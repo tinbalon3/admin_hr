@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Ecommerce API with Fast API Framework
 
@@ -188,3 +189,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 
 
+=======
+# backendfastapi
+>>>>>>> acc698f47eebf3ad61baf1185ba9efc05fa3ca8c
