@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"  # Đảm bảo hỗ trợ UTF-8
 
 
 settings = Settings()

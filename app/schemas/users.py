@@ -1,61 +1,56 @@
-from pydantic import BaseModel , EmailStr
-from typing import List
+import uuid
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from app.schemas.carts import CartBase
+from typing import Optional, List
 
 
-class BaseConfig:
-    from_attributes = True
-
-
+# Schema cơ bản của User
 class UserBase(BaseModel):
-    id: int
-    username: str
-    email: EmailStr
     full_name: str
-    password: str
+    email: EmailStr
     role: str
-    is_active: bool
-    created_at: datetime
-    carts: List[CartBase]
-
-    class Config(BaseConfig):
-        pass
 
 
+# Schema khi tạo User (Signup)
 class UserCreate(BaseModel):
     full_name: str
-    username: str
-    email: str
+    email: EmailStr
+
+    class Config:
+        from_attributes = True
+
+
+# Schema khi trả về User (có id và created_at)
+class UserOut(UserBase):
+    id: uuid.UUID
     password: str
+    created_at: datetime
 
-    class Config(BaseConfig):
-        pass
+    class Config:
+        from_attributes=True
+        orm_mode = True  
+
+class Userinfo(UserBase):
+    id: uuid.UUID
+    created_at: datetime
+
+    class Config:
+        from_attributes=True
 
 
-class UserUpdate(UserCreate):
-    pass
-
-
-class UserOut(BaseModel):
+# Schema phản hồi API khi lấy thông tin User
+class UserResponse(BaseModel):
     message: str
-    data: UserBase
+    data: UserOut
 
-    class Config(BaseConfig):
-        pass
+    class Config:
+        from_attributes = True
+        orm_mode = True  
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    password: Optional[str] = None
+    password_new: Optional[str] = None
 
-class UsersOut(BaseModel):
-    message: str
-    data: List[UserBase]
-
-    class Config(BaseConfig):
-        pass
-
-
-class UserOutDelete(BaseModel):
-    message: str
-    data: UserBase
-
-    class Config(BaseConfig):
-        pass
+    class Config:
+        from_attributes = True      

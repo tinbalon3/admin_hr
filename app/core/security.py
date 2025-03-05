@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
 from app.db.database import get_db
 from app.utils.responses import ResponseHandler
-
+import uuid
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 auth_scheme = HTTPBearer()
@@ -29,8 +29,8 @@ def verify_password(plain_password, hashed_password):
 
 
 # Create Access & Refresh Token
-async def get_user_token(id: int, refresh_token=None):
-    payload = {"id": id}
+async def get_user_token(id: uuid, refresh_token=None):
+    payload = {"id": str(id)}
 
     access_token_expiry = timedelta(minutes=settings.access_token_expire_minutes)
 
@@ -79,6 +79,30 @@ def check_admin_role(
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
     user_id = user.get('id')
-    role_user = db.query(User).filter(User.id == user_id).first()
+    role_user = db.query(User).filter(User.id == user_id).first() or None
+    if not role_user:
+        raise ResponseHandler.not_found_error("User", user_id)
     if role_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin role required")
+    return True
+
+def check_user(
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+        db: Session = Depends(get_db)):
+    user = get_token_payload(token.credentials)
+    user_id = user.get('id')
+    role_user = db.query(User).filter(User.id == user_id).first() or None
+    if not role_user:
+        raise ResponseHandler.not_found_error("User", user_id)
+    if role_user.role != "employee":
+        return False
+    return True
+    
+def check_maneger(
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+        db: Session = Depends(get_db)):
+    user = get_token_payload(token.credentials)
+    user_id = user.get('id')
+    role_user = db.query(User).filter(User.id == user_id).first()
+    if role_user.role != "manager":
+        raise HTTPException(status_code=403, detail="manager role required")

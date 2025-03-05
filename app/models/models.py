@@ -1,6 +1,8 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Float, ARRAY, Enum
+import uuid
+from sqlalchemy import Column, String, ForeignKey, Date, Text, Enum, Boolean
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
+from sqlalchemy.dialects.postgresql import UUID  # Nếu dùng PostgreSQL
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -8,79 +10,57 @@ from app.db.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
-    username = Column(String, unique=True, nullable=False)
+    # Sửa id thành UUID
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    full_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    full_name = Column(String, nullable=False)
-    is_active = Column(Boolean, server_default="True", nullable=False)
+    role = Column(Enum("employee", "manager", "admin", name="user_roles"), nullable=False, server_default="employee")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
-    # New column for role
-    role = Column(Enum("admin", "user", name="user_roles"), nullable=False, server_default="user")
-
-    # Relationship with carts
-    carts = relationship("Cart", back_populates="user")
+    # Quan hệ: Một nhân viên có thể có nhiều đơn xin nghỉ
+    leave_requests = relationship("LeaveRequest", back_populates="employee")
+    approvals = relationship("Approval", back_populates="approver")
 
 
-class Cart(Base):
-    __tablename__ = "carts"
+class LeaveType(Base):
+    __tablename__ = "leave_types"
 
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
-    total_amount = Column(Float, nullable=False)
-
-    # Relationship with user
-    user = relationship("User", back_populates="carts")
-
-    # Relationship with cart items
-    cart_items = relationship("CartItem", back_populates="cart")
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    type_name = Column(String, unique=True, nullable=False)  # VD: "Nghỉ phép năm", "Nghỉ bệnh"
+    description = Column(Text, nullable=True)  # Mô tả về loại nghỉ phép
 
 
-class CartItem(Base):
-    __tablename__ = "cart_items"
+class LeaveRequest(Base):
+    __tablename__ = "leave_requests"
 
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
-    cart_id = Column(Integer, ForeignKey("carts.id", ondelete="CASCADE"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
-    quantity = Column(Integer, nullable=False)
-    subtotal = Column(Float, nullable=False)
-
-    # Relationship with cart and product
-    cart = relationship("Cart", back_populates="cart_items")
-    product = relationship("Product", back_populates="cart_items")
-
-
-class Category(Base):
-    __tablename__ = "categories"
-
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
-    name = Column(String, unique=True, nullable=False)
-
-    # Relationship with products
-    products = relationship("Product", back_populates="category")
-
-
-class Product(Base):
-    __tablename__ = "products"
-
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    price = Column(Integer, nullable=False)
-    discount_percentage = Column(Float, nullable=False)
-    rating = Column(Float, nullable=False)
-    stock = Column(Integer, nullable=False)
-    brand = Column(String, nullable=False)
-    thumbnail = Column(String, nullable=False)
-    images = Column(ARRAY(String), nullable=False)
-    is_published = Column(Boolean, server_default="True", nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    # Cập nhật khóa ngoại thành UUID
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    leave_type_id = Column(UUID(as_uuid=True), ForeignKey("leave_types.id", ondelete="SET NULL"), nullable=True)
+    start_date = Column(Date, nullable=False)  # Ngày bắt đầu nghỉ
+    end_date = Column(Date, nullable=False)  # Ngày kết thúc nghỉ
+    reason = Column(Text, nullable=True)  # Lý do xin nghỉ
+    status = Column(Enum("pending", "approved", "rejected", name="leave_status"), nullable=False, server_default="pending")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
-    # Relationship with category
-    category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
-    category = relationship("Category", back_populates="products")
+    # Quan hệ: Một đơn nghỉ thuộc về một nhân viên
+    employee = relationship("User", back_populates="leave_requests")
+    leave_type = relationship("LeaveType")
+    approvals = relationship("Approval", back_populates="leave_request")
 
-    # Relationship with cart items
-    cart_items = relationship("CartItem", back_populates="product")
+
+class Approval(Base):
+    __tablename__ = "approvals"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    # Cập nhật khóa ngoại thành UUID
+    leave_request_id = Column(UUID(as_uuid=True), ForeignKey("leave_requests.id", ondelete="CASCADE"), nullable=False)
+    approver_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    decision = Column(Enum("approved", "rejected", name="approval_decisions"), nullable=False)
+    decision_date = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
+    comments = Column(Text, nullable=True)
+
+    # Quan hệ: Một bản ghi phê duyệt thuộc về một đơn nghỉ
+    leave_request = relationship("LeaveRequest", back_populates="approvals")
+    approver = relationship("User", back_populates="approvals")
