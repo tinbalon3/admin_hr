@@ -4,11 +4,11 @@ from app.utils.responses import ResponseHandler
 from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse
 from app.schemas.users import Userinfo
 from app.schemas.leavaType import LeaveTypeOut
-from app.core.security import get_token_payload, check_admin_role, check_user
+from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist
 
 from fastapi import HTTPException, status
 import json
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 
 
@@ -17,9 +17,9 @@ class leaveRequest:
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
         if check_user(token, db):
-            leaveRequest = db.query(LeaveRequest).group_by(LeaveRequest.id ).all() or []
-        else:
             leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.employee_id == user_id) or []
+        else:
+            leaveRequest = db.query(LeaveRequest).group_by(LeaveRequest.id ).all() or []
         return ResponseHandler.success("get list success", leaveRequest)
         
 
@@ -82,33 +82,6 @@ class leaveRequest:
 
         return response_data 
 
-
-    # @staticmethod
-    # def edit(db: Session, token, updated_leaveType,id):
-    #     user_id = get_token_payload(token.credentials).get('id')
-        
-    #     db_user = db.query(User).filter(User.id == user_id, User.role == 'admin').first()
-    #     if not db_user:
-    #        raise ResponseHandler.not_found_error("User", user_id)
-       
-    #     check_admin_role(token, db)
-    
-    #     updated_leaveType_dict = updated_leaveType.model_dump(exclude_none = True)
-    #     db_type = db.query(LeaveType).filter(LeaveType.id == id).first()
-    #     if not db_type:
-    #         raise ResponseHandler.not_found_error("Leave Type", updated_leaveType.id)
-        
-    #     if db.query(LeaveType).filter(LeaveType.type_name == updated_leaveType.type_name).first():
-    #         raise ResponseHandler.error("Leave Type already exists")
-        
-    #     for key, value in updated_leaveType_dict.items():
-    #         setattr(db_type, key, value)
-        
-
-    #     db.commit()
-    #     db.refresh(db_type)
-    #     return ResponseHandler.update_success(db_type.type_name, db_type.id, db_type)
-    
     @staticmethod
     def delele(db: Session, token,id):
         user_id = get_token_payload(token.credentials).get('id')
@@ -116,11 +89,72 @@ class leaveRequest:
         if user_id is None :
             raise ResponseHandler.invalid_token("access")
         
-        check_admin_role(token, db)
+        check_user_exist(token, db)
 
-        db_type = db.query(LeaveType).filter(LeaveType.id == id).first() or None
-        if db_type is None:
+        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id).first() or None
+        if leaveRequest is None:
             raise ResponseHandler.not_found_error("Leave Type", id)
-        db.delete(db_type)
+        if leaveRequest.status == "approved" or leaveRequest.status == "rejected":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="request was resolved, you cant delete it"
+            )
+        db.delete(leaveRequest)
         db.commit()
-        return ResponseHandler.delete_success(db_type.type_name,db_type.id , db_type)
+        return ResponseHandler.success(message="Delete success")
+
+    @staticmethod
+    def edit(db: Session, token,id,leave_data: LeaveRequestBase) -> LeaveRequestResponse:
+        # Lấy user ID từ token
+        user_id = get_token_payload(token.credentials).get("id")
+
+        # Kiểm tra user có tồn tại không
+        check_user(token, db)
+        
+        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.employee_id == user_id).first() or None
+        if not leaveRequest:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Invalid Leave Request"
+            )
+            
+        # Kiểm tra loại nghỉ phép có tồn tại không
+        leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first() or None
+        if not leave_type:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid Leave Type"
+            )
+
+        # Kiểm tra ngày bắt đầu có trước ngày kết thúc không
+        if (leave_data.start_date) > (leave_data.end_date) :
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Start date must be before end date"
+            )
+        elif (leave_data.start_date) < date.today():
+            raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Start date must be after today"
+            )
+        else:
+            if leave_data.end_date < date.today():
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="End date must be after today")
+        if leaveRequest.status == "approved" or leaveRequest.status == "rejected":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="request was resolved, you cant change it"
+            )
+        leave_data_dict = leave_data.model_dump(exclude_none = True)
+        
+        for key, value in leave_data_dict.items():
+            setattr(leaveRequest, key, value)
+        
+        # Lưu vào DB
+        db.commit()
+        db.refresh(leaveRequest)
+  
+
+        return ResponseHandler.update_success(leaveRequest.__tablename__, leaveRequest.id, leaveRequest)

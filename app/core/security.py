@@ -73,6 +73,15 @@ def get_current_user(token):
     user = get_token_payload(token.credentials)
     return user.get('id')
 
+def check_user_exist(
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+        db: Session = Depends(get_db)):
+    user = get_token_payload(token.credentials)
+    user_id = user.get('id')
+    role_user = db.query(User).filter(User.id == user_id).first() or None
+    if not role_user:
+        raise ResponseHandler.not_found_error("User", user_id)
+    return True
 
 def check_admin_role(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),

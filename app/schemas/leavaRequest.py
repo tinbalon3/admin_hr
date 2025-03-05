@@ -14,11 +14,19 @@ class LeaveRequestBase(BaseModel):
 class LeaveRequestCreate(LeaveRequestBase):
     class Config:
         from_attributes = True  # Hỗ trợ chuyển đổi từ ORM
-
+        
+class leaveReqestDelete(BaseModel):
+    message: str
+      
+class LeaveRequestFormchage(LeaveRequestBase):
+    leave_type_id: Optional[uuid.UUID] = None
+    class Config:
+        from_attributes = True  # Hỗ trợ chuyển đổi từ ORM
 
 class LeaveRequestOut(LeaveRequestBase):
     id: uuid.UUID
     created_at: datetime
+    status: str
     employee: Optional[Userinfo] = None
     leave_type: Optional[LeaveTypeOut] = None
 
