@@ -12,6 +12,8 @@ from fastapi.security import HTTPBearer
 from app.db.database import get_db
 from app.utils.responses import ResponseHandler
 import uuid
+from email_validator import validate_email, EmailNotValidError
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 auth_scheme = HTTPBearer()
@@ -21,6 +23,13 @@ auth_scheme = HTTPBearer()
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+def verify_Email(email: str) -> bool:
+    try:
+        validate_email(email)
+        return True
+    except EmailNotValidError:
+        raise HTTPException(status_code=403, detail="Email wrong")
 
 
 # Verify Hash Password
@@ -115,3 +124,4 @@ def check_maneger(
     role_user = db.query(User).filter(User.id == user_id).first()
     if role_user.role != "manager":
         raise HTTPException(status_code=403, detail="manager role required")
+

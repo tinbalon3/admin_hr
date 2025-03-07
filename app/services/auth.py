@@ -3,7 +3,7 @@ from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestF
 from sqlalchemy.orm import Session
 from app.models.models import User
 from app.db.database import get_db
-from app.core.security import verify_password, get_user_token, get_token_payload
+from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email
 from app.core.security import get_password_hash
 from app.utils.responses import ResponseHandler
 from app.schemas.auth import Signup, LoginForm
@@ -26,6 +26,7 @@ class AuthService:
 
     @staticmethod
     async def signup(db: Session, user: Signup):
+        verify_Email(user.email)
         if db.query(User).filter(User.email == user.email).first():
             raise ResponseHandler.userExists()
         else:
