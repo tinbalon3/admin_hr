@@ -1,12 +1,15 @@
 1. Cài Đặt & Chạy Hệ Thống
 git clone https://github.com/your-username/your-repo.git
+
 cd fastapi-system
 
 
 2. Tạo Môi Trường Ảo & Cài Đặt Package
 
 python -m venv venv
+
 source venv/bin/activate  # MacOS/Linux
+
 venv\Scripts\activate      # Windows
 
 pip install -r requirements.txt
@@ -40,27 +43,36 @@ Cấu Hình Database & Alembic
 1. Khởi Tạo Alembic
 
 alembic init alembic
+
 2. Kiểm Tra Cấu Trúc Alembic
 
 mkdir alembic/versions  # Đảm bảo thư mục chứa migration đã tồn tại
+
 ls alembic  # Kiểm tra các file đã tạo
+
 Cấu trúc Alembic sẽ có:
 
 
 alembic.ini
+
 env.py
+
 script.py.mako
+
 versions/   # Chứa các migration files
 
 3. Tạo & Áp Dụng Migration
 
 alembic revision --autogenerate -m "Initial Migration"
+
 alembic upgrade head
+
 Sau bước này, database của bạn đã được cập nhật.
 
 3. Chạy FastAPI
 
 uvicorn main:app --reload
+
 FastAPI sẽ chạy tại:
 
 API Docs: http://127.0.0.1:8000/docs
