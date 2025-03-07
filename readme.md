@@ -15,18 +15,28 @@ pip install -r requirements.txt
 3. Cấu Hình .env
 Tạo file .env và thêm thông tin cấu hình:
 # Database Config
+
 DB_USERNAME=YOUR_DATABASE_USER
+
 DB_PASSWORD=YOUR_DATABASE_PASSWORD
+
 DB_HOSTNAME=localhost
+
 DB_PORT=YOUR_DATABASE_PORT
+
 DB_NAME=YOUR_DATABASE_NAME
+
 DATABASE_URL=postgresql://user:password@localhost/db_name
 
 # JWT Config
+
 SECRET_KEY=mysecretkey
+
 ALGORITHM=HS256
+
 ACCESS_TOKEN_EXPIRE_MINUTES=30
-2. Cấu Hình Database & Alembic
+
+Cấu Hình Database & Alembic
 1. Khởi Tạo Alembic
 
 alembic init alembic
@@ -56,6 +66,8 @@ FastAPI sẽ chạy tại:
 API Docs: http://127.0.0.1:8000/docs
 
 4. Cấu Trúc Dự Án
+
+fastapi-system
 
 fastapi-system
 │── app
