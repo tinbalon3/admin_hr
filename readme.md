@@ -64,38 +64,3 @@ uvicorn main:app --reload
 FastAPI sẽ chạy tại:
 
 API Docs: http://127.0.0.1:8000/docs
-
-4. Cấu Trúc Dự Án
-
-fastapi-system
-
-fastapi-system
-
-│── app
-│   ├── models          # SQLAlchemy Models
-
-│   ├── routes          # API Routes
-
-│   ├── schemas         # Pydantic Schemas
-
-│   ├── services        # Business Logic
-
-│   ├── utils           # Helper Functions
-
-│   ├── __init__.py
-
-│── alembic             # Alembic Migrations
-
-│   ├── env.py
-
-│   ├── script.py.mako
-
-│   ├── versions/       # Chứa file migration
-
-│── main.py             # FastAPI Entry Point
-
-│── requirements.txt    # Dependencies
-
-│── .env                # Environment Variables
-
-│── README.md           # Documentation
