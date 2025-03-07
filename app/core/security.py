@@ -102,7 +102,7 @@ def check_admin_role(
         raise ResponseHandler.not_found_error("User", user_id)
     if role_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin role required")
-    return True
+    return role_user
 
 def check_user(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),
