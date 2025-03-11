@@ -39,7 +39,7 @@ class AuthService:
         return ResponseHandler.create_success(db_user.full_name, db_user.id, db_user)
 
     @staticmethod
-    async def get_refresh_token(token, db):
+    async def get_refresh_token(token, db: Session):
         payload = get_token_payload(token)
         user_id = payload.get('id', None)
         if not user_id:

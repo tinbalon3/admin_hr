@@ -35,17 +35,16 @@ class LeaveRequest(Base):
     __tablename__ = "leave_requests"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    # Cập nhật khóa ngoại thành UUID
     employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
     leave_type_id = Column(UUID(as_uuid=True), ForeignKey("leave_types.id", ondelete="SET NULL"), nullable=True)
-    start_date = Column(Date, nullable=False)  # Ngày bắt đầu nghỉ
-    end_date = Column(Date, nullable=False)  # Ngày kết thúc nghỉ
-    notes = Column(Text, nullable=True)  # Lý do xin nghỉ
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
+    notes = Column(Text, nullable=True)
     status = Column(Enum("PENDING", "APPROVED", "REJECTED", name="leave_status"), nullable=False, server_default="PENDING")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
-    # Quan hệ: Một đơn nghỉ thuộc về một nhân viên
-    employee = relationship("employee", back_populates="leave_requests")
+    # Sử dụng tên class ORM
+    employee = relationship("Employee", back_populates="leave_requests")
     leave_type = relationship("LeaveType")
     approvals = relationship("Approval", back_populates="leave_request")
 
@@ -54,13 +53,13 @@ class Approval(Base):
     __tablename__ = "approvals"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    # Cập nhật khóa ngoại thành UUID
     leave_request_id = Column(UUID(as_uuid=True), ForeignKey("leave_requests.id", ondelete="CASCADE"), nullable=False)
     employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
     decision = Column(Enum("APPROVED", "REJECTED", name="approval_decisions"), nullable=False)
     decision_date = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
     comments = Column(Text, nullable=True)
 
-    # Quan hệ: Một bản ghi phê duyệt thuộc về một đơn nghỉ
+    # Sử dụng tên class ORM
     leave_request = relationship("LeaveRequest", back_populates="approvals")
-    approver = relationship("employee", back_populates="approvals")
+    approver = relationship("Employee", back_populates="approvals")
+

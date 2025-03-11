@@ -10,9 +10,6 @@ from app.db.database import Base
 config = context.config
 
 
-config.set_main_option(
-    "sqlalchemy.url",  f"postgresql://{settings.db_username}:{settings.db_password}@{settings.db_hostname}:{settings.db_port}/{settings.db_name}")
-
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

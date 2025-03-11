@@ -11,26 +11,18 @@ class UserBase(BaseModel):
     role: str
 
 
-# Schema khi tạo User (Signup)
-class UserCreate(BaseModel):
-    full_name: str
-    email: EmailStr
-
-    class Config:
-        from_attributes = True
 
 
 # Schema khi trả về User (có id và created_at)
-class UserOut(UserBase):
+class UserResponse(UserBase):
     id: uuid.UUID
-    password: str
     created_at: datetime
 
     class Config:
         from_attributes=True
         orm_mode = True  
 
-class Userinfo(UserBase):
+class UserInfo(UserBase):
     id: uuid.UUID
     created_at: datetime
 
@@ -39,9 +31,9 @@ class Userinfo(UserBase):
 
 
 # Schema phản hồi API khi lấy thông tin User
-class UserResponse(BaseModel):
+class UserResponse_V2(BaseModel):
     message: str
-    data: UserOut
+    data: UserInfo
 
     class Config:
         from_attributes = True

@@ -23,7 +23,7 @@ class Signup(BaseModel):
         pass
 
 
-class UserOut(BaseModel):
+class UserResponse(BaseModel):
     message: str
     data: UserBase
 

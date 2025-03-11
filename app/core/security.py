@@ -13,6 +13,8 @@ from app.db.database import get_db
 from app.utils.responses import ResponseHandler
 import uuid
 from email_validator import validate_email, EmailNotValidError
+from fastapi import HTTPException
+
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -26,7 +28,7 @@ def get_password_hash(password):
 
 def verify_Email(email: str) -> bool:
     try:
-        validate_email(email)
+        validate_email(email, check_deliverability=False)
         return True
     except EmailNotValidError:
         raise HTTPException(status_code=403, detail="Email wrong")

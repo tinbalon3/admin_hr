@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 from app.services.auth import AuthService
 from app.db.database import get_db
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from app.schemas.auth import UserOut, Signup,TokenResponse, LoginForm
+from app.schemas.auth import UserResponse, Signup,TokenResponse, LoginForm
 
 
 router = APIRouter(tags=["Auth"], prefix="/auth")
 
 
-@router.post("/signup", status_code=status.HTTP_200_OK, response_model=UserOut)
+@router.post("/signup", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def user_login(
         user: Signup,
         db: Session = Depends(get_db)):

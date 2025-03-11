@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr
 from app.schemas.leavaType import LeaveTypeOut  
-from app.schemas.users import Userinfo 
+from app.schemas.employee import UserInfo 
 from datetime import datetime, date
 from typing import List, Optional
 
@@ -27,7 +27,7 @@ class LeaveRequestOut(LeaveRequestBase):
     id: uuid.UUID
     created_at: datetime
     status: str
-    Employee: Optional[Userinfo] = None
+    Employee: Optional[UserInfo] = None
     leave_type: Optional[LeaveTypeOut] = None
 
     class Config:

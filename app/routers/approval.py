@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, Header
 from sqlalchemy.orm import Session
 from app.schemas.approval import ApprovalCreate, ApprovalResponse,List_Approval
 from app.db.database import get_db
-from app.schemas.auth import UserOut, Signup
+from app.schemas.auth import UserResponse, Signup
 from app.services.approval import ApproveService
 from app.core.security import auth_scheme
 from fastapi.security.http import HTTPAuthorizationCredentials

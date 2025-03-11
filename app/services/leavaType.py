@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.models import Employee, LeaveType
 from app.utils.responses import ResponseHandler
-from app.schemas.users import UserResponse
+from app.schemas.employee import UserResponse
 from app.core.security import get_password_hash, get_token_payload, check_admin_role
 import json
 
@@ -20,7 +20,7 @@ class LeaveTypeService:
     @staticmethod
     def create(db: Session, token, updated_leaveType):
         user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(Employee).filter(Employee.email == user.email).first() or None
+        db_user = db.query(Employee).filter(Employee.email == updated_leaveType.email).first() or None
         
         if db_user is None:
             raise ResponseHandler.invalid_token("access")
@@ -80,3 +80,4 @@ class LeaveTypeService:
         db.delete(db_type)
         db.commit()
         return ResponseHandler.delete_success(db_type.type_name,db_type.id , db_type)
+    

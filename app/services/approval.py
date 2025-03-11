@@ -1,6 +1,6 @@
 from app.models.models import Approval, LeaveRequest, Employee
 from app.schemas.approval import ApprovalCreate, ApprovalResponse
-from app.schemas.users import Userinfo
+from app.schemas.employee import UserInfo
 from app.utils.responses import ResponseHandler
 from sqlalchemy.orm import Session
 from app.core.security import get_token_payload, check_admin_role, check_user,get_current_user  # Import the function
@@ -48,7 +48,7 @@ class ApproveService:
             decision=approver.decision,
             decision_date=approver.decision_date,
             leave_request=approver.leave_request_id,  # Giữ ID hoặc convert sang LeaveRequestOut
-            approver=Userinfo.model_validate(user)  # Chuyển đổi Userinfo
+            approver=UserInfo.model_validate(user)  # Chuyển đổi UserInfo
         )
 
         return response

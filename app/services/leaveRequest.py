@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.models import Employee, LeaveType, LeaveRequest
 from app.utils.responses import ResponseHandler
 from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse
-from app.schemas.users import Userinfo
+from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut
 from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist
 
@@ -73,10 +73,10 @@ class LeaveRequestService:
             id=leave_request.id,
             start_date=leave_request.start_date,
             end_date=leave_request.end_date,
-            reason=leave_request.reason,
+            reason=leave_request.notes,
             status=leave_request.status,
             created_at=leave_request.created_at,
-            Employee=Userinfo.model_validate(db_user), 
+            Employee=UserInfo.model_validate(db_user), 
             leave_type=LeaveTypeOut.model_validate(leave_type)  
         )
 

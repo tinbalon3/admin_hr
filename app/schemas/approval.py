@@ -4,7 +4,7 @@ from enum import Enum
 from datetime import datetime, date
 from typing import List, Optional
 from app.schemas.leavaRequest import LeaveRequestOut
-from app.schemas.users import Userinfo
+from app.schemas.employee import UserInfo
 
 
 class DecisionEnum(str, Enum):
@@ -26,7 +26,7 @@ class ApprovalResponse(ApprovalBase):
     id: uuid.UUID
     decision_date: datetime
     leave_request: uuid.UUID
-    approver: Userinfo
+    approver: UserInfo
 
     class Config:
         from_attributes = True
@@ -35,7 +35,7 @@ class ApprovalOut(ApprovalBase):
     id: uuid.UUID
     decision_date: datetime
     leave_request: LeaveRequestOut
-    approver: Userinfo
+    approver: UserInfo
 
     class Config:
         from_attributes = True

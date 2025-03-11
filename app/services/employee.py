@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.models import Employee
 from app.utils.responses import ResponseHandler
-from app.schemas.users import UserResponse
+from app.schemas.employee import UserResponse
 from app.core.security import get_password_hash, get_token_payload
 from app.core.security import verify_password, get_user_token, get_token_payload
 from app.core.security import get_password_hash
