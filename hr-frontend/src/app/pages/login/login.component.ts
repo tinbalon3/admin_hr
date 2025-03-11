@@ -29,11 +29,13 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     console.log('LoginComponent initialized!');
   }
-  username = '';
+  email = '';
   password = '';
   constructor(private loginService: LoginService, private router: Router) {}
   onLogin() {
-    this.loginService.login(this.username, this.password).subscribe({
+    console.log('Email:', this.email);
+    console.log('Password:', this.password);
+    this.loginService.login(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Login Success:', response);
         this.loginService.saveToken(response.access_token);

@@ -16,16 +16,17 @@ export class LoginService {
    * @param password - Mật khẩu
    * @returns Observable
    */
-  login(username: string, password: string): Observable<any> {
-    const formData = new URLSearchParams();
-    formData.set('username', username);
-    formData.set('password', password);
-
+  login(email: string, password: string): Observable<any> {
+   const data = {
+    "email": email,
+    "password": password
+   }
+  
     const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     });
 
-    return this.http.post(`${API_LOGIN}`, formData.toString(), { headers });
+    return this.http.post(`${API_LOGIN}`,data, { headers });
   }
 
   /**
