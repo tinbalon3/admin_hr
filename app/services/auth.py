@@ -21,7 +21,7 @@ class AuthService:
         else:
             if not verify_password(user_credentials.password, user.password):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email or password incorrect")
-
+        
         return await get_user_token(id=user.id)
 
     @staticmethod

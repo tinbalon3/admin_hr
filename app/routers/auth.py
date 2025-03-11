@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Header
+from fastapi import APIRouter, Depends, status, Header, Request
 from sqlalchemy.orm import Session
 from app.services.auth import AuthService
 from app.db.database import get_db
@@ -10,7 +10,7 @@ router = APIRouter(tags=["Auth"], prefix="/auth")
 
 
 @router.post("/signup", status_code=status.HTTP_200_OK, response_model=UserResponse)
-async def user_login(
+async def user_sinnup(
         user: Signup,
         db: Session = Depends(get_db)):
     return await AuthService.signup(db, user)
