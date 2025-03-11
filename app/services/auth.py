@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, Depends, status,Response
 from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.models.models import Employee
@@ -21,7 +21,28 @@ class AuthService:
         else:
             if not verify_password(user_credentials.password, user.password):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email or password incorrect")
+        
+            # Lưu access token vào cookie
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+                path="/"
+            )
 
+            # Lưu refresh token vào cookie
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+                path="/"
+            )
         return await get_user_token(id=user.id)
 
     @staticmethod
