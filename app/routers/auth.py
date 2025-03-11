@@ -18,7 +18,7 @@ async def user_login(
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenResponse)
 async def user_login(
-        user_credentials: LoginForm = Depends(),
+        user_credentials: LoginForm,
         db: Session = Depends(get_db)):
     return await AuthService.login(user_credentials, db)
 

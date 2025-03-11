@@ -11,7 +11,7 @@
       <form (ngSubmit)="onLogin()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
-          <input matInput [(ngModel)]="username" name="username" required />
+          <input matInput [(ngModel)]="email" name="username" required />
         </mat-form-field>
   
         <mat-form-field appearance="outline" class="full-width">
@@ -19,7 +19,7 @@
           <input matInput type="password" [(ngModel)]="password" name="password" required />
         </mat-form-field>
   
-        <button mat-raised-button color="primary" class="full-width">Đăng nhập</button>
+        <button mat-raised-button color="primary"  class="full-width">Đăng nhập</button>
       </form>
   
       <div class="register-link">
