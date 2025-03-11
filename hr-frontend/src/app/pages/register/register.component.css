@@ -1,0 +1,36 @@
+.register-card {
+    width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+    height: 100vh;
+  }
+  .header {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: #1976d2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 12px;
+  }

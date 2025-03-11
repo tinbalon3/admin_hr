@@ -1,0 +1,58 @@
+/* Header Section */
+.header {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: #1976d2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Logo Background */
+
+  
+  /* Title Style */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 12px;
+  }
+  
+  /* Adjust login container to avoid overlap with header */
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+    height: 100vh;
+  }
+  
+  /* Login Card */
+  .login-card {
+    width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  /* Full-width Fields */
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  /* Register Link */
+  .register-link {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .register-link button {
+    text-transform: none;
+  }
+  
