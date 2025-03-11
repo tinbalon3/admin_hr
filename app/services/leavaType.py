@@ -10,7 +10,7 @@ class LeaveTypeService:
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
-        user = db.query(Employee).filter(Employee.email == user.email).first()
+        user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
             raise ResponseHandler.not_found_error("User", user_id)
         leaveType = db.query(LeaveType).group_by(LeaveType.id).all() or []
@@ -20,7 +20,7 @@ class LeaveTypeService:
     @staticmethod
     def create(db: Session, token, updated_leaveType):
         user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(Employee).filter(Employee.email == updated_leaveType.email).first() or None
+        db_user = db.query(Employee).filter(Employee.id == user_id).first() or None
         
         if db_user is None:
             raise ResponseHandler.invalid_token("access")
