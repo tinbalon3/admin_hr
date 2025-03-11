@@ -7,19 +7,19 @@ from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 
-class User(Base):
-    __tablename__ = "users"
+class employee(Base):
+    __tablename__ = "employee"
 
     # Sửa id thành UUID
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     full_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    role = Column(Enum("employee", "manager", "admin", name="user_roles"), nullable=False, server_default="employee")
+    role = Column(Enum("EMPLOYEE", "ADMIN", name="user_roles"), nullable=False, server_default="EMPLOYEE")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
     # Quan hệ: Một nhân viên có thể có nhiều đơn xin nghỉ
-    leave_requests = relationship("LeaveRequest", back_populates="employee")
+    leave_requests = relationship("LeaveRequest", back_populates="EMPLOYEE")
     approvals = relationship("Approval", back_populates="approver")
 
 
@@ -36,16 +36,16 @@ class LeaveRequest(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     # Cập nhật khóa ngoại thành UUID
-    employee_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
     leave_type_id = Column(UUID(as_uuid=True), ForeignKey("leave_types.id", ondelete="SET NULL"), nullable=True)
     start_date = Column(Date, nullable=False)  # Ngày bắt đầu nghỉ
     end_date = Column(Date, nullable=False)  # Ngày kết thúc nghỉ
-    reason = Column(Text, nullable=True)  # Lý do xin nghỉ
-    status = Column(Enum("pending", "approved", "rejected", name="leave_status"), nullable=False, server_default="pending")
+    Notes = Column(Text, nullable=True)  # Lý do xin nghỉ
+    status = Column(Enum("PENDING", "APPROVED", "REJECTED", name="leave_status"), nullable=False, server_default="pending")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
     # Quan hệ: Một đơn nghỉ thuộc về một nhân viên
-    employee = relationship("User", back_populates="leave_requests")
+    employee = relationship("employee", back_populates="leave_requests")
     leave_type = relationship("LeaveType")
     approvals = relationship("Approval", back_populates="leave_request")
 
@@ -56,11 +56,11 @@ class Approval(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     # Cập nhật khóa ngoại thành UUID
     leave_request_id = Column(UUID(as_uuid=True), ForeignKey("leave_requests.id", ondelete="CASCADE"), nullable=False)
-    approver_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    decision = Column(Enum("approved", "rejected", name="approval_decisions"), nullable=False)
+    employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
+    decision = Column(Enum("APPROVED", "REJECTED", name="approval_decisions"), nullable=False)
     decision_date = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
     comments = Column(Text, nullable=True)
 
     # Quan hệ: Một bản ghi phê duyệt thuộc về một đơn nghỉ
     leave_request = relationship("LeaveRequest", back_populates="approvals")
-    approver = relationship("User", back_populates="approvals")
+    approver = relationship("employee", back_populates="approvals")
