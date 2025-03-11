@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from typing import Optional
 from app.db.database import get_db
-from app.services.leaveRequest import leaveRequest
+from app.services.leaveRequest import LeaveRequestService
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
 from app.schemas.leavaRequest import LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse,LeaveRequestCreate, LeaveRequestFormchage,leaveReqestDelete
@@ -18,7 +18,7 @@ auth_scheme = HTTPBearer()
 def get_my_info(
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return leaveRequest.get_list(db, token)
+    return LeaveRequestService.get_list(db, token)
 
 @router.post("/create", response_model=LeaveRequestOut, status_code=201)
 def create_leave_type(
@@ -26,7 +26,7 @@ def create_leave_type(
         leave_request: LeaveRequestCreate,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return leaveRequest.create(db, token, leave_type_id,leave_request)
+    return LeaveRequestService.create(db, token, leave_type_id,leave_request)
 
 @router.put("/edit/{id}", response_model=LeaveRequestResponse)
 def edit_leave_type(
@@ -34,13 +34,13 @@ def edit_leave_type(
         leaveTypes: LeaveRequestFormchage,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return leaveRequest.edit(db, token,id ,leaveTypes)
+    return LeaveRequestService.edit(db, token,id ,leaveTypes)
 
 @router.delete("/delete/{id}", response_model=leaveReqestDelete)
 def edit_leave_type(
         id: str,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return leaveRequest.delele(db, token,id)
+    return LeaveRequestService.delele(db, token,id)
 
 
