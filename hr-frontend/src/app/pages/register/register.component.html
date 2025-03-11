@@ -1,0 +1,27 @@
+<div class="register-container">
+    <header class="header">
+        <h1 class="title">HR AIAIVN</h1>
+    </header>
+
+    <mat-card class="register-card">
+        <h2>Đăng kí</h2>
+        <form>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Username</mat-label>
+                <input matInput required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" required />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" class="full-width">Đăng kí</button>
+        </form>
+
+        <!-- Nút quay lại trang Login -->
+        <div class="login-link">
+            <button mat-button color="accent" [routerLink]="['/login']">Quay lại đăng nhập</button>
+        </div>
+    </mat-card>
+</div>
