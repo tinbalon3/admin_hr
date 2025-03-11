@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Depends, status
 from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.models.models import User
+from app.models.models import Employee
 from app.db.database import get_db
 from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email
 from app.core.security import get_password_hash
@@ -15,7 +15,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 class AuthService:
     @staticmethod
     async def login(user_credentials: LoginForm = Depends(), db: Session = Depends(get_db)):
-        user = db.query(User).filter(User.email == user_credentials.email).first()
+        user = db.query(Employee).filter(Employee.email == user_credentials.email).first()
         if not user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
         else:
@@ -27,12 +27,12 @@ class AuthService:
     @staticmethod
     async def signup(db: Session, user: Signup):
         verify_Email(user.email)
-        if db.query(User).filter(User.email == user.email).first():
+        if db.query(Employee).filter(Employee.email == user.email).first():
             raise ResponseHandler.userExists()
         else:
             hashed_password = get_password_hash(user.password)
             user.password = hashed_password
-            db_user = User(id=None, **user.model_dump())
+            db_user = Employee(id=None, **user.model_dump())
             db.add(db_user)
             db.commit()
             db.refresh(db_user)
@@ -45,7 +45,7 @@ class AuthService:
         if not user_id:
             raise ResponseHandler.invalid_token('refresh')
 
-        user = db.query(User).filter(User.id == user_id).first()
+        user = db.query(Employee).filter(Employee.email == user.email).first()
         if not user:
             raise ResponseHandler.invalid_token('refresh')
 

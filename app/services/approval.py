@@ -1,4 +1,4 @@
-from app.models.models import Approval, LeaveRequest, User
+from app.models.models import Approval, LeaveRequest, Employee
 from app.schemas.approval import ApprovalCreate, ApprovalResponse
 from app.schemas.users import Userinfo
 from app.utils.responses import ResponseHandler
@@ -24,7 +24,7 @@ class ApproveService:
             logging.error("Leave request not found")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leave request not found")
 
-        if leave_request.status != 'pending':
+        if leave_request.status != 'PENDING':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Request already processed")
 
         logging.info(f"Updating leave request {leave_request.id} status to {approveCreate.decision}")

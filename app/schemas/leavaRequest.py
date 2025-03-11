@@ -27,7 +27,7 @@ class LeaveRequestOut(LeaveRequestBase):
     id: uuid.UUID
     created_at: datetime
     status: str
-    employee: Optional[Userinfo] = None
+    Employee: Optional[Userinfo] = None
     leave_type: Optional[LeaveTypeOut] = None
 
     class Config:

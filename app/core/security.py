@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from app.schemas.auth import TokenResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, Depends, status
-from app.models.models import User
+from app.models.models import Employee
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
 from app.db.database import get_db
@@ -87,7 +87,7 @@ def check_user_exist(
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
     user_id = user.get('id')
-    role_user = db.query(User).filter(User.id == user_id).first() or None
+    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
     if not role_user:
         raise ResponseHandler.not_found_error("User", user_id)
     return True
@@ -97,7 +97,7 @@ def check_admin_role(
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
     user_id = user.get('id')
-    role_user = db.query(User).filter(User.id == user_id).first() or None
+    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
     if not role_user:
         raise ResponseHandler.not_found_error("User", user_id)
     if role_user.role != "admin":
@@ -109,10 +109,10 @@ def check_user(
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
     user_id = user.get('id')
-    role_user = db.query(User).filter(User.id == user_id).first() or None
+    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
     if not role_user:
         raise ResponseHandler.not_found_error("User", user_id)
-    if role_user.role != "employee":
+    if role_user.role != "Employee":
         return False
     return True
     
@@ -121,7 +121,7 @@ def check_maneger(
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
     user_id = user.get('id')
-    role_user = db.query(User).filter(User.id == user_id).first()
+    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
     if role_user.role != "manager":
         raise HTTPException(status_code=403, detail="manager role required")
 

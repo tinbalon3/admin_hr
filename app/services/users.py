@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import User
+from app.models.models import Employee
 from app.utils.responses import ResponseHandler
 from app.schemas.users import UserResponse
 from app.core.security import get_password_hash, get_token_payload
@@ -12,15 +12,15 @@ class UserService:
     @staticmethod
     def get_my_info(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
-        user = db.query(User).filter(User.id == user_id).first()
+        user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
-            raise ResponseHandler.not_found_error("User", user_id)
+            raise ResponseHandler.not_found_error("Employee", user_id)
         return ResponseHandler.get_single_success(user.email, user.id, user)
 
     @staticmethod
     def edit_my_info(db: Session, token, updated_user):
         user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(User).filter(User.id == user_id).first()
+        db_user = db.query(Employee).filter(Employee.id == user_id).first()
         if not db_user:
             raise ResponseHandler.not_found_error("User", user_id)
         if updated_user.password :
@@ -44,7 +44,7 @@ class UserService:
     @staticmethod
     def remove_my_account(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(User).filter(User.id == user_id).first()
+        db_user = db.query(Employee).filter(Employee.id == user_id).first()
         if not db_user:
            raise ResponseHandler.not_found_error("User", user_id)
         db.delete(db_user)

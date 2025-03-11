@@ -8,8 +8,8 @@ from app.schemas.users import Userinfo
 
 
 class DecisionEnum(str, Enum):
-    approved = "approved"
-    rejected = "rejected"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
 
 
 

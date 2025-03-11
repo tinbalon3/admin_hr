@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import User, LeaveType, LeaveRequest
+from app.models.models import Employee, LeaveType, LeaveRequest
 from app.utils.responses import ResponseHandler
 from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse
 from app.schemas.users import Userinfo
@@ -17,7 +17,7 @@ class leaveRequest:
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
         if check_user(token, db):
-            leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.employee_id == user_id) or []
+            leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.Employee_id == user_id) or []
         else:
             leaveRequest = db.query(LeaveRequest).group_by(LeaveRequest.id ).all() or []
         return ResponseHandler.success("get list success", leaveRequest)
@@ -29,7 +29,7 @@ class leaveRequest:
         user_id = get_token_payload(token.credentials).get("id")
 
         # Kiểm tra user có tồn tại không
-        db_user = db.query(User).filter(User.id == user_id).first()
+        db_user = db.query(Employee).filter(Employee.email == user_id).first()
         if not db_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -54,12 +54,12 @@ class leaveRequest:
         # Tạo đơn nghỉ phép mới
         leave_request = LeaveRequest(
             id=uuid.uuid4(),
-            employee_id=user_id,
+            Employee_id=user_id,
             leave_type_id=leave_type.id,
             start_date=leave_data.start_date,
             end_date=leave_data.end_date,
             reason=leave_data.reason,
-            status="pending",  # ✅ Thêm trạng thái mặc định
+            status="PENDING",  # ✅ Thêm trạng thái mặc định
             created_at=datetime.utcnow()
         )
         
@@ -76,7 +76,7 @@ class leaveRequest:
             reason=leave_request.reason,
             status=leave_request.status,
             created_at=leave_request.created_at,
-            employee=Userinfo.model_validate(db_user), 
+            Employee=Userinfo.model_validate(db_user), 
             leave_type=LeaveTypeOut.model_validate(leave_type)  
         )
 
@@ -94,7 +94,7 @@ class leaveRequest:
         leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id).first() or None
         if leaveRequest is None:
             raise ResponseHandler.not_found_error("Leave Type", id)
-        if leaveRequest.status == "approved" or leaveRequest.status == "rejected":
+        if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="request was resolved, you cant delete it"
@@ -111,7 +111,7 @@ class leaveRequest:
         # Kiểm tra user có tồn tại không
         check_user(token, db)
         
-        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.employee_id == user_id).first() or None
+        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.Employee_id == user_id).first() or None
         if not leaveRequest:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -142,7 +142,7 @@ class leaveRequest:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="End date must be after today")
-        if leaveRequest.status == "approved" or leaveRequest.status == "rejected":
+        if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="request was resolved, you cant change it"

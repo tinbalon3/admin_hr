@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import User, LeaveType
+from app.models.models import Employee, LeaveType
 from app.utils.responses import ResponseHandler
 from app.schemas.users import UserResponse
 from app.core.security import get_password_hash, get_token_payload, check_admin_role
@@ -10,7 +10,7 @@ class leaveType:
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
-        user = db.query(User).filter(User.id == user_id).first()
+        user = db.query(Employee).filter(Employee.email == user.email).first()
         if not user:
             raise ResponseHandler.not_found_error("User", user_id)
         leaveType = db.query(LeaveType).group_by(LeaveType.id).all() or []
@@ -20,7 +20,7 @@ class leaveType:
     @staticmethod
     def create(db: Session, token, updated_leaveType):
         user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(User).filter(User.id == user_id).first() or None
+        db_user = db.query(Employee).filter(Employee.email == user.email).first() or None
         
         if db_user is None:
             raise ResponseHandler.invalid_token("access")
@@ -43,7 +43,7 @@ class leaveType:
     def edit(db: Session, token, updated_leaveType,id):
         user_id = get_token_payload(token.credentials).get('id')
         
-        db_user = db.query(User).filter(User.id == user_id, User.role == 'admin').first()
+        db_user = db.query(Employee).filter(Employee.id == user_id, Employee.role == 'admin').first()
         if not db_user:
            raise ResponseHandler.not_found_error("User", user_id)
        
