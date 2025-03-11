@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Header
+from fastapi import APIRouter, Depends, status, Header, Request
 from sqlalchemy.orm import Session
 from app.services.auth import AuthService
 from app.db.database import get_db

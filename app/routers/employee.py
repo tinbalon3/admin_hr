@@ -15,7 +15,7 @@ router = APIRouter(tags=["users"], prefix="/user")
 auth_scheme = HTTPBearer()
 
 
-@router.get("/info", response_model=UserResponse_V2)
+@router.get("/info", response_model=UserResponse)
 def get_my_info(
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
