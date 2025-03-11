@@ -12,7 +12,7 @@ from datetime import datetime, date
 import uuid
 
 
-class leaveRequest:
+class LeaveRequestService:
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')

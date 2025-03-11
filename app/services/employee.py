@@ -8,7 +8,7 @@ from app.core.security import get_password_hash
 import json
 
 
-class UserService:
+class EmployeeService:
     @staticmethod
     def get_my_info(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')

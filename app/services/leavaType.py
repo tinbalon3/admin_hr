@@ -6,7 +6,7 @@ from app.core.security import get_password_hash, get_token_payload, check_admin_
 import json
 
 
-class leaveType:
+class LeaveTypeService:
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
