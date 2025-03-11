@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.db.database import get_db
-from app.services.users import UserService
+from app.services.employee import UserService
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
 from app.schemas.users import  UserResponse, UserUpdate
