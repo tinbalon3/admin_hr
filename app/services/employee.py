@@ -15,8 +15,19 @@ class EmployeeService:
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
             raise ResponseHandler.not_found_error("Employee", user_id)
-        return ResponseHandler.get_single_success(user.email, user.id, user)
-
+        # Convert user object thành dict
+        user_data = {
+        "id": user.id,
+        "full_name": user.full_name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at
+        }
+    
+        # Truyền dữ liệu vào UserResponse
+        user_response = UserResponse(**user_data)
+        return user_response
+    
     @staticmethod
     def edit_my_info(db: Session, token, updated_user):
         user_id = get_token_payload(token.credentials).get('id')

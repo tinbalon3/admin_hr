@@ -17,7 +17,7 @@ class AuthService:
     async def login(user_credentials: LoginForm = Depends(), db: Session = Depends(get_db)):
         user = db.query(Employee).filter(Employee.email == user_credentials.email).first()
         if not user:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
         else:
             if not verify_password(user_credentials.password, user.password):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email or password incorrect")
