@@ -13,8 +13,8 @@ class LeaveTypeService:
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
             raise ResponseHandler.not_found_error("User", user_id)
-        leaveType = db.query(LeaveType).group_by(LeaveType.id).all() or []
-        return ResponseHandler.success("get list success", leaveType)
+        leaveType = db.query(LeaveType).order_by(LeaveType.id).all() or []
+        return ResponseHandler.success("lấy danh sách thành công", leaveType)
         
 
     @staticmethod
@@ -31,7 +31,7 @@ class LeaveTypeService:
             raise ResponseHandler.not_found_error("User", user_id)
         
         if db.query(LeaveType).filter(LeaveType.type_name == updated_leaveType.type_name).first():
-            raise ResponseHandler.error("Leave Type already exists")
+            raise ResponseHandler.error("loại nghỉ phép này đã tồn tại")
         
         leaveType = LeaveType(id=None, **updated_leaveType.model_dump())
         db.add(leaveType)
@@ -43,7 +43,7 @@ class LeaveTypeService:
     def edit(db: Session, token, updated_leaveType,id):
         user_id = get_token_payload(token.credentials).get('id')
         
-        db_user = db.query(Employee).filter(Employee.id == user_id, Employee.role == 'admin').first()
+        db_user = db.query(Employee).filter(Employee.id == user_id).first() or None
         if not db_user:
            raise ResponseHandler.not_found_error("User", user_id)
        
@@ -55,7 +55,7 @@ class LeaveTypeService:
             raise ResponseHandler.not_found_error("Leave Type", updated_leaveType.id)
         
         if db.query(LeaveType).filter(LeaveType.type_name == updated_leaveType.type_name).first():
-            raise ResponseHandler.error("Leave Type already exists")
+            raise ResponseHandler.error("loại nghỉ phép này đã tồn tại")
         
         for key, value in updated_leaveType_dict.items():
             setattr(db_type, key, value)
@@ -76,7 +76,7 @@ class LeaveTypeService:
 
         db_type = db.query(LeaveType).filter(LeaveType.id == id).first() or None
         if db_type is None:
-            raise ResponseHandler.not_found_error("Leave Type", id)
+            raise ResponseHandler.not_found_error("loại nghỉ phép", id)
         db.delete(db_type)
         db.commit()
         return ResponseHandler.delete_success(db_type.type_name,db_type.id , db_type)

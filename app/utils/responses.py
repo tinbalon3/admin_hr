@@ -4,8 +4,10 @@ from fastapi import HTTPException, status
 class ResponseHandler:
     @staticmethod
     def success(message = None, data=None):
-        if message is None:
+        if message is None and data is not None:
             return data
+        elif data is None and message is not None:
+            return {"message": message}
         else:
             return {"message": message, "data": data}
 

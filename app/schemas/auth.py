@@ -10,14 +10,20 @@ class BaseConfig:
 
 class UserBase(BaseModel):
     full_name: str
-    email: EmailStr
-    role: str
+    email: str
+    password: str
+    phone: str
+    location: str
+    class Config(BaseConfig):
+        pass
 
 
 class Signup(BaseModel):
     full_name: str
     email: str
     password: str
+    phone: str
+    location: str
 
     class Config(BaseConfig):
         pass

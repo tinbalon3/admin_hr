@@ -15,6 +15,8 @@ class Employee(Base):
     full_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    phone = Column(String, nullable = False)
+    location = Column(String,nullable=False)
     role = Column(Enum("EMPLOYEE", "ADMIN", name="user_roles"), nullable=False, server_default="EMPLOYEE")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
     
@@ -26,7 +28,6 @@ class Employee(Base):
 
 class LeaveType(Base):
     __tablename__ = "leave_types"
-
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     type_name = Column(String, unique=True, nullable=False)  # VD: "Nghỉ phép năm", "Nghỉ bệnh"
     description = Column(Text, nullable=True)  # Mô tả về loại nghỉ phép

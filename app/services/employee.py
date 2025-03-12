@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from app.models.models import Employee
 from app.utils.responses import ResponseHandler
 from app.schemas.employee import UserResponse
-from app.core.security import get_password_hash, get_token_payload
-from app.core.security import verify_password, get_user_token, get_token_payload
+from app.core.security import get_password_hash, get_token_payload, get_current_user
+from app.core.security import verify_password, check_admin_role
 from app.core.security import get_password_hash
 import json
 
@@ -15,17 +15,9 @@ class EmployeeService:
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
             raise ResponseHandler.not_found_error("Employee", user_id)
-        # Convert user object thành dict
-        user_data = {
-        "id": user.id,
-        "full_name": user.full_name,
-        "email": user.email,
-        "role": user.role,
-        "created_at": user.created_at
-        }
     
         # Truyền dữ liệu vào UserResponse
-        user_response = UserResponse(**user_data)
+        user_response = UserResponse.model_validate(user)
         return user_response
     
     @staticmethod
@@ -40,7 +32,7 @@ class EmployeeService:
                         raise ResponseHandler.changePasswordError()
                 updated_user.password = get_password_hash(updated_user.password_new)
             else:
-                raise ResponseHandler.error("password change error")
+                raise ResponseHandler.error("Lỗi khi thay đổi mật khẩu")
 
            # Xóa trường password_new nếu tồn tại
         updated_user_dict = updated_user.model_dump(exclude_none = True)
@@ -53,11 +45,19 @@ class EmployeeService:
         return ResponseHandler.update_success(db_user.full_name, db_user.id, db_user)
 
     @staticmethod
-    def remove_my_account(db: Session, token):
-        user_id = get_token_payload(token.credentials).get('id')
-        db_user = db.query(Employee).filter(Employee.id == user_id).first()
+    def remove_account(db: Session, token, id):
+        check_admin_role(token=token,db= db)
+        db_user = db.query(Employee).filter(Employee.id == id).first()
         if not db_user:
-           raise ResponseHandler.not_found_error("User", user_id)
+           raise ResponseHandler.not_found_error("tài khoản", id)
         db.delete(db_user)
         db.commit()
-        return ResponseHandler.delete_success(db_user.full_name, db_user.id, db_user)
+        return ResponseHandler.success('Xóa thành công')
+    
+    
+    @staticmethod
+    def list(db: Session, token):
+        admin_id = get_current_user(token=token)
+        check_admin_role(token=token,db= db)
+        db_user = db.query(Employee).order_by(Employee.id, Employee.id != admin_id).all()
+        return ResponseHandler.success('lấy danh sách thành công',db_user)

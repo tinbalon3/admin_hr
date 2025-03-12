@@ -3,7 +3,7 @@ from app.db.database import get_db
 from app.services.employee import EmployeeService
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
-from app.schemas.employee import  UserResponse, UserUpdate, UserResponse_V2
+from app.schemas.employee import  UserResponse, UserUpdate, UserResponse_V2, delete_user,List_User
 from fastapi.security import HTTPBearer
 from app.core.security import auth_scheme
 from fastapi.security.http import HTTPAuthorizationCredentials
@@ -27,3 +27,16 @@ def update_info(
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return EmployeeService.edit_my_info(db, token,updated_user)
+
+@router.delete("/detele", response_model=delete_user)
+def delete_account(
+        id: str,
+        db: Session = Depends(get_db),
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    return EmployeeService.remove_account(db, token,id)
+
+@router.get("/list", response_model=List_User)
+def list(
+        db: Session = Depends(get_db),
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    return EmployeeService.list(db, token)

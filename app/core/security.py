@@ -110,7 +110,7 @@ def check_admin_role(
     if not role_user:
         raise ResponseHandler.not_found_error("User", user_id)
     if role_user.role != "ADMIN":
-        raise HTTPException(status_code=403, detail="Admin role required")
+        raise HTTPException(status_code=403, detail="Chỉ có admin mới có quyền truy cập chức năng này")
     return role_user
 
 def check_user(

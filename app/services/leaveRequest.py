@@ -14,47 +14,24 @@ import uuid
 
 
 class LeaveRequestService:
-    # @staticmethod
-    # def get_list(db: Session, token):
-    #     user_id = get_token_payload(token.credentials).get('id')
-        
-    #     query = db.query(LeaveRequest).options(joinedload(LeaveRequest.employee))
-    #     if check_user(token, db):
-    #         leaveRequest = query.filter(LeaveRequest.employee_id == user_id) or []
-    #     else:
-    #         leaveRequest = query.group_by(LeaveRequest.start_date).all() or []
-    #     return ResponseHandler.success("get list success", leaveRequest)
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
 
-        # Load employee dữ liệu đầy đủ
-        query = db.query(LeaveRequest).options(joinedload(LeaveRequest.employee))
 
         if check_user(token, db):
-            leave_requests = query.filter(LeaveRequest.employee_id == user_id).all()
+            leave_requests = db.query(LeaveRequest).filter(LeaveRequest.employee_id == user_id).all()
         else:
-            leave_requests = query.group_by(LeaveRequest.start_date).all()
+            leave_requests = db.query(LeaveRequest).order_by(LeaveRequest.created_at).all()
 
-        # Chuyển đổi dữ liệu
-        data_response = []
-        for lr in leave_requests:
-            # Chuyển đổi dữ liệu leave_request
-            leave_request_info = LeaveRequestInfo.from_orm(lr)
-
-            # Chuyển đổi dữ liệu employee (nếu có)
-            employee_info = UserInfo.from_orm(lr.employee) if lr.employee else None
-
-            # Chuyển đổi dữ liệu leave_type (nếu có)
-            leave_type_info = LeaveTypeOut.from_orm(lr.leave_type) if lr.leave_type else None
-
-            # Bọc lại thành LeaveRequestOut
-            data_response.append(LeaveRequestOut(
-                leave_request=leave_request_info,
-                employee=employee_info,
-                leave_type=leave_type_info
-            ))
-
+        data_response = [
+        LeaveRequestOut(
+            leave_request=LeaveRequestInfo.from_orm(lr),
+            employee=UserInfo.from_orm(lr.employee) if lr.employee else None,
+            leave_type=LeaveTypeOut.from_orm(lr.leave_type) if lr.leave_type else None
+        )
+        for lr in leave_requests
+    ]
         return ResponseHandler.success("get list success", data_response)
         
 
@@ -98,9 +75,9 @@ class LeaveRequestService:
         )
         
         # # Lưu vào DB
-        # db.add(leave_request)
-        # db.commit()
-        # db.refresh(leave_request)
+        db.add(leave_request)
+        db.commit()
+        db.refresh(leave_request)
 
         # Chuyển đổi SQLAlchemy model thành Pydantic model để phản hồi
         response_data = LeaveRequestOut(
@@ -126,11 +103,11 @@ class LeaveRequestService:
         if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="request was resolved, you cant delete it"
+                detail="đơn đã được giải quyết, bạn không thể xóa"
             )
         db.delete(leaveRequest)
         db.commit()
-        return ResponseHandler.success(message="Delete success")
+        return ResponseHandler.success(message="Xóa thành công")
 
     @staticmethod
     def edit(db: Session, token,id,leave_data: LeaveRequestBase) -> LeaveRequestResponse:
