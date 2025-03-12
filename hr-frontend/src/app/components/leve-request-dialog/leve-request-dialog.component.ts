@@ -51,9 +51,7 @@ export class LeveRequestDialogComponent implements OnInit {
   }
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {
-      console.log('data', data);
       this.leaveType = data.data;
-      console.log('leaveType', this.leaveType);
     }
     )
   }

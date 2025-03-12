@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class LeaveRequestService {
   private API_LEAVE_REQUEST_CREATE = 'http://127.0.0.1:8000/leaveRequest/create'; // API endpoint
   private API_LEAVE_REQUEST_GET_LIST = 'http://127.0.0.1:8000/leaveRequest/list'; // API endpoint
+  private API_LEAVE_REQUEST_EDIT = 'http://127.0.0.1:8000/leaveRequest/edit'; // API endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -27,5 +28,13 @@ export class LeaveRequestService {
       'Content-Type': 'application/json',
     });
     return this.http.get(this.API_LEAVE_REQUEST_GET_LIST, { headers });
+  }
+
+  updateLeaveRequest(id: string, leaveRequest: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.put(`${this.API_LEAVE_REQUEST_EDIT}/edit/${id}`, leaveRequest, { headers });
   }
 }
