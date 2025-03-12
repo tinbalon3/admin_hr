@@ -1,0 +1,55 @@
+<mat-toolbar color="primary" class="header">
+    <span class="logo">HR AIAIVN</span>
+    <span class="spacer"></span>
+    <button mat-icon-button>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <span>User Name</span>
+  </mat-toolbar>
+  
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" opened class="sidenav">
+      <mat-nav-list>
+        <a mat-list-item routerLink="/dashboard">Bảng tin</a>
+        <a mat-list-item routerLink="/dashboard/create_leave_request">Tạo đơn nghỉ phép</a>
+        <a mat-list-item routerLink="/leave-list">Danh sách đơn nghỉ phép</a>
+        <a mat-list-item routerLink="/intern-schedule">Đăng kí lịch làm (Intern)</a>
+      </mat-nav-list>
+    </mat-sidenav>
+  
+    <mat-sidenav-content class="content">
+      <h1>Bảng tin công ty</h1>
+  
+      <div class="chart-container">
+        <mat-card class="chart-card">
+          <h2>Cơ sở HCM</h2>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="hcmData"
+            [legend]="showLegend"
+            [doughnut]="true"
+            [labels]="true">
+          </ngx-charts-pie-chart>
+        </mat-card>
+  
+        <mat-card class="chart-card">
+          <h2>Cơ sở Đà Nẵng</h2>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="danangData"
+            [legend]="showLegend"
+            [doughnut]="true"
+            [labels]="true">
+          </ngx-charts-pie-chart>
+        </mat-card>
+      </div>
+  
+      <mat-card class="news-card">
+        <h3>News</h3>
+        <p>User mới tham gia vào công ty từ ngày dd/mm/yyyy. Chào mừng đến với công ty <b>AIAIVN</b></p>
+      </mat-card>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  
