@@ -18,15 +18,6 @@ class UserBase(BaseModel):
     class Config(BaseConfig):
         pass
 
-class Userinfo(BaseModel):
-    id: uuid.UUID
-    full_name: str
-    email: str
-    password: str
-    phone: str
-    location: str
-    class Config(BaseConfig):
-        pass
 
 class Signup(BaseModel):
     full_name: str
@@ -46,6 +37,15 @@ class UserResponse(BaseModel):
     class Config(BaseConfig):
         pass
 
+class userInfo(BaseModel):
+    id: str
+    full_name: str
+    email: str
+    phone: str
+    location: str
+
+    class Config(BaseConfig):
+        pass
 
 # Token
 class TokenResponse(BaseModel):
@@ -53,6 +53,10 @@ class TokenResponse(BaseModel):
     refresh_token: str
     token_type: str = 'Bearer'
     expires_in: int
+
+class InfoToken(BaseModel):
+    user: userInfo
+    token: TokenResponse
     
 
 class LoginForm(BaseModel):
