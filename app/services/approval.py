@@ -1,5 +1,5 @@
 from app.models.models import Approval, LeaveRequest, Employee
-from app.schemas.approval import ApprovalCreate, ApprovalResponse,ApprovalData
+from app.schemas.approval import ApprovalCreate, ApprovalResponse_V2,ApprovalData,ApprovalResponseList
 from app.schemas.employee import UserInfo
 from app.utils.responses import ResponseHandler
 from sqlalchemy.orm import Session
@@ -61,15 +61,45 @@ class ApproveService:
         employee_data = UserInfo.model_validate(user)
 
         # Tạo response cuối cùng
-        response = ApprovalResponse(
+        response = ApprovalResponse_V2(
+            message = 'Đã xử lý thành công',
             approval=approval_data,
             employee_id=employee_data
         )
 
-        return me
+        return response
         
     @staticmethod
     def get_list(db: Session, token):
-        check_admin_role(token,db)
+        # Kiểm tra quyền admin
+        check_admin_role(token, db)
+
+        # Join với bảng User để lấy thông tin employee
         list_approval = db.query(Approval).all()
-        return ResponseHandler.success("get list success", list_approval)
+
+        result = []
+        for approval in list_approval:
+            # Lấy thông tin nhân viên
+            employee = db.query(Employee).filter(Employee.id == approval.employee_id).first()
+
+            if not employee:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Employee not found"
+                )
+
+            # Map dữ liệu vào schema ApprovalResponseList
+            approval_data = ApprovalResponseList(
+                approval={
+                    "id": approval.id,
+                    "decision": approval.decision,
+                    "comments": approval.comments,
+                    "decision_date": approval.decision_date,
+                    "leave_request_id": approval.leave_request_id,
+                },
+                employee_id=UserInfo.model_validate(employee)
+            )
+
+            result.append(approval_data)
+
+        return ResponseHandler.success("Get list success", result)
