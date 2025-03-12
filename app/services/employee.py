@@ -11,6 +11,7 @@ import json
 class EmployeeService:
     @staticmethod
     def get_my_info(db: Session, token):
+        print(get_token_payload(token.credentials))
         user_id = get_token_payload(token.credentials).get('id')
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:

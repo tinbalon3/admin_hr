@@ -6,7 +6,7 @@ from app.db.database import get_db
 from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email
 from app.core.security import get_password_hash
 from app.utils.responses import ResponseHandler
-from app.schemas.auth import Signup, LoginForm
+from app.schemas.auth import Signup, LoginForm,userInfo,InfoToken
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -21,8 +21,27 @@ class AuthService:
         else:
             if not verify_password(user_credentials.password, user.password):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email or password incorrect")
-        
-        return await get_user_token(id=user.id)
+         # Tạo dữ liệu cho TokenResponse
+        token_data = await get_user_token(user.id)
+
+        # Chuyển đổi dữ liệu người dùng
+
+        # Chuyển đổi dữ liệu người dùng
+        user_data = userInfo.model_validate({
+            "id": str(user.id),
+            "full_name": user.full_name,
+            "email": user.email,
+            "phone": user.phone,
+            "location": user.location
+        })
+
+        # Gộp dữ liệu vào InfoToken
+        info_token = InfoToken(
+            user=user_data,
+            token=token_data  # Sử dụng token_data đúng kiểu
+        )
+
+        return info_token
 
     @staticmethod
     async def signup(db: Session, user: Signup):
