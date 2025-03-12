@@ -1,0 +1,38 @@
+<div class="content">
+    <h1>Bảng tin công ty</h1>
+  
+    <div class="main-container">
+      <!-- Container cho hai biểu đồ -->
+      <div class="chart-container">
+        <mat-card class="chart-card">
+          <h2>Cơ sở HCM</h2>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="hcmData"
+            [legend]="showLegend"
+            [doughnut]="true"
+            [labels]="true">
+          </ngx-charts-pie-chart>
+        </mat-card>
+  
+        <mat-card class="chart-card">
+          <h2>Cơ sở Đà Nẵng</h2>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="danangData"
+            [legend]="showLegend"
+            [doughnut]="true"
+            [labels]="true">
+          </ngx-charts-pie-chart>
+        </mat-card>
+      </div>
+  
+      <!-- Phần News -->
+      <mat-card class="news-card">
+        <h3>News</h3>
+        <p>User mới tham gia vào công ty từ ngày <span class="date">dd/mm/yyyy</span>. Chào mừng đến với công ty <b>AIAIVN</b></p>
+      </mat-card>
+    </div>
+</div>
