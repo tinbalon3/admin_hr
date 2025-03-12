@@ -8,3 +8,59 @@
     top: 10px;
     right: 10px;
   }
+
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+  
+  .logo {
+    font-weight: bold;
+    color: red;
+  }
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  .sidenav-container {
+    height: 100vh;
+    margin-top: 64px;
+  }
+  
+  .sidenav {
+    width: 250px;
+    padding: 20px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  .chart-container {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .chart-card,
+  .news-card {
+    padding: 16px;
+    width: 100%;
+  }
+  
+  .news-card h3 {
+    color: red;
+  }
+  
+  .news-card p {
+    font-style: italic;
+  }
+  .header-content {
+    text-align: center;
+  }

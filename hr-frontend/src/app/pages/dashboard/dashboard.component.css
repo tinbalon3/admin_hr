@@ -19,8 +19,8 @@
   }
   
   .sidenav-container {
-    height: 100vh;
-    margin-top: 64px;
+    height: calc(100vh - 64px); /* Trừ chiều cao của toolbar (64px là chiều cao mặc định của mat-toolbar) */
+    margin-top: 64px; /* Đảm bảo không bị che bởi header */
   }
   
   .sidenav {
@@ -28,26 +28,8 @@
     padding: 20px;
   }
   
+  /* Không cần thêm margin-left cho .content vì mat-sidenav-content đã tự xử lý */
   .content {
     padding: 20px;
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
   }
-  
-  .chart-container {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .chart-card,
-  .news-card {
-    padding: 16px;
-    width: 100%;
-  }
-  
-  .news-card h3 {
-    color: red;
-  }
-  
-  .news-card p {
-    font-style: italic;
-  }
-  

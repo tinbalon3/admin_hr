@@ -1,26 +1,77 @@
-<h2>Tạo đơn nghỉ phép</h2>
-
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Start date</mat-label>
-  <input matInput [(ngModel)]="startDate" type="date" />
-</mat-form-field>
-
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>End date</mat-label>
-  <input matInput [(ngModel)]="endDate" type="date" />
-</mat-form-field>
-
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Note</mat-label>
-  <input matInput [(ngModel)]="note" />
-</mat-form-field>
-
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Type</mat-label>
-  <input matInput [(ngModel)]="type" />
-</mat-form-field>
-
-<div class="dialog-actions">
-  <button mat-button (click)="cancel()">Hủy</button>
-  <button mat-raised-button color="primary" (click)="submit()">Đồng ý</button>
-</div>
+<div class="form-container" mat-dialog-content>
+    <h2>Tạo đơn nghỉ phép</h2>
+  
+    <form #leaveForm="ngForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <!-- Start Date -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Start Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            [(ngModel)]="startDate"
+            name="startDate"
+          
+            autofocus
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+          <!-- <mat-error *ngIf="leaveForm.controls['startDate']?.invalid && leaveForm.controls['startDate']?.touched">
+            Vui lòng chọn ngày bắt đầu!
+          </mat-error> -->
+        </mat-form-field>
+  
+        <!-- End Date -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            [(ngModel)]="endDate"
+            name="endDate"
+           
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+          <!-- <mat-error *ngIf="leaveForm.controls['endDate']?.invalid && leaveForm.controls['endDate']?.touched">
+            Vui lòng chọn ngày kết thúc!
+          </mat-error> -->
+        </mat-form-field>
+      </div>
+  
+      <div class="form-group">
+        <!-- Note -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notes</mat-label>
+          <textarea matInput [(ngModel)]="note" name="note" rows="3"></textarea>
+        </mat-form-field>
+      </div>
+  
+      <div class="form-group">
+        <!-- Type (Dropdown) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="type" name="type" required>
+            <mat-option value="sick">Nghỉ ốm</mat-option>
+            <mat-option value="vacation">Nghỉ phép</mat-option>
+            <mat-option value="personal">Nghỉ cá nhân</mat-option>
+          </mat-select>
+          <mat-error *ngIf="leaveForm.controls['type']?.invalid && leaveForm.controls['type']?.touched">
+            Vui lòng chọn loại nghỉ phép!
+          </mat-error>
+        </mat-form-field>
+      </div>
+  
+      <div class="dialog-actions" mat-dialog-actions>
+        <button mat-button type="button" (click)="cancel()">Hủy</button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="leaveForm.invalid"
+        >
+          Đồng ý
+        </button>
+      </div>
+    </form>
+  </div>
