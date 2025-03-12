@@ -1,5 +1,5 @@
 from app.models.models import Approval, LeaveRequest, Employee
-from app.schemas.approval import ApprovalCreate, ApprovalResponse
+from app.schemas.approval import ApprovalCreate, ApprovalResponse,ApprovalData
 from app.schemas.employee import UserInfo
 from app.utils.responses import ResponseHandler
 from sqlalchemy.orm import Session
@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 
 import logging
 import uuid
+from datetime import datetime
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -24,6 +25,7 @@ class ApproveService:
             logging.error("Leave request not found")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leave request not found")
 
+        # Kiểm tra trạng thái của đơn
         if leave_request.status != 'PENDING':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Request already processed")
 
@@ -31,27 +33,41 @@ class ApproveService:
 
         # Cập nhật trạng thái đơn nghỉ
         leave_request.status = approveCreate.decision
-        db.commit()
 
-        # Tạo bản ghi phê duyệt
+        # Tạo bản ghi phê duyệt với decision_date
         approver = Approval(
-            approver_id=user.id,
-            **approveCreate.model_dump()
+            id=uuid.uuid4(),
+            employee_id=user.id,
+            decision=approveCreate.decision,
+            comments=approveCreate.comments,
+            leave_request_id=approveCreate.leave_request_id,
+            decision_date=datetime.utcnow()  # UTC thời gian chuẩn
         )
+
         db.add(approver)
         db.commit()
         db.refresh(approver)
 
-        # Kiểm tra dữ liệu trả về có đúng không
-        response = ApprovalResponse(
+        # Chuẩn bị dữ liệu cho phần `approval`
+        approval_data = ApprovalData(
             id=approver.id,
             decision=approver.decision,
+            comments=approver.comments,
             decision_date=approver.decision_date,
-            leave_request=approver.leave_request_id,  # Giữ ID hoặc convert sang LeaveRequestOut
-            approver=UserInfo.model_validate(user)  # Chuyển đổi UserInfo
+            leave_request_id=approver.leave_request_id,
         )
 
-        return response
+        # Chuẩn bị dữ liệu cho phần `employee_id`
+        employee_data = UserInfo.model_validate(user)
+
+        # Tạo response cuối cùng
+        response = ApprovalResponse(
+            approval=approval_data,
+            employee_id=employee_data
+        )
+
+        return me
+        
     @staticmethod
     def get_list(db: Session, token):
         check_admin_role(token,db)
