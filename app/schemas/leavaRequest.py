@@ -26,7 +26,7 @@ class LeaveRequestFormchage(LeaveRequestBase):
 class LeaveRequestInfo(BaseModel):
     start_date: date
     end_date: date
-    reason: Optional[str] = None
+    notes: Optional[str] = None
     id: uuid.UUID
     created_at: datetime
     status: str

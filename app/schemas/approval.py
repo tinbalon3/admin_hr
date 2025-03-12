@@ -25,25 +25,36 @@ class ApprovalCreate(ApprovalBase):
 class ApprovalResponse(ApprovalBase):
     id: uuid.UUID
     decision_date: datetime
-    leave_request: uuid.UUID
-    approver: UserInfo
-
-    class Config:
-        from_attributes = True
-
-class ApprovalOut(ApprovalBase):
-    id: uuid.UUID
-    decision_date: datetime
-    leave_request: LeaveRequestOut
-    approver: UserInfo
+    leave_request_id: uuid.UUID
+    employee_id: UserInfo
 
     class Config:
         from_attributes = True
 
 class List_Approval(BaseModel):
     message: str | None = None
-    data: List[ApprovalOut]
+    data: List[ApprovalResponse]
 
     class Config:
         from_attributes = True
         orm_mode = True
+
+# Approval Data Schema
+class ApprovalData(BaseModel):
+    id: uuid.UUID
+    decision: str
+    comments: Optional[str] = None
+    decision_date: datetime
+    leave_request_id: uuid.UUID
+
+    class Config:
+        from_attributes = True
+
+# Response Schema
+class ApprovalResponse_V2(BaseModel):
+    message: str | None = None
+    approval: ApprovalData
+    employee_id: UserInfo
+
+    class Config:
+        from_attributes = True
