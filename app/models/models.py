@@ -17,10 +17,11 @@ class Employee(Base):
     password = Column(String, nullable=False)
     role = Column(Enum("EMPLOYEE", "ADMIN", name="user_roles"), nullable=False, server_default="EMPLOYEE")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
-
+    
     # Quan hệ: Một nhân viên có thể có nhiều đơn xin nghỉ
     leave_requests = relationship("LeaveRequest", back_populates="employee")
     approvals = relationship("Approval", back_populates="approver")
+
 
 
 class LeaveType(Base):

@@ -11,8 +11,6 @@ class UserBase(BaseModel):
     role: str
 
 
-
-
 # Schema khi trả về User (có id và created_at)
 class UserResponse(UserBase):
     id: uuid.UUID

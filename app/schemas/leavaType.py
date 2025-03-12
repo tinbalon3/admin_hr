@@ -3,8 +3,6 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime, date
 from typing import List, Optional
 
-
-
 # ====== LeaveType Schemas ======
 class LeaveTypeBase(BaseModel):
     type_name: Optional[str] = None
