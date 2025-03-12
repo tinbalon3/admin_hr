@@ -4,7 +4,7 @@ from app.db.database import get_db
 from app.services.leaveRequest import LeaveRequestService
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
-from app.schemas.leavaRequest import LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse,LeaveRequestCreate, LeaveRequestFormchage,leaveReqestDelete
+from app.schemas.leavaRequest import LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse,LeaveRequestCreate, LeaveRequestFormchange,leaveReqestDelete
 from fastapi.security import HTTPBearer
 from app.core.security import auth_scheme
 from fastapi.security.http import HTTPAuthorizationCredentials
@@ -22,16 +22,16 @@ def get_my_info(
 
 @router.post("/create", response_model=LeaveRequestResponse, status_code=201)
 def create_leave_type(
-        leave_type_id: str ,
-        leave_request: LeaveRequestCreate,
+       
+        leave_request: LeaveRequestFormchange,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return LeaveRequestService.create(db, token, leave_type_id,leave_request)
+    return LeaveRequestService.create(db, token,leave_request)
 
 @router.put("/edit/{id}", response_model=LeaveRequestResponse)
 def edit_leave_type(
         id: str,
-        leaveTypes: LeaveRequestFormchage,
+        leaveTypes: LeaveRequestFormchange,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return LeaveRequestService.edit(db, token,id ,leaveTypes)

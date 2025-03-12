@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { json } from 'stream/consumers';
 
 const API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
 
@@ -16,6 +17,7 @@ export class LoginService {
    * @param password - Mật khẩu
    * @returns Observable
    */
+  private readonly TOKEN_KEY = 'access_token';
   login(email: string, password: string): Observable<any> {
    const data = {
     "email": email,
@@ -29,19 +31,45 @@ export class LoginService {
     return this.http.post(`${API_LOGIN}`,data, { headers });
   }
 
+  saveToken(token: string): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    }
+  }
+
+  // Lấy token từ localStorage
+  getToken(): string | null {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem(this.TOKEN_KEY);
+    }
+    return null;
+  }
+
+  // Xoá token khỏi localStorage
+  removeToken(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem(this.TOKEN_KEY);
+    }
+  }
   /**
    * Lưu token vào localStorage
    */
-  saveToken(token: string): void {
-    localStorage.setItem('token', token);
-  }
+ 
 
   /**
    * Lấy token từ localStorage
    */
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
   
+  saveRefreshToken(refreshToken: string): void {
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+  saveInforUser(infor:any){
+    localStorage.setItem('inforUser', JSON.stringify(infor));
+  }
+  getInforUser(): string | null {
+    return localStorage.getItem('inforUser');
+  }
 }

@@ -9,6 +9,7 @@ from typing import List, Optional
 class LeaveRequestBase(BaseModel):
     start_date: date
     end_date: date
+    leave_type_id: uuid.UUID
     notes: Optional[str] = None
 
 class LeaveRequestCreate(LeaveRequestBase):
@@ -18,7 +19,7 @@ class LeaveRequestCreate(LeaveRequestBase):
 class leaveReqestDelete(BaseModel):
     message: str
       
-class LeaveRequestFormchage(LeaveRequestBase):
+class LeaveRequestFormchange(LeaveRequestBase):
     leave_type_id: Optional[uuid.UUID] = None
     class Config:
         from_attributes = True  # Hỗ trợ chuyển đổi từ ORM  

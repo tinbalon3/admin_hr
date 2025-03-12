@@ -60,7 +60,7 @@ export class RegisterComponent implements OnInit{
         this.router.navigate(['/login']); // Chuyển hướng sau khi đăng ký thành công
       },
       error: (error) => {
-        this.showNotification('❌ Đăng ký thất bại. Vui lòng thử lại!', true);
+        this.showNotification(error.error.detail, true);
       },
     });
   }
