@@ -1,0 +1,26 @@
+<h2>Tạo đơn nghỉ phép</h2>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Start date</mat-label>
+  <input matInput [(ngModel)]="startDate" type="date" />
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>End date</mat-label>
+  <input matInput [(ngModel)]="endDate" type="date" />
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Note</mat-label>
+  <input matInput [(ngModel)]="note" />
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Type</mat-label>
+  <input matInput [(ngModel)]="type" />
+</mat-form-field>
+
+<div class="dialog-actions">
+  <button mat-button (click)="cancel()">Hủy</button>
+  <button mat-raised-button color="primary" (click)="submit()">Đồng ý</button>
+</div>
