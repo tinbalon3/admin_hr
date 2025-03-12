@@ -1,66 +1,46 @@
-.leave-request-container {
-    position: relative;
-    padding: 20px;
-  }
-  
-  .create-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 16px;
-  }
-  
-  .logo {
-    font-weight: bold;
-    color: red;
-  }
-  
-  .spacer {
-    flex: 1;
-  }
-  
-  .sidenav-container {
-    height: 100vh;
-    margin-top: 64px;
-  }
-  
-  .sidenav {
-    width: 250px;
-    padding: 20px;
-  }
-  
-  .content {
-    padding: 20px;
-  }
-  
-  .chart-container {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .chart-card,
-  .news-card {
-    padding: 16px;
+.table {
     width: 100%;
   }
   
-  .news-card h3 {
-    color: red;
+  mat-card {
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .news-card p {
-    font-style: italic;
-  }
-  .header-content {
+  mat-header-cell, mat-cell {
     text-align: center;
   }
+  
+  mat-header-cell {
+    font-weight: bold;
+  }
+  
+  mat-checkbox {
+    border-radius: 4px;
+  }
+  
+  .leave-request-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  
+  .no-data-card {
+    text-align: center;
+    padding: 20px;
+    color: #757575;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+  }
+  
+  .no-data-card mat-icon {
+    font-size: 40px;
+    color: #bdbdbd;
+  }
+  
+  .no-data-card p {
+    font-size: 16px;
+    margin-top: 8px;
+  }
+  
