@@ -51,10 +51,10 @@
         <!-- Type (Dropdown) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Type</mat-label>
-          <mat-select [(ngModel)]="type" name="type" required>
-            <mat-option value="sick">Nghỉ ốm</mat-option>
-            <mat-option value="vacation">Nghỉ phép</mat-option>
-            <mat-option value="personal">Nghỉ cá nhân</mat-option>
+          <mat-select [(ngModel)]="selectedLeaveType" name="leaveType" required>
+            <mat-option *ngFor="let type of leaveType" [value]="type.id">
+              {{ type.type_name }}
+            </mat-option>
           </mat-select>
           <mat-error *ngIf="leaveForm.controls['type']?.invalid && leaveForm.controls['type']?.touched">
             Vui lòng chọn loại nghỉ phép!

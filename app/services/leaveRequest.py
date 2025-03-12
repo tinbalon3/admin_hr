@@ -36,7 +36,7 @@ class LeaveRequestService:
         
 
     @staticmethod
-    def create(db: Session, token,leaveType_id ,leave_data: LeaveRequestBase):
+    def create(db: Session, token ,leave_data: LeaveRequestBase):
         # Lấy user ID từ token
         user_id = get_token_payload(token.credentials).get("id")
 
@@ -48,7 +48,7 @@ class LeaveRequestService:
                 detail="Invalid user token"
             )
         # Kiểm tra loại nghỉ phép có tồn tại không
-        leave_type = db.query(LeaveType).filter(LeaveType.id == leaveType_id).first() or None
+        leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first() or None
         if not leave_type:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -103,7 +103,7 @@ class LeaveRequestService:
         if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="đơn đã được giải quyết, bạn không thể xóa"
+                detail="Đơn đã được giải quyết, bạn không thể xóa"
             )
         db.delete(leaveRequest)
         db.commit()

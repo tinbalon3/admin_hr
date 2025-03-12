@@ -10,6 +10,8 @@ import { MatCardModule } from '@angular/material/card'
 import { FormsModule } from '@angular/forms';
 import { ListTypeService } from '../../services/list-type.service';
 import { MatIconModule } from '@angular/material/icon';
+import { LeaveRequestService } from '../../services/leave-request.service';
+import { log } from 'console';
 
 @Component({
   selector: 'app-leave-request',
@@ -21,12 +23,26 @@ import { MatIconModule } from '@angular/material/icon';
 export class LeaveRequestComponent {
   leaveRequests: LeaveRequest[] = [];
   displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'type', 'action'];
-  constructor(private listTypeService: ListTypeService, private dialog: MatDialog) {}
+  constructor( private dialog: MatDialog, private leaveRequestService: LeaveRequestService) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(LeveRequestDialogComponent, {
       width: '500px',
     });
+      // Nhận dữ liệu sau khi dialog đóng
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          console.log('Dialog đã đóng và gửi dữ liệu:', result);
+          this.leaveRequestService.createLeaveRequest(result).subscribe((data: any) => {
+            console.log('data', data);
+            this.fetchLeaveRequests();
+          }
+          );
+        } else {
+          console.log('Dialog bị đóng mà không gửi dữ liệu.');
+        }
+      });
+    
   }
 
   ngOnInit(): void {
@@ -34,12 +50,14 @@ export class LeaveRequestComponent {
   }
 
   fetchLeaveRequests(): void {
-    this.listTypeService.get_list_type()
-      .subscribe((data: any) => {
-        this.leaveRequests = data.map((request: any) => ({ ...request, selected: false }));
-      });
+   this.leaveRequestService.getListLeaveRequest().subscribe((data: any) => {
+
+    this.leaveRequests = data.data;
+    console.log('leaveRequests', this.leaveRequests);
+   })
       
   }
+ 
 
   hasSelected(): boolean {
     return this.leaveRequests.some(request => request.selected);
