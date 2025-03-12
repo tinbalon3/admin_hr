@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: float
+    fernet_secret_key: str
     
 
     class Config:

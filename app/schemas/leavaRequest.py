@@ -9,7 +9,7 @@ from typing import List, Optional
 class LeaveRequestBase(BaseModel):
     start_date: date
     end_date: date
-    reason: Optional[str] = None
+    notes: Optional[str] = None
 
 class LeaveRequestCreate(LeaveRequestBase):
     class Config:
@@ -21,19 +21,27 @@ class leaveReqestDelete(BaseModel):
 class LeaveRequestFormchage(LeaveRequestBase):
     leave_type_id: Optional[uuid.UUID] = None
     class Config:
-        from_attributes = True  # Hỗ trợ chuyển đổi từ ORM
+        from_attributes = True  # Hỗ trợ chuyển đổi từ ORM  
 
-class LeaveRequestOut(LeaveRequestBase):
+class LeaveRequestInfo(BaseModel):
+    start_date: date
+    end_date: date
+    reason: Optional[str] = None
     id: uuid.UUID
     created_at: datetime
     status: str
-    Employee: Optional[UserInfo] = None
+
+    class Config:
+        from_attributes = True
+
+class LeaveRequestOut(BaseModel):
+    leave_request: LeaveRequestInfo
+    employee: Optional[UserInfo] = None
     leave_type: Optional[LeaveTypeOut] = None
 
     class Config:
-        from_attributes = True  
-
-
+        from_attributes = True
+    
 class ListLeaveRequest(BaseModel):  
     message: Optional[str] = None
     data: List[LeaveRequestOut]
@@ -48,3 +56,4 @@ class LeaveRequestResponse(BaseModel):
 
     class Config:
         from_attributes = True  
+

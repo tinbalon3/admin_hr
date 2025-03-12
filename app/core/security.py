@@ -5,6 +5,7 @@ from app.core.config import settings
 from jose import JWTError, jwt, ExpiredSignatureError
 from app.schemas.auth import TokenResponse
 from fastapi.encoders import jsonable_encoder
+from cryptography.fernet import Fernet
 from fastapi import HTTPException, Depends, status
 from app.models.models import Employee
 from sqlalchemy.orm import Session
@@ -19,6 +20,7 @@ from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 auth_scheme = HTTPBearer()
+fernet = Fernet(settings.fernet_secret_key.encode())
 
 # Create Hash Password
 
@@ -62,8 +64,9 @@ async def create_access_token(data: dict, access_token_expiry=None):
 
     expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
     payload.update({"exp": expire})
-
-    return jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
+    token = jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
+    encrypted_jwt = fernet.encrypt(token.encode())
+    return encrypted_jwt
 
 
 # Create Refresh Token
@@ -74,11 +77,14 @@ async def create_refresh_token(data):
 # Get Payload Of Token
 def get_token_payload(token):
     try:
-        return jwt.decode(token, settings.secret_key, [settings.algorithm])
+        decrypted_jwt = fernet.decrypt(token).decode()
+        return jwt.decode(decrypted_jwt, settings.secret_key, [settings.algorithm])
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token đã hết hạn.")
     except JWTError:
         raise ResponseHandler.invalid_token('access')
+    except Exception:
+        raise HTTPException(status_code=400, detail='Token không tồn tại')
 
 
 def get_current_user(token):
@@ -117,7 +123,7 @@ def check_user(
         raise ResponseHandler.not_found_error("User", user_id)
     if role_user.role != "EMPLOYEE":
         return False
-    return True
+    return role_user
     
 def check_maneger(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),

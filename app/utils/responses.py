@@ -11,22 +11,22 @@ class ResponseHandler:
 
     @staticmethod
     def create_success(name, id, data):
-        message = f"created successfully"
+        message = f"Tạo thành công"
         return ResponseHandler.success(message, data)
 
     @staticmethod
     def update_success(name, id, data):
-        message = f" updated successfully"
+        message = f"cập nhật thành công"
         return ResponseHandler.success(message, data)
 
     @staticmethod
     def delete_success(name, id, data):
-        message = f"deleted successfully"
+        message = f"Xóa thành công"
         return ResponseHandler.success(message, data)
 
     @staticmethod
     def not_found_error(name="", id=None):
-        message = f"Not Found!"
+        message = f"Không tìm thấy thông tin"
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
 
     @staticmethod
@@ -37,11 +37,11 @@ class ResponseHandler:
             headers={"WWW-Authenticate": "Bearer"})
     @staticmethod
     def userExists():
-        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail='User already exists')
+        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail='Email đã được đăng ký')
     
     @staticmethod
     def changePasswordError():
-        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail='Old password is incorrect')
+        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail='Sai mật khẩu')
     
     @staticmethod
     def error(message = ""):

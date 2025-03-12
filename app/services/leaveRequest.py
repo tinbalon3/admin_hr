@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 from app.models.models import Employee, LeaveType, LeaveRequest
 from app.utils.responses import ResponseHandler
-from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse
+from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse
 from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut
 from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist
@@ -13,29 +14,62 @@ import uuid
 
 
 class LeaveRequestService:
+    # @staticmethod
+    # def get_list(db: Session, token):
+    #     user_id = get_token_payload(token.credentials).get('id')
+        
+    #     query = db.query(LeaveRequest).options(joinedload(LeaveRequest.employee))
+    #     if check_user(token, db):
+    #         leaveRequest = query.filter(LeaveRequest.employee_id == user_id) or []
+    #     else:
+    #         leaveRequest = query.group_by(LeaveRequest.start_date).all() or []
+    #     return ResponseHandler.success("get list success", leaveRequest)
     @staticmethod
     def get_list(db: Session, token):
         user_id = get_token_payload(token.credentials).get('id')
+
+        # Load employee dữ liệu đầy đủ
+        query = db.query(LeaveRequest).options(joinedload(LeaveRequest.employee))
+
         if check_user(token, db):
-            leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.Employee_id == user_id) or []
+            leave_requests = query.filter(LeaveRequest.employee_id == user_id).all()
         else:
-            leaveRequest = db.query(LeaveRequest).group_by(LeaveRequest.id ).all() or []
-        return ResponseHandler.success("get list success", leaveRequest)
+            leave_requests = query.group_by(LeaveRequest.start_date).all()
+
+        # Chuyển đổi dữ liệu
+        data_response = []
+        for lr in leave_requests:
+            # Chuyển đổi dữ liệu leave_request
+            leave_request_info = LeaveRequestInfo.from_orm(lr)
+
+            # Chuyển đổi dữ liệu employee (nếu có)
+            employee_info = UserInfo.from_orm(lr.employee) if lr.employee else None
+
+            # Chuyển đổi dữ liệu leave_type (nếu có)
+            leave_type_info = LeaveTypeOut.from_orm(lr.leave_type) if lr.leave_type else None
+
+            # Bọc lại thành LeaveRequestOut
+            data_response.append(LeaveRequestOut(
+                leave_request=leave_request_info,
+                employee=employee_info,
+                leave_type=leave_type_info
+            ))
+
+        return ResponseHandler.success("get list success", data_response)
         
 
     @staticmethod
-    def create(db: Session, token,leaveType_id ,leave_data: LeaveRequestBase) -> LeaveRequestOut:
+    def create(db: Session, token,leaveType_id ,leave_data: LeaveRequestBase):
         # Lấy user ID từ token
         user_id = get_token_payload(token.credentials).get("id")
 
         # Kiểm tra user có tồn tại không
-        db_user = db.query(Employee).filter(Employee.email == user_id).first()
+        db_user = db.query(Employee).filter(Employee.id == user_id).first()
         if not db_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Invalid user token"
             )
-
         # Kiểm tra loại nghỉ phép có tồn tại không
         leave_type = db.query(LeaveType).filter(LeaveType.id == leaveType_id).first() or None
         if not leave_type:
@@ -54,33 +88,28 @@ class LeaveRequestService:
         # Tạo đơn nghỉ phép mới
         leave_request = LeaveRequest(
             id=uuid.uuid4(),
-            Employee_id=user_id,
+            employee_id=db_user.id,
             leave_type_id=leave_type.id,
             start_date=leave_data.start_date,
             end_date=leave_data.end_date,
-            reason=leave_data.reason,
+            notes=leave_data.notes,
             status="PENDING",  # ✅ Thêm trạng thái mặc định
             created_at=datetime.utcnow()
         )
         
-        # Lưu vào DB
-        db.add(leave_request)
-        db.commit()
-        db.refresh(leave_request)
+        # # Lưu vào DB
+        # db.add(leave_request)
+        # db.commit()
+        # db.refresh(leave_request)
 
         # Chuyển đổi SQLAlchemy model thành Pydantic model để phản hồi
         response_data = LeaveRequestOut(
-            id=leave_request.id,
-            start_date=leave_request.start_date,
-            end_date=leave_request.end_date,
-            reason=leave_request.notes,
-            status=leave_request.status,
-            created_at=leave_request.created_at,
-            Employee=UserInfo.model_validate(db_user), 
+            leave_request = LeaveRequestInfo.model_validate(leave_request),
+            employee=UserInfo.model_validate(db_user), 
             leave_type=LeaveTypeOut.model_validate(leave_type)  
         )
 
-        return response_data 
+        return ResponseHandler.success('Tạo thành công yêu cầu', response_data) 
 
     @staticmethod
     def delele(db: Session, token,id):
@@ -109,9 +138,9 @@ class LeaveRequestService:
         user_id = get_token_payload(token.credentials).get("id")
 
         # Kiểm tra user có tồn tại không
-        check_user(token, db)
+        employee = check_user(token, db)
         
-        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.Employee_id == user_id).first() or None
+        leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.employee_id == user_id).first() or None
         if not leaveRequest:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -155,6 +184,10 @@ class LeaveRequestService:
         # Lưu vào DB
         db.commit()
         db.refresh(leaveRequest)
-  
+        response_data = LeaveRequestOut(
+            leave_request = LeaveRequestInfo.model_validate(leaveRequest),
+            employee=UserInfo.model_validate(employee), 
+            leave_type=LeaveTypeOut.model_validate(leave_type)  
+        )
 
-        return ResponseHandler.update_success(leaveRequest.__tablename__, leaveRequest.id, leaveRequest)
+        return ResponseHandler.update_success(leaveRequest.__tablename__, leaveRequest.id, response_data)
