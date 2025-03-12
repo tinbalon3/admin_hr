@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     # JWT Config
     secret_key: str
     algorithm: str
-    access_token_expire_minutes: int
+    access_token_expire_minutes: float
+    
 
     class Config:
         env_file = ".env"

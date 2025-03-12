@@ -2,7 +2,7 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from app.core.config import settings
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from app.schemas.auth import TokenResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, Depends, status
@@ -37,7 +37,6 @@ def verify_Email(email: str) -> bool:
 # Verify Hash Password
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
 
 # Create Access & Refresh Token
 async def get_user_token(id: uuid, refresh_token=None):
@@ -76,6 +75,8 @@ async def create_refresh_token(data):
 def get_token_payload(token):
     try:
         return jwt.decode(token, settings.secret_key, [settings.algorithm])
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token đã hết hạn.")
     except JWTError:
         raise ResponseHandler.invalid_token('access')
 
