@@ -21,5 +21,4 @@ def change_decision(
 def list(
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    print("ok")
     return  ApproveService.get_list(db, token)

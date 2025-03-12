@@ -31,13 +31,7 @@ class ApprovalResponse(ApprovalBase):
     class Config:
         from_attributes = True
 
-class List_Approval(BaseModel):
-    message: str | None = None
-    data: List[ApprovalResponse]
 
-    class Config:
-        from_attributes = True
-        orm_mode = True
 
 # Approval Data Schema
 class ApprovalData(BaseModel):
@@ -58,3 +52,17 @@ class ApprovalResponse_V2(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ApprovalResponseList(BaseModel):
+    approval: ApprovalData
+    employee_id: UserInfo
+    class Config:
+        from_attributes = True    
+
+class List_Approval(BaseModel):
+    message: str | None = None
+    data: List[ApprovalResponseList]
+
+    class Config:
+        from_attributes = True
+        orm_mode = True
