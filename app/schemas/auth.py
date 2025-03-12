@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import List
+import uuid
 
 
 # Base
@@ -17,6 +18,15 @@ class UserBase(BaseModel):
     class Config(BaseConfig):
         pass
 
+class Userinfo(BaseModel):
+    id: uuid.UUID
+    full_name: str
+    email: str
+    password: str
+    phone: str
+    location: str
+    class Config(BaseConfig):
+        pass
 
 class Signup(BaseModel):
     full_name: str

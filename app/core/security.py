@@ -41,8 +41,8 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 # Create Access & Refresh Token
-async def get_user_token(id: uuid, refresh_token=None):
-    payload = {"id": str(id)}
+async def get_user_token(data, refresh_token=None):
+    payload = jsonable_encoder(data)
 
     access_token_expiry = timedelta(minutes=settings.access_token_expire_minutes)
 
