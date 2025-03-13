@@ -31,7 +31,7 @@ def create_leave_type(
 @router.put("/edit/{id}", response_model=LeaveRequestResponse)
 def edit_leave_type(
         id: str,
-        leaveTypes: LeaveRequestFormchange,
+        leaveTypes: LeaveRequestCreate,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return LeaveRequestService.edit(db, token,id ,leaveTypes)

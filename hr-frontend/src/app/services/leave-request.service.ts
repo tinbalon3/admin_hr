@@ -31,10 +31,11 @@ export class LeaveRequestService {
   }
 
   updateLeaveRequest(id: string, leaveRequest: any): Observable<any> {
+    console.log('leaveRequest', leaveRequest);
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
 
-    return this.http.put(`${this.API_LEAVE_REQUEST_EDIT}/edit/${id}`, leaveRequest, { headers });
+    return this.http.put(`${this.API_LEAVE_REQUEST_EDIT}/${id}`, leaveRequest, { headers });
   }
 }
