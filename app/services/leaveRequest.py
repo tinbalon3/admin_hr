@@ -172,7 +172,7 @@ class LeaveRequestService:
     
     
     @staticmethod
-    def create_leave_request(db: Session, token, leave_data: LeaveRequestBase):
+    def create_leave_request(db: Session, token, leave_data: LeaveRequestDataAdmin):
         # Check admin role
         user = check_admin_role(token, db)
 

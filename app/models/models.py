@@ -11,7 +11,7 @@ class Employee(Base):
     __tablename__ = "employee"
 
     # Sửa id thành UUID
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), unique=True, nullable=False)
     full_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
@@ -28,7 +28,7 @@ class Employee(Base):
 
 class LeaveType(Base):
     __tablename__ = "leave_types"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), unique=True, nullable=False)
     type_name = Column(String, unique=True, nullable=False)  # VD: "Nghỉ phép năm", "Nghỉ bệnh"
     description = Column(Text, nullable=True)  # Mô tả về loại nghỉ phép
 
@@ -36,7 +36,7 @@ class LeaveType(Base):
 class LeaveRequest(Base):
     __tablename__ = "leave_requests"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), unique=True, nullable=False)
     employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
     leave_type_id = Column(UUID(as_uuid=True), ForeignKey("leave_types.id", ondelete="SET NULL"), nullable=True)
     start_date = Column(Date, nullable=False)
@@ -54,7 +54,7 @@ class LeaveRequest(Base):
 class Approval(Base):
     __tablename__ = "approvals"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), unique=True, nullable=False)
     leave_request_id = Column(UUID(as_uuid=True), ForeignKey("leave_requests.id", ondelete="CASCADE"), nullable=False)
     employee_id = Column(UUID(as_uuid=True), ForeignKey("employee.id", ondelete="CASCADE"), nullable=False)
     decision = Column(Enum("APPROVED", "REJECTED", name="approval_decisions"), nullable=False)
