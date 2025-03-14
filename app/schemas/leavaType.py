@@ -17,6 +17,7 @@ class LeaveTypeCreate(LeaveTypeBase):
     pass
 
 class LeaveTypeOut(LeaveTypeBase):
+    id: uuid.UUID
     class Config:
         from_attributes = True
         

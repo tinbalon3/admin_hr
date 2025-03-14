@@ -4,7 +4,7 @@ from app.db.database import get_db
 from app.services.leaveRequest import LeaveRequestService
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
-from app.schemas.leavaRequest import LeaveRequestOut, ListLeaveRequest, LeaveRequestResponse,LeaveRequestCreate, LeaveRequestFormchange,leaveReqestDelete
+from app.schemas.leavaRequest import LeaveRequestAdmin, ListLeaveRequest, LeaveRequestResponse,LeaveRequestCreate, LeaveRequestFormchange,leaveReqestDelete,LeaveRequest
 from fastapi.security import HTTPBearer
 from app.core.security import auth_scheme
 from fastapi.security.http import HTTPAuthorizationCredentials
@@ -44,3 +44,9 @@ def edit_leave_type(
     return LeaveRequestService.delele(db, token,id)
 
 
+@router.post("/createadmin", response_model=LeaveRequestAdmin, status_code=201)
+def create_leave_type(   
+        leave_request: LeaveRequest,
+        db: Session = Depends(get_db),
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    return LeaveRequestService.create_leave_request(db, token,leave_request)

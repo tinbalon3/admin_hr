@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
-from app.models.models import Employee, LeaveType, LeaveRequest
+from app.models.models import Employee, LeaveType, LeaveRequest, Approval
 from app.utils.responses import ResponseHandler
-from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse
+from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse,LeaveRequest,LeaveRequestAdmin
 from app.schemas.employee import UserInfo
-from app.schemas.leavaType import LeaveTypeOut
+from app.schemas.leavaType import LeaveTypeOut 
+from app.schemas.approval import ApprovalData 
 from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist
 
 from fastapi import HTTPException, status
@@ -168,3 +169,73 @@ class LeaveRequestService:
         )
 
         return ResponseHandler.update_success(leaveRequest.__tablename__, leaveRequest.id, response_data)
+    
+    
+    @staticmethod
+    def create_leave_request(db: Session, token, leave_data: LeaveRequest):
+        # Get user ID from token
+        user_id = get_token_payload(token.credentials).get("id")
+        user = check_admin_role(user_id,db)
+        # Check if user exists
+        db_user = db.query(Employee).filter(Employee.id == leave_data.employee_id).first()
+        if not db_user:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Nhân viên không tồn tại"
+            )
+
+        # Check if leave type exists
+        leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first()
+        if not leave_type:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Loại nghỉ không tồn t"
+            )
+
+        # Validate start and end date
+        if leave_data.start_date > leave_data.end_date:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Start date must be before end date."
+            )
+
+        # Create a new leave request
+        leave_request = LeaveRequest(
+            id=uuid.uuid4(),
+            employee_id=db_user.id,
+            leave_type_id=leave_type.id,
+            start_date=leave_data.start_date,
+            end_date=leave_data.end_date,
+            notes=leave_data.notes,
+            status="APPROVED",
+            created_at=datetime.utcnow()
+        )
+        
+        approval = Approval(
+            id=uuid.uuid4(),
+            leave_request_id = leave_request.id,
+            employee_id = user.id,
+            decision = "APPROVED",
+            comments = None
+        )
+        # Save to the database
+        db.add(leave_request)
+        db.commit()
+        db.refresh(leave_request)
+        
+        db.add(approval)
+        db.commit()
+        db.refresh(approval)
+        
+        
+
+        # Convert SQLAlchemy model to Pydantic model for response
+        response_data = LeaveRequestAdmin(
+            leave_request=LeaveRequestInfo.model_validate(leave_request),
+            employee=UserInfo.model_validate(db_user),
+            leave_type=LeaveTypeOut.model_validate(leave_type),
+            approval = ApprovalData.model_validate(approval)
+            
+        )
+
+        return ResponseHandler.success("Leave request, Approval thành công.", response_data)

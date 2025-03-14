@@ -1,9 +1,8 @@
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime, date
 from typing import List, Optional
-from app.schemas.leavaRequest import LeaveRequestOut
 from app.schemas.employee import UserInfo
 
 
