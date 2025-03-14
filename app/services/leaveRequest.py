@@ -6,7 +6,7 @@ from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveReq
 from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut 
 from app.schemas.approval import ApprovalData 
-from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist
+from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist, check_intern
 
 from fastapi import HTTPException, status
 import json
@@ -116,7 +116,7 @@ class LeaveRequestService:
         user_id = get_token_payload(token.credentials).get("id")
 
         # Kiểm tra user có tồn tại không
-        employee = check_user(token, db)
+        employee = check_user(token, db) or check_intern(token,db)
         
         leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id, LeaveRequest.employee_id == user_id).first() or None
         if not leaveRequest:
@@ -170,7 +170,7 @@ class LeaveRequestService:
     @staticmethod
     def create_leave_request(db: Session, token, leave_data: LeaveRequestDataAdmin):
         # Check admin role
-        user = check_admin_role(token, db)
+        user = check_admin_role(token, db) 
 
         # Check if employee exists
         db_user = db.query(Employee).filter(Employee.id == leave_data.employee_id).first()

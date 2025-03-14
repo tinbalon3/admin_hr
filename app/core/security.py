@@ -134,3 +134,14 @@ def check_maneger(
     if role_user.role != "manager":
         raise HTTPException(status_code=403, detail="manager role required")
 
+def check_intern(
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+        db: Session = Depends(get_db)):
+    user = get_token_payload(token.credentials)
+    user_id = user.get('id')
+    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
+    if not role_user:
+        raise ResponseHandler.not_found_error("User", user_id)
+    if role_user.role != "INTERN":
+        return False
+    return role_user

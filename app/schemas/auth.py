@@ -1,9 +1,12 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import List
+from enum import Enum
 import uuid
 
-
+class RoleEnum(str, Enum):
+    EMPLOYEE = "EMPLOYEE"
+    INTERN = "INTERN"
 # Base
 class BaseConfig:
     from_attributes = True
@@ -18,7 +21,11 @@ class UserBase(BaseModel):
     class Config(BaseConfig):
         pass
 
-
+class AdminBase(UserBase):
+    role: str
+    class Config(BaseConfig):
+        pass
+    
 class Signup(BaseModel):
     full_name: str
     email: str
@@ -29,6 +36,16 @@ class Signup(BaseModel):
     class Config(BaseConfig):
         pass
 
+class SignupAdmin(BaseModel):
+    full_name: str
+    email: str
+    password: str
+    phone: str
+    role: RoleEnum
+    location: str
+
+    class Config(BaseConfig):
+        pass
 
 class UserResponse(BaseModel):
     message: str
@@ -36,6 +53,15 @@ class UserResponse(BaseModel):
 
     class Config(BaseConfig):
         pass
+
+
+class AdminResponse(BaseModel):
+    message: str
+    data: AdminBase
+
+    class Config(BaseConfig):
+        pass
+
 
 class userInfo(BaseModel):
     id: str

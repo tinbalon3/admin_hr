@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, validator
 from typing import List
 from uuid import UUID
 from datetime import datetime
+from app.schemas.employee import UserInfo
 
 class WorkDay(BaseModel):
     day_of_week: str = Field(..., description="Day of the week (e.g., 2 for Monday, 3 for Tuesday)")
@@ -15,6 +16,8 @@ class WorkDay(BaseModel):
 
 class WorkScheduleCreate(BaseModel):
     work_days: List[WorkDay]
+    class Config:
+        orm_mode = True 
 
 class WorkScheduleOut(WorkScheduleCreate):
     id: UUID
@@ -22,3 +25,20 @@ class WorkScheduleOut(WorkScheduleCreate):
 
     class Config:
         orm_mode = True
+        from_attributes=True
+    
+class WorkScheduleResponse(BaseModel):
+    message: str
+    data : WorkScheduleOut
+
+class Response(BaseModel):
+    schedule: WorkScheduleOut
+    employee: UserInfo
+    
+class ListWorkScheduleResponse(BaseModel):
+    message: str
+    data: list[Response]
+    
+    class Config:
+        orm_mode = True
+        from_attributes=True
