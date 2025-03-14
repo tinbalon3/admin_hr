@@ -15,8 +15,8 @@ export class RegisterService {
    * API đăng ký người dùng
    * @param data Thông tin đăng ký
    */
-  register(data: {full_name:string; email: string; password: string }): Observable<any> {
-    console.log(data);
+  register(data: any): Observable<any> {
+   
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });

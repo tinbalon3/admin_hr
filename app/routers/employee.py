@@ -21,7 +21,7 @@ def get_my_info(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return EmployeeService.get_my_info(db, token)
 
-@router.post("/update", response_model=UserResponse_V2)
+@router.put("/update", response_model=UserResponse_V2)
 def update_info(
         updated_user: UserUpdate,
         db: Session = Depends(get_db),

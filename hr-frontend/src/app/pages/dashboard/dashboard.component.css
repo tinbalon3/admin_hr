@@ -1,35 +1,61 @@
+/* Giao diện toolbar */
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 16px;
-  }
-  
-  .logo {
-    font-weight: bold;
-    color: red;
-  }
-  
-  .spacer {
-    flex: 1;
-  }
-  
-  .sidenav-container {
-    height: calc(100vh - 64px); /* Trừ chiều cao của toolbar (64px là chiều cao mặc định của mat-toolbar) */
-    margin-top: 64px; /* Đảm bảo không bị che bởi header */
-  }
-  
-  .sidenav {
-    width: 250px;
-    padding: 20px;
-  }
-  
-  /* Không cần thêm margin-left cho .content vì mat-sidenav-content đã tự xử lý */
-  .content {
-    padding: 20px;
-    box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
-  }
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+/* Logo */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Spacer */
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Phần user-section */
+.user-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.user-section:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.username {
+  color: white;
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+/* Sidenav container */
+.sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 250px;
+  background-color: #f5f5f5;
+}
+
+.sidenav mat-nav-list a {
+  color: #333;
+  padding: 8px 16px;
+}
+
+.sidenav mat-nav-list a:hover {
+  background-color: #e0e0e0;
+}
+
+/* Content */
+.content {
+  padding: 16px;
+}
