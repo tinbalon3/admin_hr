@@ -9,6 +9,7 @@ export class LeaveRequestService {
   private API_LEAVE_REQUEST_CREATE = 'http://127.0.0.1:8000/leaveRequest/create'; // API endpoint
   private API_LEAVE_REQUEST_GET_LIST = 'http://127.0.0.1:8000/leaveRequest/list'; // API endpoint
   private API_LEAVE_REQUEST_EDIT = 'http://127.0.0.1:8000/leaveRequest/edit'; // API endpoint
+  private API_LEAVE_REQUEST_DELETE = 'http://127.0.0.1:8000/leaveRequest/delete'; // API endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -37,5 +38,13 @@ export class LeaveRequestService {
     });
 
     return this.http.put(`${this.API_LEAVE_REQUEST_EDIT}/${id}`, leaveRequest, { headers });
+  }
+  deleteLeaveRequest(id: string): Observable<any> {
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.delete(`${this.API_LEAVE_REQUEST_DELETE}/${id}`, { headers });
   }
 }

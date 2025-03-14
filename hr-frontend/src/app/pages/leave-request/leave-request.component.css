@@ -1,42 +1,9 @@
-/* Căn chỉnh table */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Card container với hiệu ứng đẹp hơn */
-mat-card {
-  margin: 20px;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Tiêu đề cột và nội dung cột */
-mat-header-cell, mat-cell {
-  text-align: center;
+/* Giao diện chính */
+.content {
   padding: 16px;
 }
 
-/* Tiêu đề cột in đậm và màu nổi bật */
-mat-header-cell {
-  font-weight: bold;
-  font-size: 14px;
-  color: #3f51b5;
-}
-
-/* Checkbox đẹp hơn */
-mat-checkbox {
-  border-radius: 4px;
-}
-
-/* Form field đẹp hơn với shadow nhẹ */
-mat-form-field {
-  width: 100%;
-  margin-bottom: 12px;
-}
-
-/* Nút tạo đơn và gửi đơn */
+/* Container cho các nút */
 .leave-request-container {
   display: flex;
   justify-content: flex-end;
@@ -44,176 +11,132 @@ mat-form-field {
   margin-bottom: 16px;
 }
 
-/* Nút được bo tròn và padding thoải mái */
-mat-raised-button {
-  border-radius: 8px;
+/* Tùy chỉnh nút */
+button[mat-raised-button] {
   padding: 8px 16px;
+  border-radius: 8px;
   text-transform: uppercase;
   font-weight: bold;
 }
 
-/* Nút "Tạo đơn" */
+/* Nút tạo đơn */
 .create-button {
   background-color: #3f51b5;
-  color: #fff;
+  color: white;
 }
 
 .create-button:hover {
-  background-color: #2c3e9e;
+  background-color: #303f9f;
 }
 
-/* Nút "Gửi đơn" */
-mat-raised-button[color="accent"] {
+/* Nút gửi đơn */
+button[color="accent"] {
   background-color: #4caf50;
-  color: white;
 }
 
-mat-raised-button[color="accent"]:hover {
-  background-color: #43a047;
+button[color="accent"]:hover {
+  background-color: #388e3c;
 }
 
 /* Nút chỉnh sửa */
-mat-raised-button[color="primary"] {
+button[color="primary"] {
   background-color: #ff9800;
-  color: white;
 }
 
-mat-raised-button[color="primary"]:hover {
+button[color="primary"]:hover {
   background-color: #fb8c00;
 }
 
-/* Icon trong nút */
-mat-icon {
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-/* Card khi không có dữ liệu */
-.no-data-card {
-  text-align: center;
-  padding: 30px;
-  color: #757575;
-  background-color: #fafafa;
-  border-radius: 16px;
-  border: 1px dashed #bdbdbd;
-}
-
-/* Icon khi không có dữ liệu */
-.no-data-card mat-icon {
-  font-size: 48px;
-  color: #bdbdbd;
-}
-
-/* Văn bản khi không có dữ liệu */
-.no-data-card p {
-  font-size: 18px;
-  margin-top: 12px;
-  color: #616161;
-}
-
-/* Input ngày và ghi chú */
-input[matInput] {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* Select box đẹp hơn */
-mat-select {
-  border-radius: 6px;
-  background-color: #f5f5f5;
-}
-
-/* Bảng elevation */
-.mat-elevation-z8 {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Tăng độ đẹp của bảng */
-table {
+/* Tùy chỉnh bảng */
+.custom-table {
   width: 100%;
-  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 th, td {
-  padding: 12px;
-}
-
-/* Hiệu ứng hover cho hàng */
-tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Header row style */
-tr.mat-header-row {
-  background-color: #e3f2fd;
-}
-
-/* Cell hover effect */
-td {
-  transition: background-color 0.3s ease;
-}
-
-
-
-
-/* Xóa nền và shadow của mat-card */
-mat-card {
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
-}
-
-/* Tùy chỉnh bảng để trông gọn gàng hơn */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* Header và cell của table */
-mat-header-cell, mat-cell {
+  padding: 8px; /* Giảm padding để cân đối */
   text-align: center;
-  padding: 12px;
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Tiêu đề cột */
 mat-header-cell {
   font-weight: bold;
-  font-size: 14px;
   color: #3f51b5;
+  background-color: #f1f1f1;
+}
+
+/* Hover row */
+tr:hover {
   background-color: #f5f5f5;
 }
 
-/* Hiệu ứng hover cho các dòng */
-tr:hover {
-  background-color: #f9f9f9;
+/* Tùy chỉnh cột ngày tháng */
+.date-field {
+  max-width: 150px; /* Giới hạn chiều rộng ô ngày tháng */
+  width: 100%;
+  margin: 0 auto;
 }
 
-/* Bo tròn cho các ô input */
-input[matInput], mat-select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.date-field mat-form-field {
+  width: 100%;
 }
 
-/* Chỉnh nút cập nhật */
-button[mat-raised-button] {
-  border-radius: 6px;
-  padding: 8px 16px;
+/* Tùy chỉnh cột ghi chú */
+.note-field {
+  width: 200px; /* Mở rộng ô ghi chú */
+  min-width: 150px;
+}
+
+.note-field textarea[matInput] {
+  width: 100%;
+  resize: vertical; /* Cho phép kéo dãn theo chiều dọc */
+  min-height: 40px; /* Chiều cao tối thiểu */
+}
+
+/* Tùy chỉnh cột trạng thái */
+.status-field {
+  max-width: 120px; /* Giới hạn chiều rộng ô trạng thái */
+  width: 100%;
+}
+
+/* Tùy chỉnh cột loại nghỉ phép */
+.type-field {
+  max-width: 180px; /* Giới hạn chiều rộng ô loại nghỉ phép */
+  width: 100%;
 }
 
 /* Checkbox style */
 mat-checkbox {
-  border-radius: 4px;
+  margin: 0 auto;
 }
 
-/* Xóa shadow và border cho bảng */
-.mat-elevation-z8 {
-  box-shadow: none;
-  border: none;
+/* Hiển thị khi không có dữ liệu */
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #757575;
+  background-color: #fafafa;
+  border: 1px dashed #bdbdbd;
+  border-radius: 16px;
+  margin-top: 16px;
+}
+
+/* Icon thông báo */
+.no-data mat-icon {
+  font-size: 48px;
+  color: #bdbdbd;
+}
+/* Tùy chỉnh cột hành động */
+.action-field {
+  max-width: 150px;
+  width: 100%;
+}
+
+.action-field mat-select {
+  width: 100%;
+}
+/* Văn bản khi không có dữ liệu */
+.no-data p {
+  font-size: 16px;
+  margin-top: 8px;
 }
