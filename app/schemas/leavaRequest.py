@@ -59,6 +59,8 @@ class LeaveRequestResponse(BaseModel):
     class Config:
         from_attributes = True  
 
+
+
 class LeaveRequestDataAdmin(BaseModel):
     start_date: date
     end_date: date
@@ -71,3 +73,10 @@ class LeaveRequestAdmin(LeaveRequestOut):
 
     class Config:
         from_attributes = True
+
+class LeaveRequestResponseAdmin(BaseModel):
+    message: str
+    data: LeaveRequestAdmin
+
+    class Config:
+        from_attributes = True 
