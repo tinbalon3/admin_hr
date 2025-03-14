@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI
-from app.routers import employee, auth, leavatype, leaveRequest, approval        
+from app.routers import employee, auth, leavatype, leaveRequest, approval,schedule        
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -28,3 +28,4 @@ app.include_router(employee.router)
 app.include_router(leavatype.router)
 app.include_router(leaveRequest.router)
 app.include_router(approval.router)
+app.include_router(schedule.router)

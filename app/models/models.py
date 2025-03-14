@@ -1,8 +1,10 @@
 import uuid
 from sqlalchemy import Column, String, ForeignKey, Date, Text, Enum, Boolean
+from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.sql.expression import text
-from sqlalchemy.sql.sqltypes import TIMESTAMP
+from sqlalchemy.sql.sqltypes import TIMESTAMP, DateTime
 from sqlalchemy.dialects.postgresql import UUID  # Nếu dùng PostgreSQL
+from datetime import datetime
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -23,6 +25,8 @@ class Employee(Base):
     # Quan hệ: Một nhân viên có thể có nhiều đơn xin nghỉ
     leave_requests = relationship("LeaveRequest", back_populates="employee")
     approvals = relationship("Approval", back_populates="approver")
+    schedules = relationship("WorkSchedule", back_populates="employee")
+    
 
 
 
@@ -65,3 +69,15 @@ class Approval(Base):
     leave_request = relationship("LeaveRequest", back_populates="approvals")
     approver = relationship("Employee", back_populates="approvals")
 
+class WorkSchedule(Base):
+    __tablename__ = "work_schedules"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employee_id = Column(UUID(as_uuid=True), ForeignKey('employee.id'), nullable=False)
+    week_number = Column(String, nullable=False)
+    start_month = Column(String, nullable=False)  # Tháng bắt đầu của tuần
+    start_year = Column(String, nullable=False)
+    work_days = Column(JSON, nullable=False)  # Lưu dạng list các ngày làm việc với chi tiết ngày và tháng
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    employee = relationship("Employee", back_populates="schedules")

@@ -51,6 +51,7 @@ class AuthService:
             raise ResponseHandler.userExists()
         else:
             hashed_password = get_password_hash(user.password)
+            user.password = hashed_password
             db_user = Employee(id=uuid.uuid4(), **user.model_dump())
             db.add(db_user)
             db.commit()
