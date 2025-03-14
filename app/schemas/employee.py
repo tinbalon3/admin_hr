@@ -49,7 +49,6 @@ class List_User(BaseModel):
 
 class UserUpdate(BaseModel):
     phone: Optional[str] = None
-    location: Optional[str] = None
     password: Optional[str] = None
     password_new: Optional[str] = None
 

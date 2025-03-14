@@ -1,0 +1,62 @@
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-form-field {
+    margin-bottom: 16px;
+  }
+  
+  mat-dialog-actions {
+    padding: 16px;
+  }
+  
+  /* Đảm bảo tiêu đề không bị che khuất và có khoảng cách phía dưới */
+  mat-dialog-title {
+    font-size: 20px;
+    padding: 16px 16px 8px 16px; /* Tăng padding và giảm padding-bottom */
+    margin: 0;
+    white-space: normal;
+    overflow: visible;
+  }
+  
+  /* Đảm bảo dialog có đủ không gian */
+  mat-dialog-container {
+    min-height: 400px;
+    padding: 0 !important;
+  }
+  
+  /* Thêm padding-top để tạo khoảng cách giữa tiêu đề và nội dung */
+  mat-dialog-content {
+    padding: 24px 16px 16px 16px; /* Tăng padding-top để đẩy nội dung xuống */
+  }
+  
+  /* Đảm bảo mat-form-field đầu tiên không bị đẩy lên sát tiêu đề */
+  mat-form-field:first-child {
+    margin-top: 8px; /* Thêm margin-top cho trường đầu tiên */
+  }
+  
+  mat-error {
+    color: #f44336;
+    font-size: 12px;
+    margin-top: -8px;
+    margin-bottom: 8px;
+  }
+  
+  .change-password-button {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .change-password-button:hover {
+    background-color: #d0d0d0;
+  }

@@ -31,6 +31,8 @@ export class RegisterComponent implements OnInit{
   full_name = ''
   email = '';
   password = '';
+  phone = ''
+  location = ''
 
   constructor(private registerService: RegisterService, private router: Router,private snackBar: MatSnackBar) {}
   ngOnInit(): void {
@@ -52,6 +54,8 @@ export class RegisterComponent implements OnInit{
       full_name: this.full_name,
       email: this.email,
       password: this.password,
+      phone: this.phone,
+      location: this.location
     };
 
     this.registerService.register(registerData).subscribe({

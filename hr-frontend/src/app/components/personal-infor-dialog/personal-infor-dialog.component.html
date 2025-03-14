@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Thông tin cá nhân</h2>
+<mat-dialog-content class="dialog-content">
+  <form #personalInfoForm="ngForm">
+    <!-- Tên (khóa, không cho chỉnh sửa) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên</mat-label>
+      <input matInput [value]="userInfo.full_name" name="full_name" disabled>
+    </mat-form-field>
+
+    <!-- Email (khóa, không cho chỉnh sửa) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput [value]="userInfo.email" name="email" type="email" disabled>
+    </mat-form-field>
+
+    <!-- Số điện thoại (cho phép chỉnh sửa) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Số điện thoại</mat-label>
+      <input matInput [(ngModel)]="userInfo.phone" name="phone">
+    </mat-form-field>
+
+    <!-- Nút để hiển thị các trường mật khẩu -->
+    <button mat-button (click)="togglePasswordFields()" type="button" class="change-password-button">
+      <span *ngIf="!this.showPasswordFields">Thay đổi mật khẩu</span>
+      <span *ngIf="this.showPasswordFields">Trở về</span>
+    </button>
+   
+    <!-- Các trường mật khẩu (hiển thị khi showPasswordFields là true) -->
+    <div *ngIf="showPasswordFields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mật khẩu cũ</mat-label>
+        <input matInput [(ngModel)]="oldPassword" name="oldPassword" type="password" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mật khẩu mới</mat-label>
+        <input matInput [(ngModel)]="newPassword" name="newPassword" type="password" [required]="showPasswordFields">
+      </mat-form-field>
+
+    
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Hủy</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!personalInfoForm.valid || (showPasswordFields && newPassword && !isPasswordValid())">Lưu</button>
+</mat-dialog-actions>
