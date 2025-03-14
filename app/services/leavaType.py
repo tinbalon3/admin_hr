@@ -2,14 +2,14 @@ from sqlalchemy.orm import Session
 from app.models.models import Employee, LeaveType
 from app.utils.responses import ResponseHandler
 from app.schemas.employee import UserResponse
-from app.core.security import get_password_hash, get_token_payload, check_admin_role
+from app.core.security import get_password_hash, get_token_payload, check_admin_role,get_current_user
 import json
 
 
 class LeaveTypeService:
     @staticmethod
     def get_list(db: Session, token):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
             raise ResponseHandler.not_found_error("User", user_id)
@@ -19,7 +19,7 @@ class LeaveTypeService:
 
     @staticmethod
     def create(db: Session, token, updated_leaveType):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
         db_user = db.query(Employee).filter(Employee.id == user_id).first() or None
         
         if db_user is None:
@@ -41,7 +41,7 @@ class LeaveTypeService:
 
     @staticmethod
     def edit(db: Session, token, updated_leaveType,id):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
         
         db_user = db.query(Employee).filter(Employee.id == user_id).first() or None
         if not db_user:
@@ -67,7 +67,7 @@ class LeaveTypeService:
     
     @staticmethod
     def delele(db: Session, token,id):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
         
         if user_id is None :
             raise ResponseHandler.invalid_token("access")

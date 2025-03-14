@@ -6,7 +6,7 @@ from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveReq
 from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut 
 from app.schemas.approval import ApprovalData 
-from app.core.security import get_token_payload, check_admin_role, check_user, check_user_exist, check_intern
+from app.core.security import get_current_user, check_admin_role, check_user, check_user_exist, check_intern
 
 from fastapi import HTTPException, status
 import json
@@ -17,7 +17,7 @@ import uuid
 class LeaveRequestService:
     @staticmethod
     def get_list(db: Session, token):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
 
 
         if check_user(token, db):
@@ -39,7 +39,7 @@ class LeaveRequestService:
     @staticmethod
     def create(db: Session, token ,leave_data: LeaveRequestBase):
         # Lấy user ID từ token
-        user_id = get_token_payload(token.credentials).get("id")
+        user_id = get_current_user(token=token)
 
         # Kiểm tra user có tồn tại không
         db_user = db.query(Employee).filter(Employee.id == user_id).first()
@@ -91,7 +91,7 @@ class LeaveRequestService:
 
     @staticmethod
     def delele(db: Session, token,id):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token=token)
         
         if user_id is None :
             raise ResponseHandler.invalid_token("access")
@@ -113,7 +113,7 @@ class LeaveRequestService:
     @staticmethod
     def edit(db: Session, token,id,leave_data: LeaveRequestBase) -> LeaveRequestResponse:
         # Lấy user ID từ token
-        user_id = get_token_payload(token.credentials).get("id")
+        user_id = get_current_user(token=token)
 
         # Kiểm tra user có tồn tại không
         employee = check_user(token, db) or check_intern(token,db)

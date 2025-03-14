@@ -3,11 +3,13 @@ from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestF
 from sqlalchemy.orm import Session
 from app.models.models import Employee
 from app.db.database import get_db
+from app.db.redis import redis_client
 from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email, check_admin_role
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash,get_token_payload
 from app.utils.responses import ResponseHandler
 from app.schemas.auth import Signup, LoginForm,userInfo,InfoToken,SignupAdmin
 import uuid
+from datetime import datetime
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -85,5 +87,25 @@ class AuthService:
             db.commit()
             db.refresh(db_user)
         return ResponseHandler.create_success(db_user.full_name, db_user.id, db_user)
+    
+    @staticmethod
+    def logout(token):
+        try:
+            # Giải mã token để lấy thời gian hết hạn (exp)
+            payload = get_token_payload(token=token)
+            exp = payload.get("exp")
+            if exp is None:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token.")
+
+            # Tính thời gian sống còn lại của token
+            expire_time = datetime.utcfromtimestamp(exp) - datetime.utcnow()
+            ttl = int(expire_time.total_seconds())
+
+            # Lưu token vào Redis với TTL tương ứng
+            redis_client.setex(token, ttl, "blacklisted")
+            
+            return {"message": "Logout successful."}
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token or already expired.")
     
  

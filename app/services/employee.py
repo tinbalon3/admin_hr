@@ -11,7 +11,6 @@ import json
 class EmployeeService:
     @staticmethod
     def get_my_info(db: Session, token):
-        print(get_token_payload(token.credentials))
         user_id = get_token_payload(token.credentials).get('id')
         user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
@@ -23,7 +22,7 @@ class EmployeeService:
     
     @staticmethod
     def edit_my_info(db: Session, token, updated_user):
-        user_id = get_token_payload(token.credentials).get('id')
+        user_id = get_current_user(token)
         db_user = db.query(Employee).filter(Employee.id == user_id).first()
         if not db_user:
             raise ResponseHandler.not_found_error("User", user_id)

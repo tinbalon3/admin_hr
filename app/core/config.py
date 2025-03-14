@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     access_token_expire_minutes: float
     fernet_secret_key: str
     
+    # Redis Config
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
 
     class Config:
         env_file = ".env"

@@ -11,6 +11,7 @@ from app.models.models import Employee
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPBearer
 from app.db.database import get_db
+from app.db.redis import redis_client
 from app.utils.responses import ResponseHandler
 import uuid
 from email_validator import validate_email, EmailNotValidError
@@ -90,6 +91,18 @@ def get_token_payload(token):
 def get_current_user(token):
     user = get_token_payload(token.credentials)
     return user.get('id')
+
+def verify_token(token: str):
+    # Kiểm tra nếu token bị blacklist trong Redis
+    if redis_client.get(token):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token is blacklisted.")
+    
+    try:
+        payload = get_token_payload(token)
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
+
 
 def check_user_exist(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),

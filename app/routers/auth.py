@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, status, Header, Request
+from fastapi import APIRouter, Depends, status, Header, Request, HTTPException
 from sqlalchemy.orm import Session
 from app.services.auth import AuthService
 from app.db.database import get_db
+from app.db.redis import redis_client
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from app.schemas.auth import UserResponse, Signup,InfoToken, LoginForm,SignupAdmin,AdminResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -36,3 +37,10 @@ async def admin_sinnup(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),
         db: Session = Depends(get_db)):
     return await AuthService.signup_admin(db, user, token)
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    try:
+        return AuthService.logout(token)
+    except HTTPException as e:
+        raise e
