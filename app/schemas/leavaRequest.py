@@ -59,7 +59,7 @@ class LeaveRequestResponse(BaseModel):
     class Config:
         from_attributes = True  
 
-class LeaveRequest(BaseModel):
+class LeaveRequestDataAdmin(BaseModel):
     start_date: date
     end_date: date
     leave_type_id: uuid.UUID

@@ -7,6 +7,7 @@ from app.core.security import verify_password, get_user_token, get_token_payload
 from app.core.security import get_password_hash
 from app.utils.responses import ResponseHandler
 from app.schemas.auth import Signup, LoginForm,userInfo,InfoToken
+import uuid
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -50,8 +51,7 @@ class AuthService:
             raise ResponseHandler.userExists()
         else:
             hashed_password = get_password_hash(user.password)
-            user.password = hashed_password
-            db_user = Employee(id=None, **user.model_dump())
+            db_user = Employee(id=uuid.uuid4(), **user.model_dump())
             db.add(db_user)
             db.commit()
             db.refresh(db_user)

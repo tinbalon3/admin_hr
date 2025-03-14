@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.models import Employee, LeaveType, LeaveRequest, Approval
 from app.utils.responses import ResponseHandler
-from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse,LeaveRequest,LeaveRequestAdmin
+from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse,LeaveRequestAdmin,LeaveRequestDataAdmin
 from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut 
 from app.schemas.approval import ApprovalData 
@@ -172,16 +172,16 @@ class LeaveRequestService:
     
     
     @staticmethod
-    def create_leave_request(db: Session, token, leave_data: LeaveRequest):
-        # Get user ID from token
-        user_id = get_token_payload(token.credentials).get("id")
-        user = check_admin_role(user_id,db)
-        # Check if user exists
+    def create_leave_request(db: Session, token, leave_data: LeaveRequestBase):
+        # Check admin role
+        user = check_admin_role(token, db)
+
+        # Check if employee exists
         db_user = db.query(Employee).filter(Employee.id == leave_data.employee_id).first()
         if not db_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Nhân viên không tồn tại"
+                detail="Employee does not exist."
             )
 
         # Check if leave type exists
@@ -189,7 +189,7 @@ class LeaveRequestService:
         if not leave_type:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Loại nghỉ không tồn t"
+                detail="Leave type does not exist."
             )
 
         # Validate start and end date
@@ -199,10 +199,10 @@ class LeaveRequestService:
                 detail="Start date must be before end date."
             )
 
-        # Create a new leave request
+        # Create a new LeaveRequest (using SQLAlchemy Model)
         leave_request = LeaveRequest(
             id=uuid.uuid4(),
-            employee_id=db_user.id,
+            employee_id=leave_data.employee_id,
             leave_type_id=leave_type.id,
             start_date=leave_data.start_date,
             end_date=leave_data.end_date,
@@ -210,32 +210,35 @@ class LeaveRequestService:
             status="APPROVED",
             created_at=datetime.utcnow()
         )
-        
+
+
+        # Add to DB and flush to generate ID
+        db.add(leave_request)
+        db.flush()  # Ensure ID is generated
+
+        # Create Approval record
         approval = Approval(
             id=uuid.uuid4(),
-            leave_request_id = leave_request.id,
-            employee_id = user.id,
-            decision = "APPROVED",
-            comments = None
+            leave_request_id=leave_request.id,
+            employee_id=user.id,
+            decision="APPROVED",
+            comments=None
         )
-        # Save to the database
-        db.add(leave_request)
-        db.commit()
-        db.refresh(leave_request)
-        
+
+        # Save approval to DB
         db.add(approval)
         db.commit()
+
+        # Refresh to get updated data
+        db.refresh(leave_request)
         db.refresh(approval)
-        
-        
 
         # Convert SQLAlchemy model to Pydantic model for response
         response_data = LeaveRequestAdmin(
             leave_request=LeaveRequestInfo.model_validate(leave_request),
             employee=UserInfo.model_validate(db_user),
             leave_type=LeaveTypeOut.model_validate(leave_type),
-            approval = ApprovalData.model_validate(approval)
-            
+            approval=ApprovalData.model_validate(approval)
         )
 
-        return ResponseHandler.success("Leave request, Approval thành công.", response_data)
+        return ResponseHandler.success("Leave request and approval created successfully.", response_data)
