@@ -23,9 +23,9 @@ class ScheduleService:
         """Tự động tính toán ngày làm việc dựa trên day_of_week."""
         start_of_week = current_date - timedelta(days=current_date.weekday())
         work_days = []
-
+ 
         for day in selected_days:
-            weekday = int(day) - 1  # Convert day_of_week to integer (e.g., 2 -> Monday)
+            weekday = int(day) -  2 # Convert day_of_week to integer (e.g., 2 -> Monday)
             work_day = start_of_week + timedelta(days=weekday)
             work_days.append({
                 "day_of_week": day,
@@ -40,11 +40,12 @@ class ScheduleService:
     def create_schedule(db: Session, token, schedule_data: WorkScheduleCreate):
         user = check_intern(token, db)
         current_date = datetime.now().date()
-
         # Tự động tính tuần, tháng, năm
         week_number = str(ScheduleService.calculate_week_of_month(current_date))
         start_month = str(current_date.month)
         start_year = str(current_date.year)
+        
+        
 
         # Kiểm tra lịch đã tồn tại chưa
         existing_schedule = db.query(WorkSchedule).filter(
@@ -59,11 +60,9 @@ class ScheduleService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Schedule for this week already exists."
             )
-
         # Tự động tính toán ngày làm việc dựa trên `day_of_week` được cung cấp
         selected_days = [day.day_of_week for day in schedule_data.work_days]
         work_days = ScheduleService.get_dates_for_week(current_date, selected_days)
-
         # Tạo mới lịch làm việc
         schedule = WorkSchedule(
             employee_id=user.id,

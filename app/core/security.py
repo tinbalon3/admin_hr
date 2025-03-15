@@ -112,7 +112,7 @@ def check_user_exist(
     role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
     if not role_user:
         raise ResponseHandler.not_found_error("User", user_id)
-    return True
+    return role_user
 
 def check_admin_role(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),
