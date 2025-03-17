@@ -60,7 +60,18 @@ export class LeaveRequestAdminComponent {
     this.fectchLeaveType();
   }
 
- 
+  approveRequest(element: any): void {
+    element.leave_request.status = 'Chấp nhận';
+    this.updateLeaveRequest(element);
+  }
+  
+  rejectRequest(element: any): void {
+    element.leave_request.status = 'Từ chối';
+    this.updateLeaveRequest(element);
+  }
+  
+
+  
 
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {

@@ -4,7 +4,7 @@ from app.utils.responses import ResponseHandler
 from app.schemas.employee import UserResponse
 from app.core.security import get_password_hash, get_token_payload, check_admin,get_current_user
 import json
-
+import uuid
 
 class LeaveTypeService:
     @staticmethod
@@ -33,7 +33,7 @@ class LeaveTypeService:
         if db.query(LeaveType).filter(LeaveType.type_name == updated_leaveType.type_name).first():
             raise ResponseHandler.error("loại nghỉ phép này đã tồn tại")
         
-        leaveType = LeaveType(id=None, **updated_leaveType.model_dump())
+        leaveType = LeaveType(id=uuid.uuid4(), **updated_leaveType.model_dump())
         db.add(leaveType)
         db.commit()
         db.refresh(leaveType)

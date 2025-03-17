@@ -8,7 +8,6 @@ import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule, NativeDateAdapter, p
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { VietnameseDateAdapter } from '../../customer/vietnamese-date-adapter';
 import { ListTypeService } from '../../services/list-type.service';
 @Component({
   selector: 'app-leave-request',
