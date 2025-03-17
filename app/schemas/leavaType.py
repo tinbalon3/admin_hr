@@ -35,3 +35,6 @@ class List_LeaveTypeOut(BaseModel):
     class Config:
         from_attributes = True
         orm_mode = True
+
+class LeaveType_mail(BaseModel):
+    type_name: str    # Loại nghỉ phép

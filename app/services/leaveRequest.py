@@ -145,7 +145,7 @@ class LeaveRequestService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="End date must be after today")
                 
-        if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED":
+        if leaveRequest.status == "APPROVED" or leaveRequest.status == "REJECTED" or leaveRequest.status == "PROCESSING":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="request was resolved, you cant change it"

@@ -19,7 +19,12 @@ class Settings(BaseSettings):
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_db: int = 0
-
+    
+    # admin email, password
+    SENDER_EMAIL: str
+    SENDER_PASSWORD: str
+    RECEIVER_EMAIL: str
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"  # Đảm bảo hỗ trợ UTF-8
