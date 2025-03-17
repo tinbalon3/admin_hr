@@ -14,11 +14,17 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 router = APIRouter(tags=["leaveRequest"], prefix="/leaveRequest")
 auth_scheme = HTTPBearer()
 
-@router.get("/list", response_model=ListLeaveRequest)
-def get_my_info(
+@router.get("/user/list", response_model=ListLeaveRequest)
+def getListRequestForUser(
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
-    return LeaveRequestService.get_list(db, token)
+    return LeaveRequestService.get_list_request_user(db, token)
+
+@router.get("/admin/list", response_model=ListLeaveRequest)
+def getListRequestForAdmin(
+        db: Session = Depends(get_db),
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    return LeaveRequestService.get_list_request_admin(db, token)
 
 @router.post("/create", response_model=LeaveRequestResponse, status_code=201)
 def create_leave_type(

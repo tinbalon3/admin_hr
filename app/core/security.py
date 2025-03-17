@@ -114,7 +114,7 @@ def check_user_exist(
         raise ResponseHandler.not_found_error("User", user_id)
     return role_user
 
-def check_admin_role(
+def check_admin(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),
         db: Session = Depends(get_db)):
     user = get_token_payload(token.credentials)
@@ -138,14 +138,7 @@ def check_user(
         return False
     return role_user
     
-def check_maneger(
-        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
-        db: Session = Depends(get_db)):
-    user = get_token_payload(token.credentials)
-    user_id = user.get('id')
-    role_user = db.query(Employee).filter(Employee.id == user_id).first() or None
-    if role_user.role != "manager":
-        raise HTTPException(status_code=403, detail="manager role required")
+
 
 def check_intern(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme),

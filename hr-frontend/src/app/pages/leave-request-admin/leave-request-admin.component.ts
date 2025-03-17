@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LeveRequestDialogComponent } from '../../components/leve-request-dialog/leve-request-dialog.component';
@@ -18,32 +18,33 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
+import { CommonModule } from '@angular/common';
 @Component({
-  selector: 'app-leave-request',
+  selector: 'app-leave-request-admin',
   standalone: true,
   imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatCheckboxModule,
-    MatCardModule,
-    MatTableModule,
-    FormsModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatMenuModule
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatSidenavModule,
+        MatCheckboxModule,
+        MatCardModule,
+        MatTableModule,
+        FormsModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        MatMenuModule
   ],
-  templateUrl: './leave-request.component.html',
-  styleUrls: ['./leave-request.component.css']
+  templateUrl: './leave-request-admin.component.html',
+  styleUrl: './leave-request-admin.component.css'
 })
-export class LeaveRequestComponent implements OnInit {
+export class LeaveRequestAdminComponent {
   leaveRequests: LeaveRequest[] = [];
-  displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'status', 'type', 'actions', 'action'];
+  displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'status', 'type', 'action'];
   leaveType: any;
   leave_type_id_change: any;
 
@@ -55,25 +56,11 @@ export class LeaveRequestComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchLeaveRequestUsers();
+    this.fetchLeaveRequestAdmin();
     this.fectchLeaveType();
   }
 
-  openDialog(): void {
-    const dialogRef = this.dialog.open(LeveRequestDialogComponent, {
-      width: '500px',
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log('Dialog đã đóng và gửi dữ liệu:', result);
-        this.leaveRequestService.createLeaveRequest(result).subscribe((data: any) => {
-          this.fetchLeaveRequestUsers();
-        });
-      } else {
-        console.log('Dialog bị đóng mà không gửi dữ liệu.');
-      }
-    });
-  }
+ 
 
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {
@@ -88,13 +75,7 @@ export class LeaveRequestComponent implements OnInit {
     console.log('ID Loại nghỉ phép đã chọn:', this.leave_type_id_change);
     console.log('Element đã cập nhật:', element);
   }
-  performAction(element: any): void {
-    if (element.selectedAction === 'update') {
-      this.updateLeaveRequest(element);
-    } else if (element.selectedAction === 'delete') {
-      this.deleteLeaveRequest(element.leave_request.id);
-    }
-  }
+ 
   updateLeaveRequest(element: any): void {
     const updatedRequest = {
       start_date: element.leave_request.start_date,
@@ -113,24 +94,9 @@ export class LeaveRequestComponent implements OnInit {
       }
     });
   }
-  deleteLeaveRequest(element:any): void {
-    console.log('element', element);
-    const id = element.leave_request.id;
-    if (confirm('Bạn có chắc chắn muốn xóa đơn nghỉ phép này?')) {
-      this.leaveRequestService.deleteLeaveRequest(id).subscribe({
-        next: () => {
-          this.snackBar.open('Xóa thành công!', 'Đóng', { duration: 3000 });
-          this.fetchLeaveRequestUsers(); // Cập nhật lại danh sách sau khi xóa
-        },
-        error: (err) => {
-          this.snackBar.open('Xóa thất bại!', 'Đóng', { duration: 3000 });
-          console.error('Lỗi khi xóa:', err);
-        }
-      });
-    }
-  }
-  fetchLeaveRequestUsers(): void {
-    this.leaveRequestService.getListLeaveRequestUser().subscribe((data: any) => {
+ 
+  fetchLeaveRequestAdmin(): void {
+    this.leaveRequestService.getListLeaveRequestAdmin().subscribe((data: any) => {
       this.leaveRequests = data.data;
       console.log('leaveRequests', this.leaveRequests);
     });
@@ -157,4 +123,5 @@ interface LeaveRequest {
   };
   leave_type?: { id: string };
   selected?: boolean;
+
 }

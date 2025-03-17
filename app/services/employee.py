@@ -3,7 +3,7 @@ from app.models.models import Employee
 from app.utils.responses import ResponseHandler
 from app.schemas.employee import UserResponse
 from app.core.security import get_password_hash, get_token_payload, get_current_user
-from app.core.security import verify_password, check_admin_role
+from app.core.security import verify_password, check_admin
 from app.core.security import get_password_hash
 import json
 
@@ -46,7 +46,7 @@ class EmployeeService:
 
     @staticmethod
     def remove_account(db: Session, token, id):
-        check_admin_role(token=token,db= db)
+        check_admin(token=token,db= db)
         db_user = db.query(Employee).filter(Employee.id == id).first()
         if not db_user:
            raise ResponseHandler.not_found_error("tài khoản", id)
@@ -58,6 +58,6 @@ class EmployeeService:
     @staticmethod
     def list(db: Session, token):
         admin_id = get_current_user(token=token)
-        check_admin_role(token=token,db= db)
+        check_admin(token=token,db= db)
         db_user = db.query(Employee).order_by(Employee.id, Employee.id != admin_id).all()
         return ResponseHandler.success('lấy danh sách thành công',db_user)

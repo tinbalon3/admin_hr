@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.models import Employee
 from app.db.database import get_db
 from app.db.redis import redis_client
-from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email, check_admin_role
+from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email, check_admin
 from app.core.security import get_password_hash,get_token_payload
 from app.utils.responses import ResponseHandler
 from app.schemas.auth import Signup, LoginForm,userInfo,InfoToken,SignupAdmin
@@ -77,7 +77,7 @@ class AuthService:
     @staticmethod
     async def signup_admin(db: Session, user: SignupAdmin, token):
         verify_Email(user.email)
-        check_admin_role(token,db)
+        check_admin(token,db)
         if db.query(Employee).filter(Employee.email == user.email).first():
             raise ResponseHandler.userExists()
         else:

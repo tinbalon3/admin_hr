@@ -6,7 +6,7 @@ from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveReq
 from app.schemas.employee import UserInfo
 from app.schemas.leavaType import LeaveTypeOut 
 from app.schemas.approval import ApprovalData 
-from app.core.security import get_current_user, check_admin_role, check_user, check_user_exist, check_intern
+from app.core.security import get_current_user, check_admin, check_user, check_user_exist, check_intern
 
 from fastapi import HTTPException, status
 import json
@@ -15,8 +15,9 @@ import uuid
 
 
 class LeaveRequestService:
+    
     @staticmethod
-    def get_list(db: Session, token):
+    def get_list_request_user(db: Session, token):
         user_id = get_current_user(token=token)
 
 
@@ -35,7 +36,26 @@ class LeaveRequestService:
     ]
         return ResponseHandler.success("get list success", data_response)
         
+    @staticmethod
+    def get_list_request_admin(db: Session, token):
+        user_id = get_current_user(token=token)
 
+
+        if check_admin(token, db):
+            leave_requests = db.query(LeaveRequest).filter(LeaveRequest.employee_id == user_id, LeaveRequest.status == "PROCESSING").all()
+        else:
+            leave_requests = db.query(LeaveRequest).order_by(LeaveRequest.created_at).all()
+
+        data_response = [
+        LeaveRequestOut(
+            leave_request=LeaveRequestInfo.from_orm(lr),
+            employee=UserInfo.from_orm(lr.employee) if lr.employee else None,
+            leave_type=LeaveTypeOut.from_orm(lr.leave_type) if lr.leave_type else None
+        )
+        for lr in leave_requests
+    ]
+        return ResponseHandler.success("get list success", data_response)
+    
     @staticmethod
     def create(db: Session, token ,leave_data: LeaveRequestBase):
         # Lấy user ID từ token
@@ -170,7 +190,7 @@ class LeaveRequestService:
     @staticmethod
     def create_leave_request(db: Session, token, leave_data: LeaveRequestDataAdmin):
         # Check admin role
-        user = check_admin_role(token, db) 
+        user = check_admin(token, db) 
 
         # Check if employee exists
         db_user = db.query(Employee).filter(Employee.id == leave_data.employee_id).first()

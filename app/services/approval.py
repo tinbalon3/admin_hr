@@ -3,7 +3,7 @@ from app.schemas.approval import ApprovalCreate, ApprovalResponse_V2,ApprovalDat
 from app.schemas.employee import UserInfo
 from app.utils.responses import ResponseHandler
 from sqlalchemy.orm import Session
-from app.core.security import get_token_payload, check_admin_role, check_user,get_current_user  # Import the function
+from app.core.security import get_token_payload, check_admin, check_user,get_current_user  # Import the function
 from fastapi import HTTPException, status
 
 import logging
@@ -17,7 +17,7 @@ class ApproveService:
     @staticmethod
     def change_decision_leave_request(db: Session, approveCreate: ApprovalCreate, token):
         # Kiểm tra quyền admin
-        user = check_admin_role(token, db)
+        user = check_admin(token, db)
 
         # Kiểm tra đơn nghỉ có tồn tại không
         leave_request = db.query(LeaveRequest).filter(LeaveRequest.id == approveCreate.leave_request_id).first()
@@ -72,7 +72,7 @@ class ApproveService:
     @staticmethod
     def get_list(db: Session, token):
         # Kiểm tra quyền admin
-        check_admin_role(token, db)
+        check_admin(token, db)
 
         # Join với bảng User để lấy thông tin employee
         list_approval = db.query(Approval).all()

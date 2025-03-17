@@ -7,10 +7,10 @@ import { Observable } from 'rxjs';
 })
 export class LeaveRequestService {
   private API_LEAVE_REQUEST_CREATE = 'http://127.0.0.1:8000/leaveRequest/create'; // API endpoint
-  private API_LEAVE_REQUEST_GET_LIST = 'http://127.0.0.1:8000/leaveRequest/list'; // API endpoint
+  private API_LEAVE_REQUEST_GET_LIST_REQUEST_USER = 'http://127.0.0.1:8000/leaveRequest/user/list'; // API endpoint
   private API_LEAVE_REQUEST_EDIT = 'http://127.0.0.1:8000/leaveRequest/edit'; // API endpoint
   private API_LEAVE_REQUEST_DELETE = 'http://127.0.0.1:8000/leaveRequest/delete'; // API endpoint
-
+  private API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN = 'http://127.0.0.1:8000/leaveRequest/admin/list'; // API endpoint
   constructor(private http: HttpClient) { }
 
   createLeaveRequest(leaveData: any): Observable<any> {
@@ -24,13 +24,19 @@ export class LeaveRequestService {
     return this.http.post(this.API_LEAVE_REQUEST_CREATE, leaveData, { headers });
   }
 
-  getListLeaveRequest(): Observable<any> {
+  getListLeaveRequestUser(): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    return this.http.get(this.API_LEAVE_REQUEST_GET_LIST, { headers });
+    return this.http.get(this.API_LEAVE_REQUEST_GET_LIST_REQUEST_USER, { headers });
   }
 
+  getListLeaveRequestAdmin(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    return this.http.get(this.API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN, { headers });
+  }
   updateLeaveRequest(id: string, leaveRequest: any): Observable<any> {
     console.log('leaveRequest', leaveRequest);
     const headers = new HttpHeaders({

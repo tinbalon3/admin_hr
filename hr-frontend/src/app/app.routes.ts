@@ -40,6 +40,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'list-leave-request',
+        loadComponent: () =>
+          import('./pages/leave-request-admin/leave-request-admin.component').then(
+            (m) => m.LeaveRequestAdminComponent
+          ),
+      },
+      {
         path: 'intern-schedule',
         loadComponent: () =>
           import('./pages/schedule-intern/schedule-intern.component').then(

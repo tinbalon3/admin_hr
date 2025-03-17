@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.models import Employee, LeaveType
 from app.utils.responses import ResponseHandler
 from app.schemas.employee import UserResponse
-from app.core.security import get_password_hash, get_token_payload, check_admin_role,get_current_user
+from app.core.security import get_password_hash, get_token_payload, check_admin,get_current_user
 import json
 
 
@@ -25,7 +25,7 @@ class LeaveTypeService:
         if db_user is None:
             raise ResponseHandler.invalid_token("access")
         
-        check_admin_role(token, db)
+        check_admin(token, db)
         
         if not db_user:
             raise ResponseHandler.not_found_error("User", user_id)
@@ -47,7 +47,7 @@ class LeaveTypeService:
         if not db_user:
            raise ResponseHandler.not_found_error("User", user_id)
        
-        check_admin_role(token, db)
+        check_admin(token, db)
     
         updated_leaveType_dict = updated_leaveType.model_dump(exclude_none = True)
         db_type = db.query(LeaveType).filter(LeaveType.id == id).first()
@@ -72,7 +72,7 @@ class LeaveTypeService:
         if user_id is None :
             raise ResponseHandler.invalid_token("access")
         
-        check_admin_role(token, db)
+        check_admin(token, db)
 
         db_type = db.query(LeaveType).filter(LeaveType.id == id).first() or None
         if db_type is None:
