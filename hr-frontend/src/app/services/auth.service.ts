@@ -3,13 +3,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { json } from 'stream/consumers';
 
-const API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
+
 
 @Injectable({
   providedIn: 'root',
 })
-export class LoginService {
+export class AuthService {
   constructor(private http: HttpClient) {}
+  API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
+  API_LOGOUT = 'http://127.0.0.1:8000/auth/logout'; // Đổi thành URL backend của bạn
 
   /**
    * Gọi API để đăng nhập
@@ -18,6 +20,7 @@ export class LoginService {
    * @returns Observable
    */
   private readonly TOKEN_KEY = 'access_token';
+
   login(email: string, password: string): Observable<any> {
    const data = {
     "email": email,
@@ -28,7 +31,14 @@ export class LoginService {
       'Content-Type': 'application/json',
     });
 
-    return this.http.post(`${API_LOGIN}`,data, { headers });
+    return this.http.post(`${this.API_LOGIN}`,data, { headers });
+  }
+  logout(): Observable<any> {
+    
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    return this.http.post(`${this.API_LOGOUT}`,{ headers });
   }
 
   saveToken(token: string): void {
@@ -61,7 +71,7 @@ export class LoginService {
    */
   
   saveRefreshToken(refreshToken: string): void {
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('refresh_token', refreshToken);
   }
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');

@@ -2,12 +2,12 @@ import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResp
 import { inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { LoginService } from '../services/login.service';
+import { AuthService } from '../services/auth.service';
 
 export const tokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
-  const loginService = inject(LoginService);
+  const authService = inject(AuthService);
 
-  const token = loginService.getToken();
+  const token = authService.getToken();
   console.log('loginService', token);
   let authReq = req;
 

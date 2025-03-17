@@ -69,6 +69,7 @@ class userInfo(BaseModel):
     email: str
     phone: str
     location: str
+    role: str
 
     class Config(BaseConfig):
         pass

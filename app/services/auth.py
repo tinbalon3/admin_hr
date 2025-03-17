@@ -35,7 +35,8 @@ class AuthService:
             "full_name": user.full_name,
             "email": user.email,
             "phone": user.phone,
-            "location": user.location
+            "location": user.location,
+            "role": user.role
         })
 
         # Gộp dữ liệu vào InfoToken
@@ -102,7 +103,7 @@ class AuthService:
             ttl = int(expire_time.total_seconds())
 
             # Lưu token vào Redis với TTL tương ứng
-            redis_client.setex(token, ttl, "blacklisted")
+            redis_client.set(token, ttl, "blacklisted")
             
             return {"message": "Logout successful."}
         except Exception:

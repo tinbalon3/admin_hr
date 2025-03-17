@@ -3,13 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { log } from 'console';
 
-const API_REGISTER = 'http://127.0.0.1:8000/auth/signup'; // Đổi thành URL backend của bạn
 
 @Injectable({
   providedIn: 'root',
 })
 export class RegisterService {
   constructor(private http: HttpClient) {}
+  API_REGISTER = 'http://127.0.0.1:8000/auth/signup'; // Đổi thành URL backend của bạn
 
   /**
    * API đăng ký người dùng
@@ -21,6 +21,6 @@ export class RegisterService {
       'Content-Type': 'application/json',
     });
 
-    return this.http.post(`${API_REGISTER}`, data, { headers });
+    return this.http.post(`${this.API_REGISTER}`, data, { headers });
   }
 }
