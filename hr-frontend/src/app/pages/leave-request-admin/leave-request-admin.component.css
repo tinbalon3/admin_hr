@@ -1,73 +1,127 @@
-/* Căn chỉnh bảng */
+/* Bảng chính */
 .custom-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  /* Header và Cell */
-  mat-header-cell, mat-cell {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  mat-header-cell {
-    font-weight: bold;
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-  
-  /* Nút hành động */
-  button[mat-icon-button] {
-    margin: 0 4px;
-    transition: transform 0.2s ease;
-  }
-  
-  button[mat-icon-button]:hover {
-    transform: scale(1.2);
-  }
-  
-  /* Trạng thái */
-  .status {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 12px;
-  }
-  
-  .status.approved {
-    background-color: #c8e6c9;
-    color: #2e7d32;
-  }
-  
-  .status.rejected {
-    background-color: #ffcdd2;
-    color: #c62828;
-  }
-  
-  /* Giao diện khi không có dữ liệu */
-  .no-data {
-    text-align: center;
-    padding: 20px;
-    color: #757575;
-    background-color: #fafafa;
-    border: 1px dashed #bdbdbd;
-    border-radius: 16px;
-    margin-top: 16px;
-  }
-  
-  .no-data mat-icon {
-    font-size: 48px;
-    color: #bdbdbd;
-  }
-  /* Icon thông báo */
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header và Cell */
+mat-header-cell, mat-cell {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Header Cell */
+mat-header-cell {
+  font-weight: bold;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 14px;
+}
+
+/* Nút hành động */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Style nút */
+button[mat-raised-button] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-weight: bold;
+  border-radius: 6px;
+  text-transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Hiệu ứng hover */
+button[mat-raised-button]:hover {
+  transform: translateY(-2px);
+}
+
+/* Nút Chấp Nhận */
+button[color="primary"] {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+button[color="primary"]:hover {
+  background-color: #43a047;
+}
+
+/* Nút Từ Chối */
+button[color="warn"] {
+  background-color: #f44336;
+  color: #fff;
+}
+
+button[color="warn"]:hover {
+  background-color: #e53935;
+}
+
+/* Icon trong nút */
+button mat-icon {
+  font-size: 18px;
+}
+
+/* Trạng thái */
+.status {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  display: inline-block;
+}
+
+/* Trạng thái Chấp Nhận */
+.status.approved {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+/* Trạng thái Từ Chối */
+.status.rejected {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+/* Trạng thái Đang xử lý */
+.status.pending {
+  background-color: #fff3cd;
+  color: #ff9800;
+}
+
+/* Giao diện khi không có dữ liệu */
+.no-data {
+  text-align: center;
+  padding: 24px;
+  color: #757575;
+  background-color: #fafafa;
+  border: 1px dashed #bdbdbd;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
 .no-data mat-icon {
-    font-size: 48px;
-    color: #bdbdbd;
-  }
-  .no-data p {
-    font-size: 16px;
-    margin-top: 12px;
-  }
-  
+  font-size: 48px;
+  color: #bdbdbd;
+}
+
+.no-data p {
+  font-size: 16px;
+  margin-top: 12px;
+  color: #616161;
+}

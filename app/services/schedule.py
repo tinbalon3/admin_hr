@@ -10,7 +10,12 @@ from app.core.security import check_intern
 
 
 class ScheduleService:
-
+#     ['
+#     "2025-03-25T17:00:00.000Z",
+#     "2025-03-24T17:00:00.000Z",
+#     "2025-03-26T17:00:00.000Z",
+#     "2025-03-27T17:00:00.000Z"
+# ]]
     @staticmethod
     def calculate_week_of_month(target_date: date) -> int:
         """Tính tuần thứ mấy trong tháng."""
