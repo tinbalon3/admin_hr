@@ -3,14 +3,7 @@ from email.mime.text import MIMEText
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
-from app.models.models import Employee, LeaveType, LeaveRequest, Approval
-from app.utils.responses import ResponseHandler
-from app.schemas.leavaRequest import LeaveRequestBase, LeaveRequestOut, LeaveRequestInfo, LeaveRequestResponse,LeaveRequestAdmin,LeaveRequestDataAdmin
-from app.schemas.employee import UserInfo
-from app.schemas.leavaType import LeaveTypeOut 
-from app.schemas.approval import ApprovalData 
-from app.core.security import get_current_user, check_admin_role, check_user, check_user_exist, check_intern
-
+from app.models.models import LeaveRequest
 from fastapi import HTTPException, status
 from datetime import datetime
 
