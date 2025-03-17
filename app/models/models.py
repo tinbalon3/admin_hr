@@ -46,7 +46,7 @@ class LeaveRequest(Base):
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     notes = Column(Text, nullable=True)
-    status = Column(Enum("PENDING", "APPROVED", "REJECTED", name="leave_status"), nullable=False, server_default="PENDING")
+    status = Column(Enum("PENDING","PROCESSING" ,"APPROVED", "REJECTED", name="leave_status"), nullable=False, server_default="PENDING")
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
     # Sử dụng tên class ORM

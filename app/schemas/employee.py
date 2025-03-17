@@ -57,3 +57,7 @@ class UserUpdate(BaseModel):
 
 class delete_user(BaseModel):
          message: str
+         
+class Employee(BaseModel):
+    full_name: str    # Tên nhân viên
+    email: str

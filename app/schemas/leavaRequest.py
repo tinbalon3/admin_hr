@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr
-from app.schemas.leavaType import LeaveTypeOut  
-from app.schemas.employee import UserInfo 
+from app.schemas.leavaType import LeaveTypeOut  ,LeaveType_mail
+from app.schemas.employee import UserInfo ,Employee
 from app.schemas.approval import  ApprovalData
 from datetime import datetime, date
 from typing import List, Optional
@@ -80,3 +80,14 @@ class LeaveRequestResponseAdmin(BaseModel):
 
     class Config:
         from_attributes = True 
+
+class LeaveRequestInfo_mail(BaseModel):
+    id: uuid.UUID
+    start_date: date  # Ngày bắt đầu nghỉ
+    end_date: date
+
+
+class LeaveRequestOut_mail(BaseModel):
+    leave_request: LeaveRequestInfo_mail
+    employee: Employee
+    leave_type: LeaveType_mail
