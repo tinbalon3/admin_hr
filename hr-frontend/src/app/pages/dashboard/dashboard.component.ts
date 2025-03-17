@@ -12,6 +12,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { MatDialog } from '@angular/material/dialog';
 import { PersonalInfoDialogComponent } from '../../components/personal-infor-dialog/personal-infor-dialog.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -34,15 +35,18 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class DashboardComponent implements OnInit {
   userName: string = '';
-  constructor(private dialog: MatDialog, private router: Router) {}
+  userRole: any;
+  constructor(private dialog: MatDialog, private router: Router, private authService: AuthService) {}
   ngOnInit(): void {
     // Lấy thông tin người dùng từ localStorage
     // Kiểm tra nếu đang chạy trong môi trường trình duyệt
     if (typeof window !== 'undefined' && window.localStorage) {
-      const userInfo = localStorage.getItem('inforuser');
+      const userInfo = localStorage.getItem('inforUser');
       if (userInfo) {
         const parsedUser = JSON.parse(userInfo);
-        this.userName = parsedUser.name || 'User Name';
+        this.userName = parsedUser.full_name ;
+        this.userRole = parsedUser.role;
+       
       }
     }
   }
@@ -59,12 +63,24 @@ export class DashboardComponent implements OnInit {
 
   logout(): void {
     // Xóa thông tin người dùng khỏi localStorage và điều hướng đến trang đăng nhập
-    localStorage.removeItem('inforUser');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-
-    this.router.navigate(['/login']); // Thay '/login' bằng route của trang đăng nhập
-    console.log('Đăng xuất thành công');
+    this.authService.logout().subscribe({
+      next: () => {
+        localStorage.removeItem('inforUser');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+    
+        this.router.navigate(['/login']); // Thay '/login' bằng route của trang đăng nhập
+        console.log('Đăng xuất thành công');
+      },
+      error: (error) => {
+        localStorage.removeItem('inforUser');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        this.router.navigate(['/login']); // Thay '/login' bằng route của trang đăng nhập
+        console.error('Đăng xuất thất bại:', error);
+    }
+  });
+   
   }
 }
 

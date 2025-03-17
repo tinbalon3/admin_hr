@@ -24,7 +24,7 @@
     <mat-nav-list>
       <a mat-list-item routerLink="/dashboard/inforcompany">Bảng tin</a>
       <a mat-list-item routerLink="/dashboard/create-leave-request">Tạo đơn nghỉ phép</a>
-      <a mat-list-item routerLink="/dashboard/intern-schedule">Đăng kí lịch làm (Intern)</a>
+      <a *ngIf="this.userRole == 'INTERN'" mat-list-item routerLink="/dashboard/intern-schedule">Đăng kí lịch làm (Thực tập sinh)</a>
     </mat-nav-list>
   </mat-sidenav>
 

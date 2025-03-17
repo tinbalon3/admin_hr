@@ -39,6 +39,13 @@ export const routes: Routes = [
             (m) => m.LeaveRequestComponent
           ),
       },
+      {
+        path: 'intern-schedule',
+        loadComponent: () =>
+          import('./pages/schedule-intern/schedule-intern.component').then(
+            (m) => m.ScheduleInternComponent
+          ),
+      },
       // {
       //   path: 'leave-list',
       //   loadComponent: () =>
