@@ -103,19 +103,19 @@ export class ScheduleInternComponent {
     {
       date: addDays(new Date(), 1),
       data: {
-        title: 'Netflix',
+        title: 'Đã đăng kí',
       },
     },
     {
       date: addDays(new Date(), 1),
       data: {
-        title: 'Google One',
+        title: 'Đã đăng kí',
       },
     },
     {
       date: addDays(new Date(), 5),
       data: {
-        title: 'Youtube Premium',
+        title: 'Đã đăng kí',
       },
     },
   ];
