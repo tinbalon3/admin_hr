@@ -77,3 +77,11 @@
 2025-03-18 16:45:31,786 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
 2025-03-18 16:45:31,792 - app.services.leaveRequest - DEBUG - Updating leave request 30c51846-ba04-4f3b-9a92-6307e2b42241 
 2025-03-18 16:45:31,799 - app.services.leaveRequest - INFO - Leave request 30c51846-ba04-4f3b-9a92-6307e2b42241 updated successfully
+2025-03-18 16:57:03,386 - app.core.security - DEBUG - verify_token None
+2025-03-18 16:57:03,386 - app.services.employee - INFO - Fetching user info
+2025-03-18 16:57:03,391 - app.services.employee - DEBUG - Extracted user ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 16:57:03,417 - app.services.employee - INFO - User info fetched successfully for user 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 16:57:12,158 - app.core.security - DEBUG - verify_token None
+2025-03-18 16:57:12,158 - app.services.employee - INFO - Fetching user info
+2025-03-18 16:57:12,159 - app.services.employee - DEBUG - Extracted user ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 16:57:12,161 - app.services.employee - INFO - User info fetched successfully for user 86402609-d725-410e-95a8-9ec21e23ce2b
