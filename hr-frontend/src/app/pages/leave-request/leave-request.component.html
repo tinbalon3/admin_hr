@@ -1,130 +1,62 @@
-<div class="content">
-  <h1 class="header-content">TẠO ĐƠN XIN NGHỈ PHÉP</h1>
+<div class="container mx-auto">
+  <h1 class="text-3xl font-bold text-gray-700 mb-6 text-center">TẠO ĐƠN XIN NGHỈ PHÉP</h1>
 
-  <div class="leave-request-container">
-    <button mat-raised-button color="primary" class="create-button" (click)="openDialog()">
-      <mat-icon>add_circle</mat-icon> Tạo đơn
-    </button>
-    <button mat-raised-button color="accent" *ngIf="hasSelected()" (click)="submitSelected()">
-      <mat-icon>send</mat-icon> Gửi đơn
-    </button>
+  <!-- Nút hành động -->
+  <div class="flex justify-between mb-4">
+      <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-2" (click)="openDialog()">
+          ➕ Tạo đơn
+      </button>
+      <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2" *ngIf="hasSelected()" (click)="submitSelected()">
+          📩 Gửi đơn
+      </button>
   </div>
 
-  <table mat-table [dataSource]="leaveRequests" class="mat-elevation-z8 custom-table">
-    <!-- Username Column -->
-    <ng-container matColumnDef="username">
-      <th mat-header-cell *matHeaderCellDef> Tên nhân viên </th>
-      <td mat-cell *matCellDef="let element" aria-disabled="true"> {{ element.employee.full_name }} </td>
-    </ng-container>
-
-    <!-- Start Date Column -->
-    <ng-container matColumnDef="startDate">
-      <th mat-header-cell *matHeaderCellDef> Ngày bắt đầu </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-form-field appearance="outline" class="date-field">
-          <input 
-            matInput 
-            [(ngModel)]="element.leave_request.start_date" 
-            [matDatepicker]="startPicker" 
-            (focus)="startPicker.open()" 
-            placeholder="Chọn ngày" 
-            required>
-          <mat-datepicker #startPicker></mat-datepicker>
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- End Date Column -->
-    <ng-container matColumnDef="endDate">
-      <th mat-header-cell *matHeaderCellDef> Ngày kết thúc </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-form-field appearance="outline" class="date-field">
-          <input 
-            matInput 
-            [(ngModel)]="element.leave_request.end_date" 
-            [matDatepicker]="endPicker" 
-            (focus)="endPicker.open()" 
-            placeholder="Chọn ngày" 
-            required>
-          <mat-datepicker #endPicker></mat-datepicker>
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- Note Column -->
-    <ng-container matColumnDef="note">
-      <th mat-header-cell *matHeaderCellDef> Ghi chú </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-form-field appearance="outline" class="note-field">
-          <textarea 
-            matInput 
-            [(ngModel)]="element.leave_request.notes" 
-            placeholder="Nhập ghi chú" 
-            rows="2"></textarea>
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- Status Column -->
-<!-- Status Column -->
-<ng-container matColumnDef="status">
-  <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
-  <td mat-cell *matCellDef="let element">
-    <mat-form-field appearance="outline" class="status-field">
-      <input matInput [(ngModel)]="element.leave_request.status" [disabled]="true">
-    </mat-form-field>
-  </td>
-</ng-container>
-
-
-    <!-- Type Column -->
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef> Loại nghỉ phép </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-form-field appearance="outline" class="type-field">
-          <mat-select [(ngModel)]="element.leave_type.id" placeholder="Chọn loại nghỉ phép">
-            <mat-option *ngFor="let type of leaveType" [value]="type.id">
-              {{ type.type_name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </td>
-    </ng-container>
-<!-- Action Column - Hành động -->
-<ng-container matColumnDef="actions">
-  <th mat-header-cell *matHeaderCellDef> Hành động </th>
-  <td mat-cell *matCellDef="let element">
-    <button mat-icon-button [matMenuTriggerFor]="actionMenu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #actionMenu="matMenu">
-      <button mat-menu-item (click)="updateLeaveRequest(element)">
-        <mat-icon>edit</mat-icon>
-        <span>Cập nhật</span>
-      </button>
-      <button mat-menu-item (click)="deleteLeaveRequest(element)">
-        <mat-icon>delete</mat-icon>
-        <span>Xóa</span>
-      </button>
-    </mat-menu>
-  </td>
-</ng-container>
-    <!-- Action Column - Gửi -->
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef> Gửi </th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox [(ngModel)]="element.selected"></mat-checkbox>
-      </td>
-    </ng-container>
-
-
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
-  </table>
-
-  <div *ngIf="leaveRequests.length === 0" class="no-data">
-    <mat-icon>info</mat-icon>
-    <p>Không có đơn nghỉ phép nào. Hãy nhấn "Tạo đơn" để bắt đầu.</p>
+  <!-- Bảng đơn nghỉ phép -->
+  <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+      <table class="min-w-full border-collapse">
+          <thead class="bg-gray-200">
+              <tr>
+                  <th class="py-3 px-4 border">
+                      <input type="checkbox" (change)="toggleSelectAll($event)"/>
+                  </th>
+                  <th class="py-3 px-4 border text-center">Tên nhân viên</th>
+                  <th class="py-3 px-4 border text-center">Ngày bắt đầu</th>
+                  <th class="py-3 px-4 border text-center">Ngày kết thúc</th>
+                  <th class="py-3 px-4 border text-center">Ghi chú</th>
+                  <th class="py-3 px-4 border text-center">Trạng thái</th>
+                  <th class="py-3 px-4 border text-center">Hành động</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let request of leaveRequests" class="bg-gray-50">
+                  <td class="py-3 px-4 border">
+                      <input type="checkbox" [(ngModel)]="request.selected"/>
+                  </td>
+                  <td class="py-3 px-4 border">{{ request.employee?.full_name }}</td>
+                  <td class="py-3 px-4 border">
+                      <input type="date" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.start_date" />
+                  </td>
+                  <td class="py-3 px-4 border">
+                      <input type="date" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.end_date" />
+                  </td>
+                  <td class="py-3 px-4 border">
+                      <input type="text" placeholder="Nhập ghi chú" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.notes" />
+                  </td>
+                  <td class="py-3 px-4 border text-center">
+                    <span class="status-label" [ngClass]="{
+                        'status-pending': request.leave_request.status === 'PENDING',
+                        'status-approved': request.leave_request.status === 'APPROVED',
+                        'status-rejected': request.leave_request.status === 'REJECTED',
+                        'status-processing': request.leave_request.status === 'PROCESSING'
+                    }">
+                        {{ request.leave_request.status }}
+                    </span>
+                </td>
+                  <td class="py-3 px-4 border text-center">
+                      <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" (click)="deleteLeaveRequest(request)">Xóa</button>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
   </div>
 </div>

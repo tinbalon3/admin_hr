@@ -1,77 +1,79 @@
-<div class="form-container" mat-dialog-content>
-    <h2>Tạo đơn nghỉ phép</h2>
-  
-    <form #leaveForm="ngForm" (ngSubmit)="submit()">
-      <div class="form-group">
-        <!-- Start Date -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Start Date</mat-label>
-          <input
-            matInput
-            [matDatepicker]="startPicker"
-            [(ngModel)]="startDate"
-            name="startDate"
-          
-            autofocus
-          />
-          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-          <!-- <mat-error *ngIf="leaveForm.controls['startDate']?.invalid && leaveForm.controls['startDate']?.touched">
-            Vui lòng chọn ngày bắt đầu!
-          </mat-error> -->
-        </mat-form-field>
-  
-        <!-- End Date -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>End Date</mat-label>
-          <input
-            matInput
-            [matDatepicker]="endPicker"
-            [(ngModel)]="endDate"
-            name="endDate"
-           
-          />
-          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-          <!-- <mat-error *ngIf="leaveForm.controls['endDate']?.invalid && leaveForm.controls['endDate']?.touched">
-            Vui lòng chọn ngày kết thúc!
-          </mat-error> -->
-        </mat-form-field>
+<div class="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full">
+  <h2 class="text-2xl font-bold text-indigo-700 text-center mb-6">Tạo đơn nghỉ phép</h2>
+
+  <form #leaveForm="ngForm" (ngSubmit)="submit()" class="space-y-6">
+    
+    <!-- Ngày bắt đầu & Ngày kết thúc -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Ngày bắt đầu -->
+      <div class="flex flex-col">
+        <label class="text-gray-700 font-medium mb-1">Ngày bắt đầu</label>
+        <input 
+          type="date" 
+          [(ngModel)]="startDate" 
+          name="startDate"
+          required
+          class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
-  
-      <div class="form-group">
-        <!-- Note -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Notes</mat-label>
-          <textarea matInput [(ngModel)]="note" name="note" rows="3"></textarea>
-        </mat-form-field>
+      
+      <div class="flex flex-col">
+        <label class="text-gray-700 font-medium mb-1">Ngày kết thúc</label>
+        <input 
+          type="date" 
+          [(ngModel)]="endDate" 
+          name="endDate"
+          required
+          class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
-  
-      <div class="form-group">
-        <!-- Type (Dropdown) -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Type</mat-label>
-          <mat-select [(ngModel)]="selectedLeaveType" name="leaveType" required>
-            <mat-option *ngFor="let type of leaveType" [value]="type.id">
-              {{ type.type_name }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="leaveForm.controls['type']?.invalid && leaveForm.controls['type']?.touched">
-            Vui lòng chọn loại nghỉ phép!
-          </mat-error>
-        </mat-form-field>
-      </div>
-  
-      <div class="dialog-actions" mat-dialog-actions>
-        <button mat-button type="button" (click)="cancel()">Hủy</button>
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="leaveForm.invalid"
-        >
-          Đồng ý
-        </button>
-      </div>
-    </form>
-  </div>
+    </div>      
+    
+
+    <!-- Ghi chú -->
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Ghi chú</label>
+      <textarea 
+        [(ngModel)]="note"
+        name="note"
+        rows="3"
+        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      ></textarea>
+    </div>
+
+    <!-- Loại nghỉ phép -->
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Loại nghỉ phép</label>
+      <select 
+        [(ngModel)]="selectedLeaveType"
+        name="leaveType"
+        required
+        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        <option *ngFor="let type of leaveType" [value]="type.id">
+          {{ type.type_name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Nút Hủy & Đồng ý -->
+    <div class="flex justify-end gap-4 mt-6">
+      <button 
+        type="button" 
+        (click)="cancel()" 
+        class="px-4 py-2 text-gray-700 hover:text-red-600 transition"
+      >
+        Hủy
+      </button>
+      <button 
+        type="submit" 
+        (click)="submit()"
+        [disabled]="leaveForm.invalid"
+        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+      >
+        Đồng ý
+      </button>
+    </div>
+
+  </form>
+</div>

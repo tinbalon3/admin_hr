@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ListTypeService } from '../../services/list-type.service';
+import { format } from 'date-fns';
+import { LeaveRequestService } from '../../services/leave-request.service';
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -30,8 +32,8 @@ import { ListTypeService } from '../../services/list-type.service';
   styleUrls: ['./leve-request-dialog.component.css'],
 })
 export class LeveRequestDialogComponent implements OnInit {
-  startDate: Date | null = null;
-  endDate: Date | null = null;
+  startDate: Date | null= null;
+  endDate: Date | null= null;
   note: string = '';
 
   leaveType :any;
@@ -39,11 +41,14 @@ export class LeveRequestDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<LeveRequestDialogComponent>,
     private listTypeService: ListTypeService,
+    private leaveRequestService: LeaveRequestService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
   ngOnInit(): void {
     this.fectchLeaveType();
   }
+ 
+ 
 
   cancel(): void {
     this.dialogRef.close();
@@ -55,20 +60,17 @@ export class LeveRequestDialogComponent implements OnInit {
     )
   }
   submit(): void {
-    if (this.startDate && this.endDate && this.selectedLeaveType) {
+   
       const leaveRequest = {
-        start_date: this.formatDate(this.startDate),
-        end_date: this.formatDate(this.endDate),
+        start_date: this.startDate,
+        end_date: this.endDate,
         leave_type_id: this.selectedLeaveType,
         notes: this.note,
       };
-      
-      this.dialogRef.close(leaveRequest);
-    }
-  
+   
+        this.dialogRef.close(leaveRequest);
+     
   }
-  private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
+
 }
 
