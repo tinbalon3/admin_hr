@@ -51,7 +51,7 @@ class LeaveRequestService:
         verify_token(token)
         user_id = get_current_user(token=token)
         logger.info(f"Fetching leave requests for user {user_id}")
-        if check_user(token, db):
+        if check_user_exist(token, db):
             leave_requests = db.query(LeaveRequest).filter(LeaveRequest.employee_id == user_id).all()
             logger.debug(f"Found {len(leave_requests)} leave requests for user {user_id}")
         else:
