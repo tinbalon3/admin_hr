@@ -1,47 +1,34 @@
-<h2 mat-dialog-title>Thông tin cá nhân</h2>
-<mat-dialog-content class="dialog-content">
-  <form #personalInfoForm="ngForm">
-    <!-- Tên (khóa, không cho chỉnh sửa) -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tên</mat-label>
-      <input matInput [value]="userInfo.full_name" name="full_name" disabled>
-    </mat-form-field>
+<div class="container mx-auto p-4">
+  <div class="card shadow-sm rounded px-6 py-6 bg-white max-w-lg">
+    <h1 class="text-2xl font-semibold mb-4">Hồ Sơ Của Tôi</h1>
+    <p class="text-gray-600 mb-6">Quản lý thông tin hồ sơ cá nhân</p>
 
-    <!-- Email (khóa, không cho chỉnh sửa) -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput [value]="userInfo.email" name="email" type="email" disabled>
-    </mat-form-field>
+    <form [formGroup]="profileForm">
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Họ và tên</label>
+            <input type="text" formControlName="fullname" class="w-full border border-gray-300 rounded px-3 py-2">
+        </div>
 
-    <!-- Số điện thoại (cho phép chỉnh sửa) -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Số điện thoại</mat-label>
-      <input matInput [(ngModel)]="userInfo.phone" name="phone">
-    </mat-form-field>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Email</label>
+            <div class="flex items-center">
+                <input type="email" formControlName="email" class="w-full border border-gray-300 rounded px-3 py-2" >
+                <button class="text-blue-600 ml-2" (click)="changeEmail()">Thay đổi</button>
+            </div>
+        </div>
 
-    <!-- Nút để hiển thị các trường mật khẩu -->
-    <button mat-button (click)="togglePasswordFields()" type="button" class="change-password-button">
-      <span *ngIf="!this.showPasswordFields">Thay đổi mật khẩu</span>
-      <span *ngIf="this.showPasswordFields">Trở về</span>
-    </button>
-   
-    <!-- Các trường mật khẩu (hiển thị khi showPasswordFields là true) -->
-    <div *ngIf="showPasswordFields">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mật khẩu cũ</mat-label>
-        <input matInput [(ngModel)]="oldPassword" name="oldPassword" type="password" required>
-      </mat-form-field>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Số điện thoại</label>
+            <div class="flex items-center">
+                <input type="text" formControlName="phone_number" class="w-full border border-gray-300 rounded px-3 py-2">
+            </div>
+        </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mật khẩu mới</mat-label>
-        <input matInput [(ngModel)]="newPassword" name="newPassword" type="password" [required]="showPasswordFields">
-      </mat-form-field>
 
-    
-    </div>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onClose()">Hủy</button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!personalInfoForm.valid || (showPasswordFields && newPassword && !isPasswordValid())">Lưu</button>
-</mat-dialog-actions>
+
+        <div class="flex justify-between items-center">
+            <button class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" (click)="changePassword()">Đổi mật khẩu</button>
+            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" [disabled]="!profileForm.dirty" (click)="saveProfile()">Cập nhật</button>
+        </div>
+    </form>
+</div>
