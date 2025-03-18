@@ -107,7 +107,6 @@ export class LeaveRequestComponent implements OnInit {
       notes: element.leave_request.notes,
       leave_type_id: element.leave_type.id,
     };
-    console.log('updatedRequest', updatedRequest);
     this.leaveRequestService.updateLeaveRequest(element.leave_request.id, updatedRequest).subscribe({
       next: () => {
         this.snackBar.open('Cập nhật thành công!', 'Đóng', { duration: 3000 });
@@ -137,8 +136,18 @@ export class LeaveRequestComponent implements OnInit {
   fetchLeaveRequestUsers(): void {
     this.leaveRequestService.getListLeaveRequestUser().subscribe((data: any) => {
       this.leaveRequests = data.data;
+      this.leaveRequests.forEach(request => {
+        request.originalData = JSON.parse(JSON.stringify(request.leave_request));
+        request.selected = false;  // nếu chưa có thì thêm vào luôn
+      });
     });
   }
+  hasChanges(request: any): boolean {
+    return request.leave_request.start_date !== request.originalData.start_date ||
+           request.leave_request.end_date !== request.originalData.end_date ||
+           request.leave_request.notes !== request.originalData.notes;
+  }
+  
 
   hasSelected(): boolean {
     return this.leaveRequests.some(request => request.selected);

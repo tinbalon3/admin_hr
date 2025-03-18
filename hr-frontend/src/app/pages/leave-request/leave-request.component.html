@@ -32,17 +32,17 @@
           <tbody>
               <tr *ngFor="let request of leaveRequests" class="bg-gray-50">
                   <td class="py-3 px-4 border">
-                      <input type="checkbox" [disabled]="request.leave_request.status == 'PROCESSING'" [(ngModel)]="request.selected"/>
+                      <input type="checkbox"  [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.selected"/>
                   </td>
                   <td class="py-3 px-4 border">{{ request.employee?.full_name }}</td>
                   <td class="py-3 px-4 border">
-                      <input type="date" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.start_date" />
+                      <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.start_date" />
                   </td>
                   <td class="py-3 px-4 border">
-                      <input type="date" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.end_date" />
+                      <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.end_date" />
                   </td>
                   <td class="py-3 px-4 border">
-                      <input type="text" placeholder="Nhập ghi chú" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.notes" />
+                      <input type="text" placeholder="Nhập ghi chú" [disabled]="request.leave_request.status != 'PENDING'" class="border rounded px-2 py-1 w-full" [(ngModel)]="request.leave_request.notes" />
                   </td>
                   <td class="py-3 px-4 border text-center">
                     <span class="status-label" [ngClass]="{
@@ -55,10 +55,10 @@
                     </span>
                 </td>
                   <td class="py-3 px-4 border text-center">
-                      <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" (click)="deleteLeaveRequest(request)">Xóa</button>
+                      <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" [disabled]="request.leave_request.status != 'PENDING'" (click)="deleteLeaveRequest(request)">Xóa</button>
                   </td>
                   <td class="py-3 px-4 border text-center">
-                    <button class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" (click)="updateLeaveRequest(request)">Cập nhật</button>
+                    <button class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"  (click)="updateLeaveRequest(request)">Cập nhật</button>
                 </td>
               </tr>
           </tbody>
