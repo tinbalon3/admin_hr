@@ -203,6 +203,12 @@ class LeaveRequestService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Start date must be before end date"
             )
+        elif leave_data.start_date < date.today():
+                logger.error("start day is before today during edit")
+                raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="End date must be after today"
+                )
         elif leave_data.end_date < date.today():
             logger.error("End date is before today during edit")
             raise HTTPException(
