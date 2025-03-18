@@ -34,6 +34,7 @@ def send_email_endpoint(data: datamail, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Lỗi không xác định: {str(e)}"
         )
+
 @router.post("/sendmail_bulk", response_model=Sendmail)
 def send_email_bulk(
     data: List[datamail],
