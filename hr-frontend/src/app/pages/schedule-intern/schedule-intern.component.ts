@@ -4,7 +4,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ScheduleInternServiceService } from '../../services/schedule-intern-service.service';
+import { ScheduleInternService } from '../../services/schedule-intern-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { addDays } from 'date-fns';
@@ -24,7 +24,7 @@ interface ScheduleData {
     MatCheckboxModule,
     MatButtonModule,
     FormsModule,
-    CalendarComponent, JsonPipe
+    CalendarComponent
   ],
   templateUrl: './schedule-intern.component.html',
   styleUrl: './schedule-intern.component.css'
@@ -38,17 +38,6 @@ export class ScheduleInternComponent {
         title: 'Đã đăng kí',
       },
     },
-    {
-      date: addDays(new Date(), 1),
-      data: {
-        title: 'Đã đăng kí',
-      },
-    },
-    {
-      date: addDays(new Date(), 5),
-      data: {
-        title: 'Đã đăng kí',
-      },
-    },
+   
   ];
 }

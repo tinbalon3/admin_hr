@@ -17,7 +17,7 @@
           <thead class="bg-gray-200">
               <tr>
                   <th class="py-3 px-4 border">
-                      <input type="checkbox" (change)="toggleSelectAll($event)"/>
+                      <input style="width: 100%;height: 100%;" type="checkbox" (change)="toggleSelectAll($event)"/>
                   </th>
                   <th class="py-3 px-4 border text-center">Tên nhân viên</th>
                   <th class="py-3 px-4 border text-center">Ngày bắt đầu</th>
@@ -32,7 +32,7 @@
           <tbody>
               <tr *ngFor="let request of leaveRequests" class="bg-gray-50">
                   <td class="py-3 px-4 border">
-                      <input type="checkbox"  [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.selected"/>
+                      <input style="width: 100%;height: 100%;" type="checkbox"  [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.selected"/>
                   </td>
                   <td class="py-3 px-4 border">{{ request.employee?.full_name }}</td>
                   <td class="py-3 px-4 border">

@@ -1,19 +1,22 @@
 <div class="container mx-auto p-4">
   <div class="card shadow-sm rounded px-6 py-6 bg-white max-w-lg">
+    <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" (click)="onClose()">
+        &#10006;
+      </button>
     <h1 class="text-2xl font-semibold mb-4">Hồ Sơ Của Tôi</h1>
     <p class="text-gray-600 mb-6">Quản lý thông tin hồ sơ cá nhân</p>
 
     <form [formGroup]="profileForm">
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Họ và tên</label>
-            <input type="text" formControlName="fullname" class="w-full border border-gray-300 rounded px-3 py-2">
+            <input type="text" [attr.disabled]="true" formControlName="fullname" class="w-full border border-gray-300 rounded px-3 py-2">
         </div>
 
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Email</label>
             <div class="flex items-center">
                 <input type="email" formControlName="email" class="w-full border border-gray-300 rounded px-3 py-2" >
-                <button class="text-blue-600 ml-2" (click)="changeEmail()">Thay đổi</button>
+                <button class="text-blue-600 ml-2" >Thay đổi</button>
             </div>
         </div>
 

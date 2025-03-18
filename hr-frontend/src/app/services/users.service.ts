@@ -6,9 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UsersService {
-  private API_USER_UPDATED = 'http://127.0.0.1:8000/user'; // API endpoint
+
+  private API_USER_UPDATED = 'http://127.0.0.1:8000/user/update'; // API endpoint
 
   constructor(private http: HttpClient) {}
+
   updatedUser(data: any) :Observable<any> {
     const headers = new HttpHeaders({
           'Content-Type': 'application/json',
