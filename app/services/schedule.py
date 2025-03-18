@@ -1,13 +1,16 @@
 from fastapi import HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import datetime, date, timedelta
 from uuid import UUID
 from app.models.models import WorkSchedule, Employee
 from app.schemas.schedule import WorkScheduleOut,ListWorkScheduleResponse, WorkScheduleCreate,Response
 from app.utils.responses import ResponseHandler
-from app.core.security import check_intern
-
-
+from app.core.security import (
+    check_intern,
+    verify_token,
+    check_admin
+)
 
 class ScheduleService:
 #     ['
@@ -42,7 +45,8 @@ class ScheduleService:
         return work_days
 
     @staticmethod
-    def create_schedule(db: Session, token, schedule_data: WorkScheduleCreate):
+    def create_schedule(db: Session, token: HTTPAuthorizationCredentials, schedule_data: WorkScheduleCreate):
+        verify_token(token=token)
         user = check_intern(token, db)
         current_date = datetime.now().date()
         # Tự động tính tuần, tháng, năm
@@ -86,7 +90,9 @@ class ScheduleService:
         return ResponseHandler.success('Đăng ký thành công', data_response)
 
     @staticmethod
-    def getlist(db: Session, token):
+    def getlist(db: Session, token: HTTPAuthorizationCredentials):
+        verify_token(token=token)
+        check_admin(token=token,db=db)
         """Lấy danh sách lịch làm việc của tuần hiện tại các intern."""
         current_date = datetime.now().date()
 

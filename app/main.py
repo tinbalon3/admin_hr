@@ -1,32 +1,40 @@
-
+from app import logging_config
 from fastapi import FastAPI
-from app.routers import employee, auth, leavatype, leaveRequest, approval,schedule,sendmail        
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers import auth, employee, leavatype, leaveRequest, approval, schedule, sendmail
 
 app = FastAPI(
-    title="Test api App",
+    title="Test API App",
     swagger_ui_parameters={
         "syntaxHighlight.theme": "monokai",
         "layout": "BaseLayout",
         "filter": True,
         "tryItOutEnabled": True,
         "onComplete": "Ok"
-    },
-)
-# Cấu hình CORS cho Angular
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Cho phép frontend Angular
-    allow_credentials=True,
-    allow_methods=["*"],                      # Cho phép tất cả phương thức như GET, POST, PUT, DELETE
-    allow_headers=["*"],                      # Cho phép tất cả các header
+    }
 )
 
-app.include_router(auth.router)
-app.include_router(employee.router)
-app.include_router(leavatype.router)
-app.include_router(leaveRequest.router)
-app.include_router(approval.router)
-app.include_router(schedule.router)
-app.include_router(sendmail.router)
+# Cấu hình CORS cho Angular frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include tất cả các router
+routers = [auth.router, employee.router, leavatype.router, leaveRequest.router, approval.router, schedule.router, sendmail.router]
+for router in routers:
+    app.include_router(router)
+
+# Sự kiện startup: dùng để khởi tạo các kết nối, preload cache, v.v.
+@app.on_event("startup")
+async def startup_event():
+    print("Ứng dụng đang khởi động...")
+
+# Sự kiện shutdown: dùng để đóng các kết nối, dọn dẹp tài nguyên, v.v.
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("Ứng dụng đang tắt...")

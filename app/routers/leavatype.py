@@ -35,7 +35,7 @@ def edit_leave_type(
     return LeaveTypeService.edit(db, token, leaveTypes,id)
 
 @router.delete("/delete/{id}", response_model=LeaveTypeResponse)
-def edit_leave_type(
+def delete_leave_type(
         id: str,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):

@@ -7,87 +7,67 @@ import uuid
 class RoleEnum(str, Enum):
     EMPLOYEE = "EMPLOYEE"
     INTERN = "INTERN"
-# Base
-class BaseConfig:
-    from_attributes = True
 
+# Lớp cơ sở chung cho các model, giúp cấu hình mặc định
+class CustomBase(BaseModel):
+    class Config:
+        from_attributes = True
+        orm_mode = True
 
-class UserBase(BaseModel):
+# Các model dựa trên CustomBase để tránh lặp lại Config
+
+class UserBase(CustomBase):
     full_name: str
-    email: str
+    email: EmailStr
     password: str
     phone: str
     location: str
-    class Config(BaseConfig):
-        pass
 
 class AdminBase(UserBase):
     role: str
-    class Config(BaseConfig):
-        pass
-    
-class Signup(BaseModel):
+
+class Signup(CustomBase):
     full_name: str
-    email: str
+    email: EmailStr
     password: str
     phone: str
     location: str
 
-    class Config(BaseConfig):
-        pass
-
-class SignupAdmin(BaseModel):
+class SignupAdmin(CustomBase):
     full_name: str
-    email: str
+    email: EmailStr
     password: str
     phone: str
     role: RoleEnum
     location: str
 
-    class Config(BaseConfig):
-        pass
-
-class UserResponse(BaseModel):
+class UserResponse(CustomBase):
     message: str
     data: UserBase
 
-    class Config(BaseConfig):
-        pass
-
-
-class AdminResponse(BaseModel):
+class AdminResponse(CustomBase):
     message: str
     data: AdminBase
 
-    class Config(BaseConfig):
-        pass
-
-
-class userInfo(BaseModel):
+class userInfo(CustomBase):
     id: str
     full_name: str
-    email: str
+    email: EmailStr
     phone: str
     location: str
     role: str
 
-    class Config(BaseConfig):
-        pass
-
 # Token
-class TokenResponse(BaseModel):
+class TokenResponse(CustomBase):
     access_token: str
     refresh_token: str
     token_type: str = 'Bearer'
     expires_in: int
 
-class InfoToken(BaseModel):
+class InfoToken(CustomBase):
     user: userInfo
     token: TokenResponse
-    
 
-class LoginForm(BaseModel):
-    email: str
+class LoginForm(CustomBase):
+    email: EmailStr
     password: str
-    # otp_code: str | None = None  # Thêm mã OTP nếu có
-    # remember_me: bool = False
