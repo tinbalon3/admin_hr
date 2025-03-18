@@ -1913,3 +1913,22 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2025-03-18 14:33:50,107 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
 2025-03-18 14:33:50,107 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
 2025-03-18 14:33:50,108 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:54:29,383 - passlib.utils.compat - DEBUG - loaded lazy attr 'SafeConfigParser': <class 'configparser.ConfigParser'>
+2025-03-18 14:54:29,383 - passlib.utils.compat - DEBUG - loaded lazy attr 'NativeStringIO': <class '_io.StringIO'>
+2025-03-18 14:54:29,383 - passlib.utils.compat - DEBUG - loaded lazy attr 'BytesIO': <class '_io.BytesIO'>
+2025-03-18 14:54:29,398 - passlib.registry - DEBUG - registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+2025-03-18 14:54:59,590 - app.services.auth - INFO - Login attempt for email: admin@gmail.com
+2025-03-18 14:54:59,605 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "d:\Job\HR_PROJECT\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-03-18 14:54:59,607 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '<unknown>'
+2025-03-18 14:54:59,607 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2025-03-18 14:54:59,872 - app.core.security - DEBUG - Password verification result: True
+2025-03-18 14:54:59,873 - app.services.auth - INFO - User 86402609-d725-410e-95a8-9ec21e23ce2b authenticated successfully
+2025-03-18 14:54:59,875 - app.core.security - DEBUG - Access token created and encrypted
+2025-03-18 14:54:59,875 - app.core.security - DEBUG - Refresh token created
+2025-03-18 14:54:59,875 - app.core.security - INFO - Tokens generated for user 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:54:59,876 - app.services.auth - INFO - Token generated for user 86402609-d725-410e-95a8-9ec21e23ce2b

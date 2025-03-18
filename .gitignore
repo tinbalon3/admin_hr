@@ -21,6 +21,7 @@ site_build
 venv
 docs.zip
 archive.zip
+app/logs/app.log
 # alembic
 alembic/versions/
 .env
