@@ -42,8 +42,7 @@ import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
   styleUrls: ['./leave-request.component.css']
 })
 export class LeaveRequestComponent implements OnInit {
-  leaveRequests: LeaveRequest[] = [];
-  displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'status', 'type', 'actions', 'action'];
+  leaveRequests: any[] = [];  // Đảm bảo mảng không bị undefined
   leaveType: any;
   leave_type_id_change: any;
 
@@ -81,7 +80,11 @@ export class LeaveRequestComponent implements OnInit {
       console.log('leaveType', this.leaveType);
     });
   }
-
+  toggleSelectAll(event: any): void {
+    const isChecked = event.target.checked;
+    this.leaveRequests.forEach(request => request.selected = isChecked);
+  }
+  
   onLeaveTypeChange(element: any, selectedTypeId: string): void {
     this.leave_type_id_change = selectedTypeId;
     element.leave_type.id = selectedTypeId;
@@ -141,9 +144,38 @@ export class LeaveRequestComponent implements OnInit {
   }
 
   submitSelected(): void {
-    const selectedRequests = this.leaveRequests.filter(request => request.selected);
-    console.log('Selected Requests:', selectedRequests);
+    const selectedRequest = this.leaveRequests.find(request => request.selected);
+
+    if (!selectedRequest) {
+      console.log('No selected leave request.');
+      return;
+    }
+  
+    const formattedData = {
+      data: {
+        leave_request: {
+          id: selectedRequest.leave_request.id,
+          start_date: selectedRequest.leave_request.start_date,
+          end_date: selectedRequest.leave_request.end_date
+        },
+        employee: {
+          full_name: selectedRequest.employee.full_name,
+          email: selectedRequest.employee.email
+        },
+        leave_type: {
+          type_name: selectedRequest.leave_type.type_name
+        }
+      }
+    };
+  
+    console.log('Formatted Selected Requests:', formattedData);
+    this.leaveRequestService.sendLeaveRequestToAdmin(formattedData).subscribe({
+      next: () => {
+        this.snackBar.open('Gửi yêu cầu thành công!', 'Đóng', { duration: 3000 });
+      }
+    });
   }
+  
 }
 
 interface LeaveRequest {
