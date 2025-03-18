@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
 from typing import Optional, List
 
@@ -42,6 +42,19 @@ class UserUpdate(CustomBase):
     phone: Optional[str] = None
     password: Optional[str] = None
     password_new: Optional[str] = None
+    
+    
+    @validator("password")
+    def password_not_empty(cls, v):
+        if v is not None and v.strip() == "":
+            raise ValueError("Mật khẩu cũ không được để trống")
+        return v
+
+    @validator("password_new")
+    def password_new_not_empty(cls, v):
+        if v is not None and v.strip() == "":
+            raise ValueError("Mật khẩu mới không được để trống")
+        return v
 
 # Schema phản hồi khi xóa User
 class delete_user(CustomBase):

@@ -48,24 +48,26 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password: str) -> str:
     """Trả về chuỗi hash của mật khẩu bằng bcrypt."""
     hashed = pwd_context.hash(password)
-    # logger.debug("Password hashed")
+    logger.debug("Password hashed")
     return hashed
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Xác thực mật khẩu gốc với chuỗi hashed."""
     result = pwd_context.verify(plain_password, hashed_password)
-    # logger.debug("Password verification result: %s", result)
+    logger.debug("Password verification result: %s", result)
     return result
+
+
 
 # --- Email Validation ---
 def verify_Email(email: str) -> bool:
     """Kiểm tra xem email có hợp lệ hay không."""
     try:
         validate_email(email, check_deliverability=False)
-        # logger.debug("Email is valid")
+        logger.debug("Email is valid")
         return True
     except EmailNotValidError:
-        # logger.error("Invalid email: %s", email)
+        logger.error("Invalid email: %s", email)
         raise HTTPException(status_code=403, detail="Email không hợp lệ.")
 
 # --- Token Generation ---
