@@ -40,7 +40,7 @@ export class LeaveRequestService {
     return this.http.get(this.API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN, { headers });
   }
   updateLeaveRequest(id: string, leaveRequest: any): Observable<any> {
-    console.log('leaveRequest', leaveRequest);
+    
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });

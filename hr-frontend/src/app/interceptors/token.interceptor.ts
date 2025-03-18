@@ -8,7 +8,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
   const authService = inject(AuthService);
 
   const token = authService.getToken();
-  console.log('loginService', token);
   let authReq = req;
 
   if (token) {
@@ -23,7 +22,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         console.error('Lỗi 401 - Unauthorized');
-      } else if (error.status === 0) {
+      } else  {
         console.error('Lỗi CORS hoặc mất kết nối:', error);
       }
       return throwError(() => error);

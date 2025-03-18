@@ -24,13 +24,15 @@
                   <th class="py-3 px-4 border text-center">Ngày kết thúc</th>
                   <th class="py-3 px-4 border text-center">Ghi chú</th>
                   <th class="py-3 px-4 border text-center">Trạng thái</th>
-                  <th class="py-3 px-4 border text-center">Hành động</th>
+                  <th class="py-3 px-4 border text-center">Xoá đơn</th>
+                  <th class="py-3 px-4 border text-center">Cập nhật</th>
+
               </tr>
           </thead>
           <tbody>
               <tr *ngFor="let request of leaveRequests" class="bg-gray-50">
                   <td class="py-3 px-4 border">
-                      <input type="checkbox" [(ngModel)]="request.selected"/>
+                      <input type="checkbox" [disabled]="request.leave_request.status == 'PROCESSING'" [(ngModel)]="request.selected"/>
                   </td>
                   <td class="py-3 px-4 border">{{ request.employee?.full_name }}</td>
                   <td class="py-3 px-4 border">
@@ -55,6 +57,9 @@
                   <td class="py-3 px-4 border text-center">
                       <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" (click)="deleteLeaveRequest(request)">Xóa</button>
                   </td>
+                  <td class="py-3 px-4 border text-center">
+                    <button class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" (click)="updateLeaveRequest(request)">Cập nhật</button>
+                </td>
               </tr>
           </tbody>
       </table>

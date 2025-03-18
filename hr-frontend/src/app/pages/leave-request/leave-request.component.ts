@@ -64,7 +64,6 @@ export class LeaveRequestComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log('Dialog đã đóng và gửi dữ liệu:', result);
         this.leaveRequestService.createLeaveRequest(result).subscribe((data: any) => {
           this.fetchLeaveRequestUsers();
         });
@@ -82,14 +81,17 @@ export class LeaveRequestComponent implements OnInit {
   }
   toggleSelectAll(event: any): void {
     const isChecked = event.target.checked;
-    this.leaveRequests.forEach(request => request.selected = isChecked);
+    this.leaveRequests.forEach(request => {
+      if (request.leave_request.status === 'PENDING') {
+        request.selected = isChecked;
+      }
+      });
   }
   
   onLeaveTypeChange(element: any, selectedTypeId: string): void {
     this.leave_type_id_change = selectedTypeId;
     element.leave_type.id = selectedTypeId;
-    console.log('ID Loại nghỉ phép đã chọn:', this.leave_type_id_change);
-    console.log('Element đã cập nhật:', element);
+   
   }
   performAction(element: any): void {
     if (element.selectedAction === 'update') {
@@ -135,7 +137,6 @@ export class LeaveRequestComponent implements OnInit {
   fetchLeaveRequestUsers(): void {
     this.leaveRequestService.getListLeaveRequestUser().subscribe((data: any) => {
       this.leaveRequests = data.data;
-      console.log('leaveRequests', this.leaveRequests);
     });
   }
 
@@ -147,7 +148,6 @@ export class LeaveRequestComponent implements OnInit {
     const selectedRequest = this.leaveRequests.find(request => request.selected);
 
     if (!selectedRequest) {
-      console.log('No selected leave request.');
       return;
     }
   
@@ -168,10 +168,11 @@ export class LeaveRequestComponent implements OnInit {
       }
     };
   
-    console.log('Formatted Selected Requests:', formattedData);
+
     this.leaveRequestService.sendLeaveRequestToAdmin(formattedData).subscribe({
       next: () => {
         this.snackBar.open('Gửi yêu cầu thành công!', 'Đóng', { duration: 3000 });
+        this.fetchLeaveRequestUsers();
       }
     });
   }

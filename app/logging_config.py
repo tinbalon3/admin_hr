@@ -2,11 +2,12 @@ import os
 import logging
 
 # Xác định đường dẫn đến thư mục logs (tùy chỉnh theo cấu trúc dự án của bạn)
-log_dir = os.path.join(os.path.dirname(__file__), "./logs")
+log_dir = os.path.join(os.path.dirname(__file__), "logs")
+print(log_dir)
 os.makedirs(log_dir, exist_ok=True)  # Tạo thư mục nếu chưa tồn tại
 
 log_file = os.path.join(log_dir, "app.log")
-
+print("log_file",log_file)
 # Cấu hình logger gốc
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)

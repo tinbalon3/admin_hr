@@ -28,7 +28,6 @@ def getListRequestForAdmin(
 
 @router.post("/create", response_model=LeaveRequestResponse, status_code=201)
 def create_leave_type(
-       
         leave_request: LeaveRequestFormchange,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):

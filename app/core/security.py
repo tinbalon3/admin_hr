@@ -31,23 +31,30 @@ def get_and_print_token(token):
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 if not logger.handlers:
-    handler = logging.FileHandler("../logs/app.log")
+    import os
+    log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, "app.log")
+    handler = logging.FileHandler(log_file, encoding="utf-8")
+
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+else:
+    print("hello world")
 # --- Password Hashing ---
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
     """Trả về chuỗi hash của mật khẩu bằng bcrypt."""
     hashed = pwd_context.hash(password)
-    logger.debug("Password hashed")
+    # logger.debug("Password hashed")
     return hashed
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Xác thực mật khẩu gốc với chuỗi hashed."""
     result = pwd_context.verify(plain_password, hashed_password)
-    logger.debug("Password verification result: %s", result)
+    # logger.debug("Password verification result: %s", result)
     return result
 
 # --- Email Validation ---
@@ -55,10 +62,10 @@ def verify_Email(email: str) -> bool:
     """Kiểm tra xem email có hợp lệ hay không."""
     try:
         validate_email(email, check_deliverability=False)
-        logger.debug("Email is valid")
+        # logger.debug("Email is valid")
         return True
     except EmailNotValidError:
-        logger.error("Invalid email: %s", email)
+        # logger.error("Invalid email: %s", email)
         raise HTTPException(status_code=403, detail="Email không hợp lệ.")
 
 # --- Token Generation ---
@@ -72,7 +79,7 @@ async def get_user_token(id: uuid.UUID, refresh_token: str = None) -> TokenRespo
     access_token = await create_access_token(payload, access_token_expiry)
     if not refresh_token:
         refresh_token = await create_refresh_token(payload)
-    logger.info("Tokens generated for user %s", id)
+    # logger.info("Tokens generated for user %s", id)
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
@@ -89,13 +96,13 @@ async def create_access_token(data: dict, access_token_expiry: timedelta = None)
     })
     token = jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
     encrypted_jwt = fernet.encrypt(token.encode())
-    logger.debug("Access token created and encrypted")
+    # logger.debug("Access token created and encrypted")
     return encrypted_jwt
 
 async def create_refresh_token(data: dict) -> str:
     """Tạo refresh token bằng JWT (không mã hoá bằng Fernet)."""
     token = jwt.encode(data, settings.secret_key, settings.algorithm)
-    logger.debug("Refresh token created")
+    # logger.debug("Refresh token created")
     return token
 
 # --- Token Decoding ---
@@ -108,7 +115,7 @@ def get_token_payload(token: str) -> dict:
         decrypted_jwt = fernet.decrypt(token).decode()
         print(decrypted_jwt)
         payload = jwt.decode(decrypted_jwt, settings.secret_key, [settings.algorithm])
-        logger.debug("Token payload successfully decoded")
+        # logger.debug("Token payload successfully decoded")
         return payload
     except ExpiredSignatureError:
         logger.error("Token has expired")

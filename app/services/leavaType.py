@@ -14,11 +14,15 @@ from app.core.security import  (
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 if not logger.handlers:
-    ch = logging.StreamHandler()  # Có thể thay bằng FileHandler nếu cần ghi log vào file
-    ch.setLevel(logging.DEBUG)
+    import os
+    log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, "app.log")
+    handler = logging.FileHandler(log_file, encoding="utf-8")
+
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 class LeaveTypeService:
     @staticmethod
