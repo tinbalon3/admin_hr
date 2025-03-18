@@ -105,6 +105,17 @@ class ScheduleService:
         )
     @staticmethod
     def user_get_list_in_month(db: Session, month: str, token: HTTPAuthorizationCredentials) -> ListWorkScheduleResponse:
+        
+        try:
+            month_int = int(month)
+            if month_int < 1 or month_int > 12:
+                raise ValueError()
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Tháng không hợp lệ. Vui lòng nhập số từ 1 đến 12."
+            )
+        
         # Kiểm tra token và quyền admin
         verify_token(token=token)
         employee = check_user_exist(token=token, db=db)
