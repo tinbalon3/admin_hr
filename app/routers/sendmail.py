@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.schemas.sendmail import datamail, Sendmail
 from app.services.sendmail import send_leave_request_email
@@ -33,3 +34,22 @@ def send_email_endpoint(data: datamail, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Lỗi không xác định: {str(e)}"
         )
+@router.post("/sendmail_bulk", response_model=Sendmail)
+def send_email_bulk(
+    data: List[datamail],
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """
+    Nhận danh sách datamail và gửi email cho từng phần tử trong danh sách.
+    Các email sẽ được gửi ở chế độ nền (background) và phản hồi ngay lập tức cho client.
+    """
+    for item in data:
+        # Chuyển đổi dữ liệu từ model (đảm bảo rằng các sub-field đều có phương thức model_dump)
+        leave_request = item.data.leave_request.dict()
+        employee = item.data.employee.dict() if item.data.employee else {}
+        leave_type = item.data.leave_type.dict() if item.data.leave_type else {}
+
+        background_tasks.add_task(send_leave_request_email, db, leave_request, employee, leave_type)
+    
+    return {"messeger": "Các email đang được gửi"}

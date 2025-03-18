@@ -21,7 +21,6 @@ site_build
 venv
 docs.zip
 archive.zip
-/logs/
 *.log
 # alembic
 alembic/versions/
