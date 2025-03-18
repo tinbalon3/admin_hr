@@ -215,7 +215,7 @@ class LeaveRequestService:
                 detail="Đơn đã được giải quyết, bạn không thể thay đổi"
             )
         leave_data_dict = leave_data.model_dump(exclude_none=True)
-        logger.debug(f"Updating leave request {id} with data: {json.dumps(leave_data_dict)}")
+        logger.debug(f"Updating leave request {id} ")
         for key, value in leave_data_dict.items():
             setattr(leaveRequest, key, value)
         db.commit()
