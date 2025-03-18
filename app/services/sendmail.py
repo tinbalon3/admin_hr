@@ -20,8 +20,7 @@ def send_leave_request_email(db: Session,leave_request: dict, employee: dict, le
     
     # Cập nhật trạng thái thành "PROCESSING"
     leave_request_db.status = "PROCESSING"
-    db.commit()
-    db.refresh(leave_request_db)
+   
     
     sender_email = settings.SENDER_EMAIL       # Thay bằng email của bạn
     password = settings.SENDER_PASSWORD        # Thay bằng App Password của bạn
@@ -60,6 +59,10 @@ def send_leave_request_email(db: Session,leave_request: dict, employee: dict, le
             server.login(sender_email, password)
             server.send_message(msg)
             sendtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            db.commit()
+            db.refresh(leave_request_db)
             return {"messeger": f"Email đã được gửi thành công đến {receiver_email}!", 'sendtime': sendtime}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi gửi email: {str(e)}")
+    
+    
