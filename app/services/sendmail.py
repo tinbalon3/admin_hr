@@ -37,7 +37,7 @@ def send_leave_request_email(db: Session,leave_request: dict, employee: dict, le
     body = f"""\
     Xin chào {employee_name},
 
-    Dưới đây là thông tin yêu cầu nghỉ phép của bạn đã được duyệt:
+    Dưới đây là thông tin yêu cầu nghỉ phép của nhân viên:
 
     - Tên nhân viên: {employee_name}
     - Email nhân viên: {employee["email"]}

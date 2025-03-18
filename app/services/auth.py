@@ -1,35 +1,57 @@
-from fastapi import HTTPException, Depends, status
-from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import uuid
+from datetime import datetime
+import logging
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status, Depends
+
 from app.models.models import Employee
 from app.db.database import get_db
 from app.db.redis import redis_client
-from app.core.security import verify_password, get_user_token, get_token_payload, verify_Email, check_admin
-from app.core.security import get_password_hash,get_token_payload
+from app.core.security import (
+    verify_password,
+    get_user_token,
+    get_token_payload,
+    verify_Email,
+    check_admin,
+    get_password_hash,
+)
+from fastapi.security import HTTPAuthorizationCredentials
 from app.utils.responses import ResponseHandler
-from app.schemas.auth import Signup, LoginForm,userInfo,InfoToken,SignupAdmin
-import uuid
-from datetime import datetime
+from app.schemas.auth import Signup, LoginForm, userInfo, InfoToken, SignupAdmin
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+# Setup logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    ch = logging.StreamHandler()  # Console handler; thay thế bằng FileHandler nếu cần ghi file log
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
 
 class AuthService:
     @staticmethod
-    async def login(user_credentials: LoginForm = Depends(), db: Session = Depends(get_db)):
+    async def login(user_credentials: LoginForm = None, db: Session = Depends(get_db)):
+        logger.info(f"Login attempt for email: {user_credentials.email}")
         user = db.query(Employee).filter(Employee.email == user_credentials.email).first()
         if not user:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
-        else:
-            if not verify_password(user_credentials.password, user.password):
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email or password incorrect")
-         # Tạo dữ liệu cho TokenResponse
+            logger.error(f"User not found: {user_credentials.email}")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Không tìm thấy người dùng"
+            )
+        if not verify_password(user_credentials.password, user.password):
+            logger.error(f"Invalid password for user: {user_credentials.email}")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email hoặc mật khẩu không đúng"
+            )
+        logger.info(f"User {user.id} authenticated successfully")
+        
+        # Generate token data
         token_data = await get_user_token(user.id)
-
-        # Chuyển đổi dữ liệu người dùng
-
-        # Chuyển đổi dữ liệu người dùng
+        
+        # Convert user data to schema userInfo
         user_data = userInfo.model_validate({
             "id": str(user.id),
             "full_name": user.full_name,
@@ -38,75 +60,75 @@ class AuthService:
             "location": user.location,
             "role": user.role
         })
-
-        # Gộp dữ liệu vào InfoToken
+        
         info_token = InfoToken(
             user=user_data,
-            token=token_data  # Sử dụng token_data đúng kiểu
+            token=token_data
         )
-
+        logger.info(f"Token generated for user {user.id}")
         return info_token
 
     @staticmethod
     async def signup(db: Session, user: Signup):
+        logger.info(f"Signup attempt for email: {user.email}")
         verify_Email(user.email)
         if db.query(Employee).filter(Employee.email == user.email).first():
+            logger.warning(f"User already exists: {user.email}")
             raise ResponseHandler.userExists()
-        else:
-            hashed_password = get_password_hash(user.password)
-            user.password = hashed_password
-            db_user = Employee(id=uuid.uuid4(), **user.model_dump())
-            db.add(db_user)
-            db.commit()
-            db.refresh(db_user)
+        hashed_password = get_password_hash(user.password)
+        user.password = hashed_password
+        db_user = Employee(id=uuid.uuid4(), **user.model_dump())
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        logger.info(f"User signed up successfully with id: {db_user.id}")
         return ResponseHandler.create_success(db_user.full_name, db_user.id, db_user)
 
     @staticmethod
-    async def get_refresh_token(token, db: Session):
-        payload = get_token_payload(token)
+    async def get_refresh_token(token: HTTPAuthorizationCredentials, db: Session):
+        logger.info("Refresh token request received")
+        payload = get_token_payload(token.credentials)
         user_id = payload.get('id', None)
         if not user_id:
+            logger.error("User ID not found in token payload")
             raise ResponseHandler.invalid_token('refresh')
-
-        user = db.query(Employee).filter(Employee.email == user.email).first()
+        user = db.query(Employee).filter(Employee.id == user_id).first()
         if not user:
+            logger.error(f"User not found for id: {user_id}")
             raise ResponseHandler.invalid_token('refresh')
-
+        logger.info(f"Refreshing token for user {user_id}")
         return await get_user_token(id=user.id, refresh_token=token)
     
     @staticmethod
     async def signup_admin(db: Session, user: SignupAdmin, token):
+        logger.info(f"Admin signup attempt for email: {user.email}")
         verify_Email(user.email)
-        check_admin(token,db)
+        check_admin(token, db)
         if db.query(Employee).filter(Employee.email == user.email).first():
+            logger.warning(f"Admin user already exists: {user.email}")
             raise ResponseHandler.userExists()
-        else:
-            hashed_password = get_password_hash(user.password)
-            user.password = hashed_password
-            db_user = Employee(id=uuid.uuid4(), **user.model_dump())
-            db.add(db_user)
-            db.commit()
-            db.refresh(db_user)
+        hashed_password = get_password_hash(user.password)
+        user.password = hashed_password
+        db_user = Employee(id=uuid.uuid4(), **user.model_dump())
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        logger.info(f"Admin user signed up successfully with id: {db_user.id}")
         return ResponseHandler.create_success(db_user.full_name, db_user.id, db_user)
     
     @staticmethod
-    def logout(token):
-        try:
-            # Giải mã token để lấy thời gian hết hạn (exp)
-            payload = get_token_payload(token=token)
-            exp = payload.get("exp")
-            if exp is None:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token.")
-
-            # Tính thời gian sống còn lại của token
-            expire_time = datetime.utcfromtimestamp(exp) - datetime.utcnow()
-            ttl = int(expire_time.total_seconds())
-
-            # Lưu token vào Redis với TTL tương ứng
-            redis_client.set(token, ttl, "blacklisted")
-            
-            return {"message": "Logout successful."}
-        except Exception:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token or already expired.")
-    
- 
+    def logout(token: HTTPAuthorizationCredentials):
+        logger.info("Logout request received")
+        payload = get_token_payload(token.credentials)
+        exp = payload.get("exp")
+        if exp is None:
+                logger.error("Expiration time not found in token")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Token không hợp lệ."
+                )
+        expire_time = datetime.utcfromtimestamp(exp) - datetime.utcnow()
+        ttl = int(expire_time.total_seconds())
+        redis_client.set(token.credentials, "blacklisted", ex=ttl)
+        logger.info("Token successfully blacklisted")
+        return {"message": "Đăng xuất thành công."}

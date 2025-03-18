@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     db_hostname: str
     db_port: str
     db_name: str
+    environment: str = "development"  # Mặc định là development
 
     # JWT Config
     secret_key: str
