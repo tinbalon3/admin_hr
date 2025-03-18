@@ -1,23 +1,23 @@
-from pydantic import BaseModel, Field, validator
+# app/schemas/schedule.py
+
+from pydantic import BaseModel, Field
 from typing import List
 from uuid import UUID
-from datetime import datetime
+from datetime import date, datetime
 from app.schemas.employee import UserInfo
+from typing import List, Optional
 
 class WorkDay(BaseModel):
-    day_of_week: str = Field(..., description="Day of the week (e.g., 2 for Monday, 3 for Tuesday)")
-
-    @validator("day_of_week")
-    def validate_day_of_week(cls, value):
-        valid_days = ["2", "3", "4", "5", "6"]
-        if value not in valid_days:
-            raise ValueError(f"{value} is not a valid day of the week. Valid options are: {valid_days}")
-        return value
+    day_of_week: date 
+    note: Optional[str] = None
+    class Config:
+        orm_mode = True
 
 class WorkScheduleCreate(BaseModel):
-    work_days: List[WorkDay]
+    work_days: List[WorkDay]  # Danh sách các ngày làm việc
+
     class Config:
-        orm_mode = True 
+        orm_mode = True
 
 class WorkScheduleOut(WorkScheduleCreate):
     id: UUID
@@ -25,20 +25,24 @@ class WorkScheduleOut(WorkScheduleCreate):
 
     class Config:
         orm_mode = True
-        from_attributes=True
-    
+        from_attributes = True
+
 class WorkScheduleResponse(BaseModel):
     message: str
-    data : WorkScheduleOut
+    data: WorkScheduleOut
 
 class Response(BaseModel):
     schedule: WorkScheduleOut
     employee: UserInfo
-    
+
+class Response(BaseModel):
+    schedule: WorkScheduleOut
+    employee: UserInfo
+
 class ListWorkScheduleResponse(BaseModel):
     message: str
     data: list[Response]
-    
+
     class Config:
         orm_mode = True
-        from_attributes=True
+        from_attributes = True

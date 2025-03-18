@@ -31,3 +31,16 @@ def get_current_week_schedule(token: HTTPAuthorizationCredentials = Depends(auth
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/user/list", response_model=ListWorkScheduleResponse, status_code=status.HTTP_200_OK)
+def get_schedule_in_month(month: str,
+                          token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+                          db: Session = Depends(get_db)):
+    try:
+        schedule = ScheduleService.user_get_list_in_month(db,month, token)
+        return schedule
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
