@@ -172,7 +172,7 @@ class LeaveRequestService:
         verify_token(token)
         user_id = get_current_user(token=token)
         logger.info(f"User {user_id} is editing leave request {id}")
-        employee = check_user(token, db) or check_intern(token, db)
+        employee = check_user_exist(token, db)
         leaveRequest = db.query(LeaveRequest).filter(
             LeaveRequest.id == id,
             LeaveRequest.employee_id == user_id

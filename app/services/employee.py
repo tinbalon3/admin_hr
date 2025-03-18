@@ -28,7 +28,7 @@ if not logger.handlers:
 class EmployeeService:
     @staticmethod
     def get_my_info(db: Session, token: HTTPAuthorizationCredentials):
-        # verify_token(token)
+        verify_token(token)
         logger.info("Fetching user info")
         user_id = get_token_payload(token.credentials).get('id')
         logger.debug(f"Extracted user ID: {user_id}")
