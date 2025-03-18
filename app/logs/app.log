@@ -1693,3 +1693,223 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2025-03-18 14:30:31,021 - passlib.utils.compat - DEBUG - loaded lazy attr 'NativeStringIO': <class '_io.StringIO'>
 2025-03-18 14:30:31,021 - passlib.utils.compat - DEBUG - loaded lazy attr 'BytesIO': <class '_io.BytesIO'>
 2025-03-18 14:30:31,035 - passlib.registry - DEBUG - registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+2025-03-18 14:31:33,730 - passlib.utils.compat - DEBUG - loaded lazy attr 'SafeConfigParser': <class 'configparser.ConfigParser'>
+2025-03-18 14:31:33,730 - passlib.utils.compat - DEBUG - loaded lazy attr 'NativeStringIO': <class '_io.StringIO'>
+2025-03-18 14:31:33,730 - passlib.utils.compat - DEBUG - loaded lazy attr 'BytesIO': <class '_io.BytesIO'>
+2025-03-18 14:31:33,756 - passlib.registry - DEBUG - registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+2025-03-18 14:31:35,926 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:35,929 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:35,946 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:35,946 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:35,946 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:35,947 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:35,948 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:35,948 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:35,950 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:40,728 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:40,729 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:40,731 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:40,731 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:40,731 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:40,732 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:40,732 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:40,732 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:40,733 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:41,472 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:41,473 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:41,475 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,475 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,475 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:41,476 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:41,476 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,476 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,477 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:41,983 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:41,984 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:41,986 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,986 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,986 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:41,986 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:41,986 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,986 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:41,987 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:42,145 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:42,146 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,147 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,147 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,147 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:42,147 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,147 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,147 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,148 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:42,301 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:42,302 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,304 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,304 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,304 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:42,305 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,305 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,305 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,306 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:42,457 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:42,459 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,460 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,460 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,460 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:42,462 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:42,462 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,462 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:42,464 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,128 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,129 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,131 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,131 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,131 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,132 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,132 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,132 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,133 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,285 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,286 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,288 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,288 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,288 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,289 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,289 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,289 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,290 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,444 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,445 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,447 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,447 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,447 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,448 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,448 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,448 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,450 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,599 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,600 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,601 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,601 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,601 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,603 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,603 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,603 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,605 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,756 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,757 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,759 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,759 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,759 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,760 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,760 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,760 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,762 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:31:43,910 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:31:43,910 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,912 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,912 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,912 - app.services.employee - INFO - Listing all users
+2025-03-18 14:31:43,913 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:31:43,913 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,913 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:31:43,915 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:32:14,424 - app.services.auth - INFO - Logout request received
+2025-03-18 14:32:14,425 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:32:14,433 - app.services.auth - INFO - Token successfully blacklisted
+2025-03-18 14:32:20,008 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:20,008 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:23,992 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:23,992 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:24,161 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:24,161 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:24,434 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:24,435 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:24,593 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:24,593 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:24,739 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:24,739 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:24,886 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:24,886 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:25,036 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:25,036 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:25,545 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:25,546 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:25,709 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:25,709 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:25,868 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:25,868 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:26,033 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:26,034 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:26,185 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:26,185 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:26,339 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:26,339 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:26,613 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:26,613 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:26,787 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:26,787 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:27,088 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:27,088 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:27,240 - app.core.security - DEBUG - verify_token blacklisted
+2025-03-18 14:32:27,240 - app.core.security - WARNING - Token is blacklisted
+2025-03-18 14:32:32,376 - app.services.auth - INFO - Login attempt for email: admin@gmail.com
+2025-03-18 14:32:32,380 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "d:\Job\HR_PROJECT\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-03-18 14:32:32,381 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '<unknown>'
+2025-03-18 14:32:32,381 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2025-03-18 14:32:32,659 - app.core.security - DEBUG - Password verification result: True
+2025-03-18 14:32:32,659 - app.services.auth - INFO - User 86402609-d725-410e-95a8-9ec21e23ce2b authenticated successfully
+2025-03-18 14:32:32,659 - app.core.security - DEBUG - Access token created and encrypted
+2025-03-18 14:32:32,659 - app.core.security - DEBUG - Refresh token created
+2025-03-18 14:32:32,660 - app.core.security - INFO - Tokens generated for user 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:32:32,660 - app.services.auth - INFO - Token generated for user 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:47,065 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:33:47,066 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:47,068 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:47,068 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:47,068 - app.services.employee - INFO - Listing all users
+2025-03-18 14:33:47,069 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:47,069 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:47,069 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:47,071 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:33:48,868 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:33:48,869 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:48,872 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:48,872 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:48,872 - app.services.employee - INFO - Listing all users
+2025-03-18 14:33:48,874 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:48,875 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:48,875 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:48,877 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:33:49,071 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:33:49,072 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:49,074 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,074 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,074 - app.services.employee - INFO - Listing all users
+2025-03-18 14:33:49,075 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:49,075 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,075 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,076 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:33:49,243 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:33:49,244 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:49,246 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,246 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,246 - app.services.employee - INFO - Listing all users
+2025-03-18 14:33:49,247 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:49,247 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,247 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:49,249 - app.services.employee - INFO - User list retrieved successfully
+2025-03-18 14:33:50,104 - app.core.security - DEBUG - verify_token None
+2025-03-18 14:33:50,105 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:50,106 - app.core.security - DEBUG - User fetched from DB: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:50,106 - app.core.security - DEBUG - Admin user validated: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:50,106 - app.services.employee - INFO - Listing all users
+2025-03-18 14:33:50,107 - app.core.security - DEBUG - Token payload successfully decoded
+2025-03-18 14:33:50,107 - app.core.security - DEBUG - Current user id extracted: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:50,107 - app.services.employee - DEBUG - Admin ID: 86402609-d725-410e-95a8-9ec21e23ce2b
+2025-03-18 14:33:50,108 - app.services.employee - INFO - User list retrieved successfully
