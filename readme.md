@@ -1,150 +1,226 @@
-# Clone code from the original repository
+# Admin HR System
 
-1. Clone the Repository and Navigate to the Project Directory
+## Overview
+The Admin HR System project provides a comprehensive backend built with FastAPI and a frontend for managing HR-related tasks. This guide will help you set up and run both parts of the application.
 
+## Table of Contents
+- [Backend Setup](#backend-setup)
+  - [Clone Repository](#clone-repository)
+  - [Virtual Environment and Package Installation](#virtual-environment-and-package-installation)
+  - [Environment Variables (.env)](#environment-variables-env)
+  - [Database and Alembic Migration](#database-and-alembic-migration)
+  - [Running the FastAPI Server](#running-the-fastapi-server)
+- [Frontend Setup](#frontend-setup)
+  - [Navigate to the Frontend Directory](#navigate-to-the-frontend-directory)
+  - [Install Frontend Packages](#install-frontend-packages)
+  - [Running the Frontend Application](#running-the-frontend-application)
+
+---
+
+## Backend Setup
+
+### 1. Clone Repository
+Clone the repository and navigate to the project directory:
+
+```bash
 git clone https://github.com/SCGROUPS/admin_hr.git
-
 cd admin_hr
+```
 
+---
 
-# ============================================  BACKEND ============================================== #
+### 2. Virtual Environment and Package Installation
 
-2. Create a Virtual Environment and Install Packages
+#### Create and Activate the Virtual Environment
 
-# Activate the virtual environment:
+- **For macOS/Linux:**
+  ```bash
+  python -m venv venv
+  source venv/bin/activate
+  ```
 
-For macOS/Linux:
+- **For Windows:**
+  ```bash
+  python -m venv venv
+  venv\Scripts\activate
+  ```
 
-source venv/bin/activate
+#### Install the Required Packages
 
-For Windows:
-
-venv\Scripts\activate
-
-# Install the required packages:
-
+```bash
 pip install -r requirements.txt
+```
 
+---
 
-3. Configure the .env File
+### 3. Environment Variables (.env)
+Create a `.env` file in the project root and add the following configuration details:
 
-Create a .env file in the project root and add the following configuration details:
-
-# Database Config
-
+```dotenv
+# Database Configuration
 DB_USERNAME=YOUR_DATABASE_USER
-
 DB_PASSWORD=YOUR_DATABASE_PASSWORD
-
 DB_HOSTNAME=localhost
-
 DB_PORT=YOUR_DATABASE_PORT
-
 DB_NAME=YOUR_DATABASE_NAME
-
 DATABASE_URL=postgresql://user:password@localhost/db_name
 
-
-# JWT Config
-
+# JWT Configuration
 SECRET_KEY=supersecretkey123
-
 ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+FERNET_SECRET_KEY=yoursecretkey
 
-ACCESS_TOKEN_EXPIRE_MINUTES= 30
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379  # default Redis port is 6379
+REDIS_DB=0
 
-FERNET_SECRET_KEY = yoursecretkey
+# SMTP Configuration
+SENDER_EMAIL="your_email@example.com"  # Replace with your system email
+SENDER_PASSWORD="your_app_password"     # Use an app password if required
+RECEIVER_EMAIL="hr_email@example.com"   # Replace with HR email
+```
 
-# Redis Config
+---
 
-REDIS_HOST = localhost
+### 4. Database and Alembic Migration
 
-REDIS_PORT = 6379 || note: default port for Redis is 6379
+#### Initialize Alembic
 
-REDIS_DB = 0
+Run the following command to initialize Alembic:
 
-# Smtp Config 
-
-SENDER_EMAIL = "nguyenkiettuan1@gmail.com" || replace mail of systeam
-
-SENDER_PASSWORD = "ukkwoibeiwqyygui" || you need login, in the security search for app password to create a new password 
-
-RECEIVER_EMAIL = "tinbalon3@gmail.com" || replace HR mail
-
-# Configure the Database & Alembic
-
-4. Initialize Alembic:
-
+```bash
 alembic init alembic
+```
 
-* Verify the Alembic Directory Structure:
+#### Verify Alembic Directory Structure
 
-Create the versions folder if it doesn't already exist
+Ensure that the `alembic/versions` folder exists:
 
-mkdir alembic/versions  # Đảm bảo thư mục chứa migration đã tồn tại
+```bash
+mkdir -p alembic/versions
+ls alembic
+```
 
-* Check the structure of the alembic directory:
+Expected structure:
+- `alembic.ini`
+- `env.py`
+- `script.py.mako`
+- `versions/` (folder for migration files)
 
-ls alembic  # Kiểm tra các file đã tạo
+#### Configure Alembic
 
-* The expected structure includes:
+Open the `alembic/env.py` file and update it to import your models and configuration. For example:
 
-alembic.ini
-
-env.py
-
-script.py.mako
-
-versions/   # Chứa các migration files
-
-Note: after ini alembic, you open file env.py and add config, database, models.
-
-Example with this project : 
-from app.models.models import Employee, LeaveType, LeaveRequest, Approval,WorkSchedule  # Import all models
-
+```python
+from logging.config import fileConfig
+from sqlalchemy import engine_from_config, pool
+from alembic import context
+from app.models.models import Employee, LeaveType, LeaveRequest, Approval, WorkSchedule  # Import all models
 from app.core.config import settings
-
 from app.db.database import Base
+
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
-5. Create and Apply a Migration:
+def run_migrations_offline() -> None:
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+    with context.begin_transaction():
+        context.run_migrations()
 
-Generate an initial migration automatically:
+def run_migrations_online() -> None:
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    with connectable.connect() as connection:
+        context.configure(connection=connection, target_metadata=target_metadata)
+        with context.begin_transaction():
+            context.run_migrations()
 
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+```
+
+#### Create and Apply a Migration
+
+Generate an initial migration:
+
+```bash
 alembic revision --autogenerate -m "Initial Migration"
+```
 
-Apply the migration to update your database
+Apply the migration to update your database:
 
+```bash
 alembic upgrade head
+```
 
+After these steps, your database will be updated with the latest migrations.
 
-After these steps, your database should be updated with the latest migrations.
+---
 
-6. Run FastAPI
+### 5. Running the FastAPI Server
 
-For Windows:
-
+#### For Windows:
+```bash
 python main.py --reload
+```
 
-For Linux/macOS:
+#### For Linux/macOS:
+```bash
+python3 main.py --reload
+```
 
-python3 main.py --reload (linux)
+Once running, FastAPI will be accessible at:
 
-Once the server is running, FastAPI will be accessible at:
+- **API Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-API Docs: http://127.0.0.1:8000/docs
+---
 
-# ============================================  Frontend ============================================== #
+## Frontend Setup
 
-1. accept to folder frontend with name hr-frontend
+### 1. Navigate to the Frontend Directory
 
+Change into the frontend folder named `hr-frontend`:
+
+```bash
 cd hr-frontend
+```
 
-2. install packages
+### 2. Install Frontend Packages
 
-npm i 
+Install the necessary packages using npm:
 
-3. run the application
+```bash
+npm install
+```
 
-ng sever
+### 3. Running the Frontend Application
+
+Start the application with Angular CLI:
+
+```bash
+ng serve
+```
+
+The frontend application will typically be accessible at `http://localhost:4200`.
+
+---
+
+## Conclusion
+
+By following these steps, you will have successfully set up and run both the backend and frontend parts of the Admin HR System. Happy coding!
