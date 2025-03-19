@@ -209,14 +209,25 @@ class ScheduleService:
 
             # Cập nhật lịch
             schedule.work_days = new_work_days
-            try:
-                db.commit()
-                db.refresh(schedule)
-                logger.info(f"Sửa lịch {schedule_id} thành công")
-            except Exception as e:
-                db.rollback()
-                logger.error(f"Lỗi cập nhật lịch {schedule_id}: {e}")
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi cập nhật lịch.")
+            if len(schedule.work_days) > 0 :
+                try:
+                    db.commit()
+                    db.refresh(schedule)
+                    logger.info(f"Sửa lịch {schedule_id} thành công")
+                except Exception as e:
+                    db.rollback()
+                    logger.error(f"Lỗi cập nhật lịch {schedule_id}: {e}")
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi cập nhật lịch.")
+            else:
+                try:
+                    logger.info(f"Xóa  {schedule_id} trong database")  
+                    db.delete(schedule)
+                    db.commit()
+                    db.refresh(schedule)
+                except Exception as e:
+                    db.rollback()
+                    logger.error(f"Lỗi xóa lịch {schedule_id}: {e}")
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi xóa lịch sử")
 
             return ResponseHandler.success("Cập nhật thành công")
 
