@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, date, timedelta
 import uuid
 from app.models.models import WorkSchedule, Employee
-from app.schemas.schedule import WorkScheduleCreate, WorkScheduleOut, ListWorkScheduleResponse, Response
+from app.schemas.schedule import WorkScheduleCreate, WorkScheduleOut, ListWorkScheduleResponse, Response,Response_2
 from app.utils.responses import ResponseHandler
 from app.core.security import verify_token, check_intern, check_admin, check_user_exist
 
@@ -122,17 +122,16 @@ class ScheduleService:
         
         # Lấy danh sách lịch làm việc theo tháng của user
         schedules = db.query(WorkSchedule).filter(
-            WorkSchedule.start_month == month,
-            WorkSchedule.employee_id == employee.id
+            WorkSchedule.start_month == str(month_int),
+            WorkSchedule.employee_id == str(employee.id)
         ).all()  # Loại bỏ "or None"
         
         response_data = []
         # Nếu có lịch, lặp qua và xây dựng response
         if schedules:
             for schedule in schedules:
-                response_data.append(Response(
+                response_data.append(Response_2(
                     schedule=WorkScheduleOut.from_orm(schedule),
-                    employee=employee  # Có thể chuyển đổi bằng UserInfo.from_orm(employee) nếu cần
                 ))
         
         return ListWorkScheduleResponse(
