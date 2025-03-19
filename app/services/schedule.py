@@ -176,7 +176,7 @@ class ScheduleService:
             """
             # Kiểm tra token và lấy user_id
             verify_token(token=token)
-            user_id = check_user_exist(token=token)
+            user_id = check_user_exist(token=token,db=db)
             logger.info(f"Người dùng {user_id} đang cố gắng sửa lịch {schedule_id}")
 
             # Lấy lịch cần sửa của người dùng
