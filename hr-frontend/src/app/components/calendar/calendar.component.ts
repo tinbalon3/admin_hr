@@ -38,6 +38,9 @@ export class CalendarComponent implements OnInit {
   protected selectedDate = signal<Date | null>(null);  // Ngày được chọn
   protected selectedDates = signal<Date[]>([]);  // Lưu nhiều ngày được chọn
   selectedDatesObject: { day_of_week: string; note: boolean }[] = [];
+  schedule_id: string = ''; // Lưu schedule_id sau khi fetch
+  // Đây là mảng lưu các ngày mới mà người dùng chọn để đăng ký (chưa tồn tại trong DB)
+  newSelectedDatesObject: { day_of_week: string; note: boolean }[] = [];
   protected currentMonth = computed(() =>
     format(this.currentDate(), 'MMMM yyyy')
   );
@@ -50,79 +53,105 @@ export class CalendarComponent implements OnInit {
   protected readonly endDateOfSelectedMonth = computed(() => endOfMonth(this.currentDate()));
   registeredDays: Date[] = []; // Danh sách ngày đã đăng ký
   weekLocked: boolean = false; // Cờ kiểm tra tuần có bị khóa không
-  
+
   protected readonly days = computed(() => this.eachDayOfInterval({
     start: this.startDateOfSelectedMonth(),
     end: this.endDateOfSelectedMonth(),
   }));
+
+
   updateSchedule(): void {
-    // Loại bỏ các ngày được đánh dấu khỏi selectedDates
-    this.selectedDates.set(this.selectedDates().filter(day =>
-      this.datesToRemove.every(rem => startOfDay(rem).getTime() !== startOfDay(day).getTime())
-    ));
+    const today = new Date();
+    const currentWeekStart = this.getStartOfWeek(today);
+    const currentWeekEnd = this.getEndOfWeek(today);
+    const nextWeekStart = addDays(currentWeekStart, 7);
+    const nextWeekEnd = addDays(currentWeekEnd, 7);
   
-    // Cập nhật selectedDatesObject theo cùng điều kiện
-    this.selectedDatesObject = this.selectedDatesObject.filter(obj =>
-      this.datesToRemove.every(rem => startOfDay(new Date(obj.day_of_week)).getTime() !== startOfDay(rem).getTime())
-    );
+    // Kiểm tra xem có ngày bị xoá và có ngày mới được chọn không
+    const hasRemoved = this.datesToRemove.length > 0;
+    const hasNewSelections = this.newSelectedDatesObject.length > 0;
   
-    // Cập nhật lại registeredDays nếu bạn muốn hiển thị giao diện (ô đăng ký không còn hiển thị màu xanh)
-    this.registeredDays = this.registeredDays.filter(day =>
-      this.datesToRemove.every(rem => startOfDay(rem).getTime() !== startOfDay(day).getTime())
-    );
+    // Nếu có ngày bị xoá, cập nhật lại registeredDays (loại bỏ những ngày bị xoá)
+    if (hasRemoved) {
+      console.log('Có ngày bị xoá:', this.datesToRemove);
+      this.registeredDays = this.registeredDays.filter(day =>
+        this.datesToRemove.every(rem =>
+          startOfDay(rem).getTime() !== startOfDay(day).getTime()
+        )
+      );
+    }
+    console.log('Danh sách ngày đã đăng ký sau xoá:', this.registeredDays);
   
-    console.log("Danh sách ngày sau khi loại bỏ:", this.selectedDates(), this.selectedDatesObject);
-  
-    // Sau khi cập nhật, xóa danh sách đánh dấu
+    // Khi gửi dữ liệu qua API edit, chỉ gửi những ngày trong tuần kế tiếp
+    let data;
+    if (hasRemoved) {
+      // Lọc registeredDays chỉ lấy những ngày trong khoảng tuần kế tiếp
+      const remainingNextWeekDays = this.registeredDays.filter(day =>
+        day >= nextWeekStart && day <= nextWeekEnd
+      );
+      // Chuyển đổi các ngày còn lại trong tuần kế tiếp thành đối tượng
+      const existingDays = remainingNextWeekDays.map(day => ({
+        day_of_week: format(day, 'yyyy-MM-dd'),
+        note: false // cập nhật note theo logic của bạn nếu cần
+      }));
+      // Nếu có ngày mới được chọn, có thể muốn kết hợp vào
+      data = { work_days: [...existingDays, ...this.newSelectedDatesObject] };
+    } else if (hasNewSelections) {
+      // Nếu không có xoá mà chỉ có ngày mới được chọn, ta chỉ gửi các ngày mới đó (có thể cần kiểm tra xem chúng có thuộc tuần kế tiếp không)
+      data = { work_days: [...this.newSelectedDatesObject] };
+    } else {
+      alert('Chưa có thay đổi nào được thực hiện.');
+      return;
+    }
+    // Reset danh sách xoá
     this.datesToRemove = [];
+    console.log("Dữ liệu gửi đi:", JSON.stringify(data, null, 2));
   
-    // Gọi hàm submitSchedule để gửi dữ liệu đã cập nhật
-    this.submitSchedule();
-  }
- // Hàm xử lý click vào ngày
-handleDayClick(day: Date): void {
-  // Nếu ngày quá khứ hoặc tuần bị khóa thì không xử lý
-  if (this.isPast(day) || this.isWeekLocked(day)) {
-    return;
+    // Nếu có schedule_id (đã có lịch của tuần kế tiếp) thì gọi edit, ngược lại gọi submit
+    if (this.schedule_id && this.schedule_id.trim() !== '') {
+      this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe(
+        (res) => {
+          alert('Đã cập nhật lịch làm việc!');
+          // (Tùy chọn) Reset danh sách ngày mới sau khi cập nhật thành công
+          this.newSelectedDatesObject = [];
+        },
+        (error) => {
+          console.error("Lỗi khi cập nhật dữ liệu:", error);
+          alert('Có lỗi xảy ra khi cập nhật lịch làm việc!');
+        }
+      );
+    } else {
+      this.scheduleService.submitSchedule(data).subscribe(
+        (res) => {
+          alert('Đã lưu lịch làm việc mới!');
+          this.newSelectedDatesObject = [];
+        },
+        (error) => {
+          console.error("Lỗi khi gửi dữ liệu:", error);
+          alert('Có lỗi xảy ra khi lưu lịch làm việc!');
+        }
+      );
+    }
   }
   
-  // Nếu ngày đã đăng ký và thuộc tuần tương lai
-  if (this.isRegistered(day) && (this.getStartOfWeek(day).getTime() > this.getStartOfWeek(new Date()).getTime())) {
-    this.toggleRemoveDate(day);
-  } else {
-    this.selectDate(day);
-  }
-}
-
-// Hàm kiểm tra ngày quá khứ (có thể dùng date-fns isBefore)
-isPast(day: Date): boolean {
-  return isBefore(day, startOfToday());
-}
-
-// Hàm kiểm tra nếu ngày đã được đánh dấu loại bỏ
-isMarkedForRemoval(day: Date): boolean {
-  return this.datesToRemove.findIndex(d => this.startOfDay(d).getTime() === this.startOfDay(day).getTime()) > -1;
-}
-
   
-  submitSchedule(): void {
-    // Đảm bảo dữ liệu được đóng gói trong object có key "work_days"
-    const data = {
-      work_days: this.selectedDatesObject
-    };
+  
+  
 
-    console.log("Dữ liệu gửi đi:", JSON.stringify(data, null, 2)); // Debug log dữ liệu gửi đi
+ 
 
-    this.scheduleService.submitSchedule(data).subscribe(
-      (res) => {
-        alert('Đã lưu lịch làm việc!');
-      },
-      (error) => {
-        console.error("Lỗi khi gửi dữ liệu:", error); // Log lỗi để kiểm tra chi tiết
-        alert('Có lỗi xảy ra!');
-      }
-    );
+  // Hàm kiểm tra ngày quá khứ (có thể dùng date-fns isBefore)
+  isPast(day: Date): boolean {
+    return isBefore(day, startOfToday());
   }
+
+  // Hàm kiểm tra nếu ngày đã được đánh dấu loại bỏ
+  isMarkedForRemoval(day: Date): boolean {
+    return this.datesToRemove.findIndex(d => this.startOfDay(d).getTime() === this.startOfDay(day).getTime()) > -1;
+  }
+
+
+
 
   toggleRemoveDate(day: Date): void {
     const today = startOfDay(new Date());
@@ -144,7 +173,7 @@ isMarkedForRemoval(day: Date): boolean {
       console.warn("Chỉ cho phép loại bỏ những ngày đăng ký ở tương lai.");
     }
   }
-  
+
   /**
    * Kiểm tra nếu một ngày nằm trong khoảng từ `startDate` đến `endDate`
    */
@@ -174,9 +203,35 @@ isMarkedForRemoval(day: Date): boolean {
   });
 
   protected readonly daysEnriched = computed(() => {
+    const today = new Date();
+    const currentWeekStart = this.getStartOfWeek(today);
+    const currentWeekEnd = this.getEndOfWeek(today);
+    const nextWeekStart = addDays(currentWeekStart, 7);
+    const nextWeekEnd = addDays(currentWeekEnd, 7);
+    
+    // Kiểm tra xem trong tuần hiện tại có ít nhất 1 ngày đăng kí không
+    const currentWeekHasRegistration = this.registeredDays.some(day => 
+      day >= currentWeekStart && day <= currentWeekEnd
+    );
+    
     const selectedDates = this.selectedDates();
-
     return this.days().map((day, i) => {
+      let enable = false;
+      if (day < currentWeekStart) {
+        enable = false;
+      }
+      // Tuần hiện tại: nếu đã có đăng kí thì disable, nếu chưa có thì cho phép chọn
+      else if (day >= currentWeekStart && day <= currentWeekEnd) {
+        enable = !currentWeekHasRegistration;
+      }
+      // Tuần kế tiếp luôn enable
+      else if (day >= nextWeekStart && day <= nextWeekEnd) {
+        enable = true;
+      }
+      else {
+        enable = false;
+      }
+      
       return {
         day: day,
         isToday: isEqual(day, startOfToday()),
@@ -184,9 +239,12 @@ isMarkedForRemoval(day: Date): boolean {
         isSelected: selectedDates.some(selected => isEqual(selected, day)),
         colStartClass: i === 0 ? this.COL_START_CLASSES[day.getDay()] : '',
         markers: this.markersMap().get(this.getMarkerMapKey(day)) || [],
+        disableSelection: !enable
       };
     });
   });
+  
+  
 
 
 
@@ -194,6 +252,8 @@ isMarkedForRemoval(day: Date): boolean {
 
   protected nextMonth() {
     this.currentDate.set(addMonths(this.currentDate(), 1));
+    const nextMonth = format(this.currentDate(), 'MM');
+    this.fetchUserSchedule(nextMonth);
     this.monthChange.emit(this.currentDate());
   }
   readonly #dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -204,7 +264,9 @@ isMarkedForRemoval(day: Date): boolean {
 
   protected prevMonth() {
     this.currentDate.set(subMonths(this.currentDate(), 1));
+    const prevMonth = format(this.currentDate(), 'MM');
     this.monthChange.emit(this.currentDate());
+    this.fetchUserSchedule(prevMonth);
   }
 
   protected toCurrentMonth(): void {
@@ -217,29 +279,51 @@ isMarkedForRemoval(day: Date): boolean {
   }
 
   selectDate(day: Date): void {
-    // Kiểm tra nếu ngày thuộc một tuần đã bị khóa
-    if (this.isWeekLocked(day)) {
-      console.warn("Không thể chọn ngày vì tuần này đã có ngày đăng ký.");
+    // Nếu ngày đã được đăng ký từ DB thì không cho chọn lại
+    if (this.isRegistered(day)) {
+      console.warn(`Ngày ${format(day, 'yyyy-MM-dd')} đã được đăng ký.`);
       return;
     }
   
     const formattedDay = format(day, 'yyyy-MM-dd');
-    const currentSelected = this.selectedDates();
-    const isAlreadySelected = currentSelected.some(selected => isEqual(selected, day));
+    // Kiểm tra xem ngày đã được chọn trong mảng newSelectedDatesObject hay chưa
+    const exists = this.newSelectedDatesObject.some(obj => obj.day_of_week === formattedDay);
   
-    if (isAlreadySelected) {
-      this.selectedDates.set(currentSelected.filter(selected => !isEqual(selected, day)));
+    if (exists) {
+      // Nếu đã chọn rồi thì bỏ chọn: cập nhật cả newSelectedDatesObject và selectedDatesObject
+      this.newSelectedDatesObject = this.newSelectedDatesObject.filter(obj => obj.day_of_week !== formattedDay);
+      this.selectedDates.set(this.selectedDates().filter(selected => !isEqual(selected, day)));
       this.selectedDatesObject = this.selectedDatesObject.filter(obj => obj.day_of_week !== formattedDay);
-      console.log(`Bỏ chọn ngày: ${formattedDay}`);
+      console.log(`Bỏ chọn ngày mới: ${formattedDay}`);
     } else {
-      this.selectedDates.set([...currentSelected, day]);
+      // Nếu chưa chọn, thêm ngày mới vào cả hai mảng để UI cập nhật màu
+      this.newSelectedDatesObject.push({ day_of_week: formattedDay, note: false });
+      this.selectedDates.set([...this.selectedDates(), day]);
       this.selectedDatesObject.push({ day_of_week: formattedDay, note: false });
-      console.log(`Chọn ngày: ${formattedDay}`);
+      console.log(`Chọn ngày mới: ${formattedDay}`);
     }
   
-    console.log('Danh sách ngày làm việc:', this.selectedDatesObject);
+    console.log('Danh sách ngày đăng ký mới:', this.newSelectedDatesObject);
   }
   
+
+  handleDayClick(day: Date): void {
+    // Lấy đối tượng day từ computed property để kiểm tra trạng thái disable
+    const enrichedDay = this.daysEnriched().find(d => isEqual(d.day, day));
+    if (enrichedDay && enrichedDay.disableSelection) {
+      return;
+    }
+    
+    if (this.isPast(day) || this.isWeekLocked(day)) {
+      return;
+    }
+  
+    if (this.isRegistered(day) && (this.getStartOfWeek(day).getTime() > this.getStartOfWeek(new Date()).getTime())) {
+      this.toggleRemoveDate(day);
+    } else {
+      this.selectDate(day);
+    }
+  }
   
   /**
    * Đánh dấu ngày làm nửa ngày
@@ -249,10 +333,10 @@ isMarkedForRemoval(day: Date): boolean {
       console.warn("Không thể chỉnh sửa ngày làm nửa ngày vì tuần hiện tại đã có ngày đăng ký.");
       return;
     }
-  
+
     const formattedDay = format(day, 'yyyy-MM-dd');
     let existingDay = this.selectedDatesObject.find(obj => obj.day_of_week === formattedDay);
-  
+
     if (!existingDay) {
       existingDay = { day_of_week: formattedDay, note: true };
       this.selectedDatesObject.push(existingDay);
@@ -264,10 +348,10 @@ isMarkedForRemoval(day: Date): boolean {
       existingDay.note = !existingDay.note;
       console.log(`Cập nhật ngày ${formattedDay}: ${existingDay.note}`);
     }
-  
+
     console.log('Danh sách ngày làm việc:', this.selectedDatesObject);
   }
-  
+
 
   isSelected(day: Date): boolean {
     return this.selectedDatesObject.some(obj => obj.day_of_week === format(day, 'yyyy-MM-dd'));
@@ -287,15 +371,40 @@ isMarkedForRemoval(day: Date): boolean {
           employee: any 
         }[] 
       }) => {
-        // Chuyển đổi danh sách ngày làm việc từ API thành Date[]
-        const workDays = res.data.flatMap(entry =>
+        const today = new Date();
+        const currentWeekStart = this.getStartOfWeek(today);
+        const currentWeekEnd = this.getEndOfWeek(today);
+        const nextWeekStart = addDays(currentWeekStart, 7);
+        const nextWeekEnd = addDays(currentWeekEnd, 7);
+        
+        // Chuyển đổi tất cả các work_days thành Date[]
+        const allWorkDays: Date[] = res.data.flatMap(entry =>
           entry.schedule.work_days.map(day => new Date(day.day_of_week))
         );
-  
-        // Cập nhật danh sách ngày đã đăng ký
-        this.registeredDays = workDays;
-        // Đồng thời cập nhật signal để hiển thị màu xanh cho ô đó
-        this.selectedDates.set(workDays);
+        
+        // Lưu tất cả các ngày đăng kí để hiển thị trên UI
+        this.registeredDays = allWorkDays;
+        this.selectedDates.set(allWorkDays);
+        
+        // Xác định schedule_id cho tuần tiếp theo
+        let nextWeekScheduleId = "";
+        res.data.forEach(entry => {
+          const workDays = entry.schedule.work_days.map(day => new Date(day.day_of_week));
+          const workDaysNextWeek = workDays.filter(day => day >= nextWeekStart && day <= nextWeekEnd);
+          if (workDaysNextWeek.length > 0) {
+            // Nếu có lịch có ngày thuộc tuần tiếp theo, lấy schedule_id của lịch đó
+            nextWeekScheduleId = entry.schedule.id;
+          }
+        });
+        
+        if (nextWeekScheduleId) {
+          this.schedule_id = nextWeekScheduleId;
+          console.log("Lấy được schedule_id của tuần tiếp theo:", nextWeekScheduleId);
+        } else {
+          // Nếu không có lịch của tuần tiếp theo, đặt schedule_id rỗng (để submit mới)
+          this.schedule_id = "";
+          console.log("Không tìm thấy lịch cho tuần tiếp theo.");
+        }
         
         console.log("Danh sách ngày đã đăng ký:", this.registeredDays);
       },
@@ -306,6 +415,19 @@ isMarkedForRemoval(day: Date): boolean {
   }
   
   
+  
+
+  isInNextWeek(day: Date): boolean {
+    const today = new Date();
+    const currentWeekStart = this.getStartOfWeek(today);
+    // Tính toán đầu tuần và cuối tuần của tuần tiếp theo:
+    const nextWeekStart = addDays(currentWeekStart, 7);
+    const nextWeekEnd = addDays(this.getEndOfWeek(today), 7);
+    return day >= nextWeekStart && day <= nextWeekEnd;
+  }
+  
+
+
   isWeekLocked(date: Date): boolean {
     const today = new Date();
     const startOfWeekDate = this.getStartOfWeek(date);
@@ -316,7 +438,7 @@ isMarkedForRemoval(day: Date): boolean {
     }
     return false;
   }
-  
+
 
 
   /**
@@ -326,7 +448,7 @@ isMarkedForRemoval(day: Date): boolean {
     const today = new Date();
     const startOfWeek = this.getStartOfWeek(today);
     const endOfWeek = this.getEndOfWeek(today);
-  
+
     return this.registeredDays.some(day => day >= startOfWeek && day <= endOfWeek);
   }
   isRegistered(date: Date): boolean {
@@ -337,14 +459,14 @@ isMarkedForRemoval(day: Date): boolean {
     start.setDate(date.getDate() - date.getDay()); // Đưa về chủ nhật đầu tuần
     return start;
   }
-  
+
   getEndOfWeek(date: Date): Date {
     const end = new Date(date);
     end.setDate(date.getDate() + (6 - date.getDay())); // Đưa về thứ bảy cuối tuần
     return end;
   }
-  
-  
+
+
 }
 
 export interface CalendarMarkerData<Data = any> {
