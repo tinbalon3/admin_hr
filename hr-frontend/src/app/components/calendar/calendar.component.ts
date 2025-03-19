@@ -17,21 +17,22 @@ import {
   addDays,
   isBefore,
 } from 'date-fns';
-import { startOfWeek, endOfWeek } from 'date-fns';
+
 import { MatTooltip } from '@angular/material/tooltip';
 import { ScheduleInternService } from '../../services/schedule-intern-service.service';
-
+import { startOfDay } from 'date-fns';
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [DatePipe, NgClass, NgTemplateOutlet, NgFor, CommonModule, NgIf, MatTooltip],
+  imports: [DatePipe, NgClass, NgFor, CommonModule],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
 export class CalendarComponent implements OnInit {
+  public startOfDay = startOfDay;
   @Input() markers: CalendarMarkerData[] = [];
   @Input() markerTpl!: TemplateRef<any>;
-
+  datesToRemove: Date[] = [];
   public monthChange = output<Date>();
   protected currentDate = signal(startOfToday());
   protected selectedDate = signal<Date | null>(null);  // Ngày được chọn
@@ -47,12 +48,63 @@ export class CalendarComponent implements OnInit {
   }
   protected readonly startDateOfSelectedMonth = computed(() => startOfMonth(this.currentDate()));
   protected readonly endDateOfSelectedMonth = computed(() => endOfMonth(this.currentDate()));
-
+  registeredDays: Date[] = []; // Danh sách ngày đã đăng ký
+  weekLocked: boolean = false; // Cờ kiểm tra tuần có bị khóa không
+  
   protected readonly days = computed(() => this.eachDayOfInterval({
     start: this.startDateOfSelectedMonth(),
     end: this.endDateOfSelectedMonth(),
   }));
+  updateSchedule(): void {
+    // Loại bỏ các ngày được đánh dấu khỏi selectedDates
+    this.selectedDates.set(this.selectedDates().filter(day =>
+      this.datesToRemove.every(rem => startOfDay(rem).getTime() !== startOfDay(day).getTime())
+    ));
+  
+    // Cập nhật selectedDatesObject theo cùng điều kiện
+    this.selectedDatesObject = this.selectedDatesObject.filter(obj =>
+      this.datesToRemove.every(rem => startOfDay(new Date(obj.day_of_week)).getTime() !== startOfDay(rem).getTime())
+    );
+  
+    // Cập nhật lại registeredDays nếu bạn muốn hiển thị giao diện (ô đăng ký không còn hiển thị màu xanh)
+    this.registeredDays = this.registeredDays.filter(day =>
+      this.datesToRemove.every(rem => startOfDay(rem).getTime() !== startOfDay(day).getTime())
+    );
+  
+    console.log("Danh sách ngày sau khi loại bỏ:", this.selectedDates(), this.selectedDatesObject);
+  
+    // Sau khi cập nhật, xóa danh sách đánh dấu
+    this.datesToRemove = [];
+  
+    // Gọi hàm submitSchedule để gửi dữ liệu đã cập nhật
+    this.submitSchedule();
+  }
+ // Hàm xử lý click vào ngày
+handleDayClick(day: Date): void {
+  // Nếu ngày quá khứ hoặc tuần bị khóa thì không xử lý
+  if (this.isPast(day) || this.isWeekLocked(day)) {
+    return;
+  }
+  
+  // Nếu ngày đã đăng ký và thuộc tuần tương lai
+  if (this.isRegistered(day) && (this.getStartOfWeek(day).getTime() > this.getStartOfWeek(new Date()).getTime())) {
+    this.toggleRemoveDate(day);
+  } else {
+    this.selectDate(day);
+  }
+}
 
+// Hàm kiểm tra ngày quá khứ (có thể dùng date-fns isBefore)
+isPast(day: Date): boolean {
+  return isBefore(day, startOfToday());
+}
+
+// Hàm kiểm tra nếu ngày đã được đánh dấu loại bỏ
+isMarkedForRemoval(day: Date): boolean {
+  return this.datesToRemove.findIndex(d => this.startOfDay(d).getTime() === this.startOfDay(day).getTime()) > -1;
+}
+
+  
   submitSchedule(): void {
     // Đảm bảo dữ liệu được đóng gói trong object có key "work_days"
     const data = {
@@ -71,10 +123,33 @@ export class CalendarComponent implements OnInit {
       }
     );
   }
+
+  toggleRemoveDate(day: Date): void {
+    const today = startOfDay(new Date());
+    const currentWeekStart = this.getStartOfWeek(today);
+    const dayWeekStart = this.getStartOfWeek(day);
+    // Chỉ cho phép loại bỏ nếu ngày thuộc vào tuần tương lai (khác với tuần hiện tại)
+    if (dayWeekStart.getTime() > currentWeekStart.getTime()) {
+      const index = this.datesToRemove.findIndex(d => startOfDay(d).getTime() === startOfDay(day).getTime());
+      if (index > -1) {
+        // Nếu đã được đánh dấu rồi thì bỏ đánh dấu
+        this.datesToRemove.splice(index, 1);
+        console.log(`Bỏ đánh dấu loại bỏ ngày: ${format(day, 'yyyy-MM-dd')}`);
+      } else {
+        // Đánh dấu ngày để loại bỏ
+        this.datesToRemove.push(day);
+        console.log(`Đánh dấu loại bỏ ngày: ${format(day, 'yyyy-MM-dd')}`);
+      }
+    } else {
+      console.warn("Chỉ cho phép loại bỏ những ngày đăng ký ở tương lai.");
+    }
+  }
+  
   /**
    * Kiểm tra nếu một ngày nằm trong khoảng từ `startDate` đến `endDate`
    */
   isDateWithinInterval(date: Date, startDate: Date, endDate: Date): boolean {
+    console.log('date:', date, 'startDate:', startDate, 'endDate:', endDate);
     return date >= startDate && date <= endDate;
   }
   eachDayOfInterval(interval: { start: Date; end: Date }): Date[] {
@@ -142,8 +217,9 @@ export class CalendarComponent implements OnInit {
   }
 
   selectDate(day: Date): void {
-    if (this.isCurrentWeekLocked()) {
-      console.warn("Không thể chọn ngày vì tuần hiện tại đã có ngày đăng ký.");
+    // Kiểm tra nếu ngày thuộc một tuần đã bị khóa
+    if (this.isWeekLocked(day)) {
+      console.warn("Không thể chọn ngày vì tuần này đã có ngày đăng ký.");
       return;
     }
   
@@ -163,6 +239,7 @@ export class CalendarComponent implements OnInit {
   
     console.log('Danh sách ngày làm việc:', this.selectedDatesObject);
   }
+  
   
   /**
    * Đánh dấu ngày làm nửa ngày
@@ -203,44 +280,71 @@ export class CalendarComponent implements OnInit {
 
   fetchUserSchedule(month: string): void {
     this.scheduleService.fecthScheduleIntern(month).subscribe(
-      (res: { message: string; data: { schedule: { work_days: { day_of_week: string; note: boolean }[], id: string, created_at: string }, employee: any }[] }) => {
-
-        // Lấy danh sách ngày làm việc từ API
-        const workDays = res.data.flatMap(entry => entry.schedule.work_days);
-
-        // Cập nhật danh sách ngày đã đăng ký
-        this.selectedDatesObject = workDays.map(day => ({
-          day_of_week: day.day_of_week,
-          note: day.note
-        }));
-
-        // Cập nhật `selectedDates` để phản ánh ngày đã đăng ký
-        this.selectedDates.set(
-          this.selectedDatesObject.map(obj => new Date(obj.day_of_week))
+      (res: { 
+        message: string; 
+        data: { 
+          schedule: { work_days: { day_of_week: string; note: boolean }[], id: string, created_at: string },
+          employee: any 
+        }[] 
+      }) => {
+        // Chuyển đổi danh sách ngày làm việc từ API thành Date[]
+        const workDays = res.data.flatMap(entry =>
+          entry.schedule.work_days.map(day => new Date(day.day_of_week))
         );
-
-        console.log("Lịch đã đăng ký trong tháng:", month, this.selectedDatesObject);
+  
+        // Cập nhật danh sách ngày đã đăng ký
+        this.registeredDays = workDays;
+        // Đồng thời cập nhật signal để hiển thị màu xanh cho ô đó
+        this.selectedDates.set(workDays);
+        
+        console.log("Danh sách ngày đã đăng ký:", this.registeredDays);
       },
       (error) => {
         console.error("Lỗi khi fetch lịch đã đăng ký:", error);
       }
     );
-}
+  }
+  
+  
+  isWeekLocked(date: Date): boolean {
+    const today = new Date();
+    const startOfWeekDate = this.getStartOfWeek(date);
+    const endOfWeekDate = this.getEndOfWeek(date);
+    // Chỉ kiểm tra khóa nếu tuần của ngày được chọn chứa ngày hôm nay (tức là tuần hiện tại)
+    if (today >= startOfWeekDate && today <= endOfWeekDate) {
+      return this.registeredDays.some(day => day >= startOfWeekDate && day <= endOfWeekDate);
+    }
+    return false;
+  }
+  
 
 
   /**
  * Kiểm tra nếu tuần hiện tại có ngày đã đăng ký => Khóa chỉnh sửa
  */
   isCurrentWeekLocked(): boolean {
-    const today = startOfToday();
-    const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 }); // Tuần bắt đầu từ Thứ Hai
-    const endOfCurrentWeek = endOfWeek(today, { weekStartsOn: 1 });
-
-    return this.selectedDatesObject.some(dayObj => {
-      const dayDate = new Date(dayObj.day_of_week);
-      return this.isDateWithinInterval(dayDate, startOfCurrentWeek, endOfCurrentWeek);
-    });
+    const today = new Date();
+    const startOfWeek = this.getStartOfWeek(today);
+    const endOfWeek = this.getEndOfWeek(today);
+  
+    return this.registeredDays.some(day => day >= startOfWeek && day <= endOfWeek);
   }
+  isRegistered(date: Date): boolean {
+    return this.registeredDays.some(d => startOfDay(d).getTime() === startOfDay(date).getTime());
+  }
+  getStartOfWeek(date: Date): Date {
+    const start = new Date(date);
+    start.setDate(date.getDate() - date.getDay()); // Đưa về chủ nhật đầu tuần
+    return start;
+  }
+  
+  getEndOfWeek(date: Date): Date {
+    const end = new Date(date);
+    end.setDate(date.getDate() + (6 - date.getDay())); // Đưa về thứ bảy cuối tuần
+    return end;
+  }
+  
+  
 }
 
 export interface CalendarMarkerData<Data = any> {
