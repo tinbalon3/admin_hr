@@ -168,67 +168,66 @@ class ScheduleService:
 
     @staticmethod
     def edit_schedule_multi(db: Session, token: HTTPAuthorizationCredentials, schedule_id: str, new_schedule_data: WorkScheduleCreate) -> notification:
-            """
-            Sửa lịch làm việc cho một lịch cụ thể (chỉ cập nhật trường day_of_week)
-            nếu lịch đó chưa bắt đầu.
-            Yêu cầu: Tất cả các ngày trong lịch hiện tại phải là tương lai (sau ngày hôm nay).
-            Sau đó, cập nhật trường work_days dựa trên new_schedule_data.
-            """
-            # Kiểm tra token và lấy user_id
-            verify_token(token=token)
-            user_id = check_user_exist(token=token,db=db)
-            logger.info(f"Người dùng {user_id} đang cố gắng sửa lịch {schedule_id}")
+        """
+        Sửa lịch làm việc cho một lịch cụ thể (chỉ cập nhật trường day_of_week)
+        nếu lịch đó chưa bắt đầu.
+        Yêu cầu: Tất cả các ngày trong lịch hiện tại phải là tương lai (sau ngày hôm nay).
+        Sau đó, cập nhật trường work_days dựa trên new_schedule_data.
+        """
+        # Kiểm tra token và lấy user_id
+        verify_token(token=token)
+        user_id = check_user_exist(token=token, db=db)
+        logger.info(f"Người dùng {user_id} đang cố gắng sửa lịch {schedule_id}")
 
-            # Lấy lịch cần sửa của người dùng
-            schedule = db.query(WorkSchedule).filter(
-                WorkSchedule.id == schedule_id,
-                WorkSchedule.employee_id == user_id.id
-            ).first()
-            if not schedule:
-                logger.error(f"Không tìm thấy lịch {schedule_id} của người dùng {user_id}")
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lịch không tồn tại hoặc không thuộc về bạn.")
+        # Lấy lịch cần sửa của người dùng
+        schedule = db.query(WorkSchedule).filter(
+            WorkSchedule.id == schedule_id,
+            WorkSchedule.employee_id == user_id.id
+        ).first()
+        if not schedule:
+            logger.error(f"Không tìm thấy lịch {schedule_id} của người dùng {user_id}")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lịch không tồn tại hoặc không thuộc về bạn.")
 
-            # Kiểm tra xem lịch đã bắt đầu chưa:
-            # Giả sử work_days được lưu dưới dạng list các dict: [{"day_of_week": "2025-03-24"}, ...]
+        # Kiểm tra xem lịch đã bắt đầu chưa:
+        try:
+            existing_dates = [datetime.fromisoformat(item["day_of_week"]).date() for item in schedule.work_days]
+            earliest_date = min(existing_dates)
+            logger.debug(f"Ngày sớm nhất trong lịch: {earliest_date}")
+        except Exception as e:
+            logger.error(f"Lỗi xử lý work_days cho lịch {schedule_id}: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi xử lý lịch làm việc hiện tại.")
+
+        if earliest_date <= date.today():
+            logger.warning(f"Lịch {schedule_id} đã bắt đầu (ngày sớm nhất: {earliest_date}). Không thể sửa.")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lịch đã bắt đầu, không thể sửa.")
+
+        # Chuyển đổi new_schedule_data.work_days thành list các dict với key "day_of_week"
+        new_work_days = [{"day_of_week": wd.day_of_week.isoformat()} for wd in new_schedule_data.work_days]
+        logger.debug(f"Work_days mới sẽ được cập nhật: {new_work_days}")
+
+        # Cập nhật lịch
+        schedule.work_days = new_work_days
+        if len(schedule.work_days) > 0:
             try:
-                existing_dates = [datetime.fromisoformat(item["day_of_week"]).date() for item in schedule.work_days]
-                earliest_date = min(existing_dates)
-                logger.debug(f"Ngày sớm nhất trong lịch: {earliest_date}")
+                db.commit()
+                db.refresh(schedule)
+                logger.info(f"Sửa lịch {schedule_id} thành công")
             except Exception as e:
-                logger.error(f"Lỗi xử lý work_days cho lịch {schedule_id}: {e}")
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi xử lý lịch làm việc hiện tại.")
+                db.rollback()
+                logger.error(f"Lỗi cập nhật lịch {schedule_id}: {e}")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi cập nhật lịch.")
+        else:
+            try:
+                logger.info(f"Xóa lịch {schedule_id} trong database")
+                db.delete(schedule)
+                db.commit()
+                # Không cần gọi db.refresh(schedule) sau khi xóa, vì đối tượng đã bị xóa
+            except Exception as e:
+                db.rollback()
+                logger.error(f"Lỗi xóa lịch {schedule_id}: {e}")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi xóa lịch sử")
 
-            if earliest_date <= date.today():
-                logger.warning(f"Lịch {schedule_id} đã bắt đầu (ngày sớm nhất: {earliest_date}). Không thể sửa.")
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lịch đã bắt đầu, không thể sửa.")
+        return ResponseHandler.success("Cập nhật thành công")
 
-            # Chuyển đổi new_schedule_data.work_days thành list các dict với key "day_of_week"
-            # Giả sử schema WorkScheduleCreate có field work_days với từng đối tượng WorkDay có thuộc tính day_of_week (kiểu date)
-            new_work_days = [{"day_of_week": wd.day_of_week.isoformat()} for wd in new_schedule_data.work_days]
-            logger.debug(f"Work_days mới sẽ được cập nhật: {new_work_days}")
-
-            # Cập nhật lịch
-            schedule.work_days = new_work_days
-            if len(schedule.work_days) > 0 :
-                try:
-                    db.commit()
-                    db.refresh(schedule)
-                    logger.info(f"Sửa lịch {schedule_id} thành công")
-                except Exception as e:
-                    db.rollback()
-                    logger.error(f"Lỗi cập nhật lịch {schedule_id}: {e}")
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi cập nhật lịch.")
-            else:
-                try:
-                    logger.info(f"Xóa  {schedule_id} trong database")  
-                    db.delete(schedule)
-                    db.commit()
-                    db.refresh(schedule)
-                except Exception as e:
-                    db.rollback()
-                    logger.error(f"Lỗi xóa lịch {schedule_id}: {e}")
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Lỗi khi xóa lịch sử")
-
-            return ResponseHandler.success("Cập nhật thành công")
 
 
