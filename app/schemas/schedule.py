@@ -31,6 +31,9 @@ class WorkScheduleOut(WorkScheduleCreate):
 class WorkScheduleResponse(BaseModel):
     message: str
     data: WorkScheduleOut
+    
+class notification(BaseModel):
+    message: str
 
 class Response(BaseModel):
     schedule: WorkScheduleOut
