@@ -28,46 +28,37 @@
         </div>
     </header>
 
-    <!-- Hiển thị cảnh báo nếu tuần hiện tại bị khóa -->
-    <div *ngIf="isCurrentWeekLocked()" class="bg-red-500 text-white text-center p-2 rounded-lg mb-3">
-        Tuần này đã có lịch đăng ký, bạn không thể chỉnh sửa!
-    </div>
-
-    <div class="mt-2 grid grid-cols-7 gap-3"
-        [ngClass]="isCurrentWeekLocked() ? 'opacity-50 pointer-events-none' : ''">
-        
+  
+    <div class="mt-2 grid grid-cols-7 gap-3">
         <div *ngFor="let day of daysEnriched()"
-            (click)="!day.isPast && selectDate(day.day)"
-            [ngClass]="[
-                'relative flex flex-col items-center justify-center rounded-lg p-3 h-24 transition',
-                day.colStartClass,
-                day.isToday ? 'bg-yellow-100 text-gray-800' : '',
-                day.isPast ? 'bg-gray-200 text-gray-500 pointer-events-none' : '',
-                isSelected(day.day) ? 'bg-green-200 text-gray-900' : '',
-                !day.isToday && !day.isPast && !isSelected(day.day) ? 'bg-white' : '',
-                'hover:ring-2 hover:ring-blue-400'
-            ]">
-
-            <!-- Icon nửa ngày ở góc trái trên -->
-            <div 
-                *ngIf="isSelected(day.day)"
-                class="absolute top-2 left-2 w-5 h-5 flex items-center justify-center rounded-full text-xs font-semibold cursor-pointer transition"
-                [ngClass]="isHalfDay(day.day) ? 'bg-green-700 text-white' : 'bg-blue-500 text-white'"
-                (click)="toggleHalfDay(day.day); $event.stopPropagation()"
-                [matTooltip]="isHalfDay(day.day) ? 'Đã đăng ký làm nửa ngày' : 'Đăng ký làm nửa ngày'">
-                🌓
-            </div>
-
-            <!-- Nhãn "Nửa Ngày" khi đã đăng ký nửa ngày -->
-            <div *ngIf="isHalfDay(day.day)" 
-                class="absolute bottom-2 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-full shadow-lg">
-                Nửa Ngày
-            </div>
-
-            <!-- Ngày -->
-            <div class="absolute bottom-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-200 text-gray-700 rounded-full text-xs font-semibold">
-                {{ day.day | date: 'd' }}
-            </div>
+             (click)="handleDayClick(day.day)"
+             [ngClass]="[
+               'relative flex flex-col items-center justify-center rounded-lg p-3 h-24 transition',
+               day.colStartClass,
+               day.isToday ? 'bg-yellow-100 text-gray-800' : '',
+               day.isPast ? 'bg-gray-200 text-gray-500' : '',
+               isRegistered(day.day)
+                 ? (isMarkedForRemoval(day.day) ? 'bg-red-200 text-white' : 'bg-blue-200 text-white')
+                 : '',
+               isSelected(day.day) ? 'bg-green-200 text-gray-900' : '',
+               !day.isToday && !day.isPast && !isSelected(day.day) && !isRegistered(day.day) ? 'bg-white' : '',
+               isWeekLocked(day.day) ? 'opacity-50 pointer-events-none' : '',
+               'hover:ring-2 hover:ring-blue-400'
+             ]">
+          <!-- Hiển thị ngày -->
+          <div class="absolute bottom-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-200 text-gray-700 rounded-full text-xs font-semibold">
+            {{ day.day | date: 'd' }}
+          </div>
         </div>
-    </div>
+      </div>
+      
+      
+
+
+     
+   
+      
+    
+    <!-- Thông báo nếu tuần hiện tại đã khóa -->
+
 </div>
