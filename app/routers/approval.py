@@ -29,3 +29,16 @@ def list(
     Lấy danh sách các phê duyệt đơn nghỉ phép.
     """
     return ApproveService.get_list(db, token)
+
+
+# @router.get("/list/", status_code=status.HTTP_200_OK, response_model=List_Approval)
+# def list(
+#     page: int = 1,
+#     limit: int = 10,
+#     db: Session = Depends(get_db),
+#     token: HTTPAuthorizationCredentials = Depends(auth_scheme)
+# ):
+#     """
+#     Lấy danh sách các phê duyệt đơn nghỉ phép.
+#     """
+#     return ApproveService.get_list(db, token)
