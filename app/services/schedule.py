@@ -197,7 +197,7 @@ class ScheduleService:
                     schedule=WorkScheduleOut.from_orm(schedule),
                 ))
         
-        return ListWorkScheduleResponse(
+        return ListWorkScheduleUserResponse(
             message="Lấy danh sách thành công",
             data=response_data
         )
