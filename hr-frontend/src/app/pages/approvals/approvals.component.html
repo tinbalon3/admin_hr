@@ -1,0 +1,66 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+    <h1 class="text-2xl font-semibold text-black text-center mb-6">
+      DANH SÁCH QUYẾT ĐỊNH NGHỈ PHÉP
+    </h1>
+  
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+      <table class="min-w-full">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Người duyệt
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Email
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Quyết định
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Ngày duyệt
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Ghi chú
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Mã đơn nghỉ
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr 
+            *ngFor="let item of data" 
+            class="bg-gray-50"
+          >
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.employee_id?.full_name }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.employee_id?.email }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              <span
+                class="px-3 py-1 inline-flex text-xs font-semibold rounded-full uppercase transition-colors duration-200"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': item.approval.decision === 'APPROVED',
+                  'bg-red-100 text-red-800': item.approval.decision === 'REJECTED'
+                }"
+              >
+                {{ item.approval.decision }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.approval.decision_date | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.approval.comments }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.approval.leave_request_id }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

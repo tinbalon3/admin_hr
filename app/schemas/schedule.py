@@ -44,8 +44,15 @@ class Response_2(BaseModel):
 
 class ListWorkScheduleResponse(BaseModel):
     message: str
+    data: list[Response]
+    class Config:
+        orm_mode = True
+        from_attributes = True
+        
+class ListWorkScheduleUserResponse(BaseModel):
+    message: str
     data: list[Response_2]
-
+    
     class Config:
         orm_mode = True
         from_attributes = True

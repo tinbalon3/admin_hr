@@ -67,11 +67,10 @@ export class CalendarComponent implements OnInit {
     const nextWeekStart = addDays(currentWeekStart, 7);
     const nextWeekEnd = addDays(currentWeekEnd, 7);
   
-    // Kiểm tra xem có ngày bị xoá và có ngày mới được chọn không
     const hasRemoved = this.datesToRemove.length > 0;
     const hasNewSelections = this.newSelectedDatesObject.length > 0;
   
-    // Nếu có ngày bị xoá, cập nhật lại registeredDays (loại bỏ những ngày bị xoá)
+    // Nếu có xoá, loại bỏ các ngày đó khỏi registeredDays
     if (hasRemoved) {
       console.log('Có ngày bị xoá:', this.datesToRemove);
       this.registeredDays = this.registeredDays.filter(day =>
@@ -82,38 +81,46 @@ export class CalendarComponent implements OnInit {
     }
     console.log('Danh sách ngày đã đăng ký sau xoá:', this.registeredDays);
   
-    // Khi gửi dữ liệu qua API edit, chỉ gửi những ngày trong tuần kế tiếp
+    // Khi gửi dữ liệu, chỉ xử lý các ngày của tuần kế tiếp
     let data;
     if (hasRemoved) {
-      // Lọc registeredDays chỉ lấy những ngày trong khoảng tuần kế tiếp
+      // Lọc registeredDays chỉ giữ những ngày thuộc tuần kế tiếp
       const remainingNextWeekDays = this.registeredDays.filter(day =>
         day >= nextWeekStart && day <= nextWeekEnd
       );
-      // Chuyển đổi các ngày còn lại trong tuần kế tiếp thành đối tượng
       const existingDays = remainingNextWeekDays.map(day => ({
         day_of_week: format(day, 'yyyy-MM-dd'),
-        note: false // cập nhật note theo logic của bạn nếu cần
+        note: false
       }));
-      // Nếu có ngày mới được chọn, có thể muốn kết hợp vào
       data = { work_days: [...existingDays, ...this.newSelectedDatesObject] };
     } else if (hasNewSelections) {
-      // Nếu không có xoá mà chỉ có ngày mới được chọn, ta chỉ gửi các ngày mới đó (có thể cần kiểm tra xem chúng có thuộc tuần kế tiếp không)
       data = { work_days: [...this.newSelectedDatesObject] };
     } else {
       alert('Chưa có thay đổi nào được thực hiện.');
       return;
     }
-    // Reset danh sách xoá
     this.datesToRemove = [];
     console.log("Dữ liệu gửi đi:", JSON.stringify(data, null, 2));
   
-    // Nếu có schedule_id (đã có lịch của tuần kế tiếp) thì gọi edit, ngược lại gọi submit
+    // Sau khi thành công, hợp nhất các ngày mới vào registeredDays để hiển thị đúng trạng thái
+    const onSuccess = () => {
+      // Chuyển newSelectedDatesObject thành Date[] và hợp nhất vào registeredDays
+      const newDays = this.newSelectedDatesObject.map(obj => new Date(obj.day_of_week));
+      // Chỉ cập nhật những ngày thuộc tuần kế tiếp (nếu cần, có thể đảm bảo không trùng lặp)
+      const filteredRegistered = this.registeredDays.filter(day => day < nextWeekStart || day > nextWeekEnd);
+      this.registeredDays = [...filteredRegistered, ...newDays];
+      // Cập nhật lại signal selectedDates để giao diện nhận diện là "đã đăng kí"
+      this.selectedDates.set(this.registeredDays);
+      // Reset lại danh sách các ngày đang chọn
+      this.newSelectedDatesObject = [];
+      this.selectedDatesObject = [];
+    };
+  
     if (this.schedule_id && this.schedule_id.trim() !== '') {
       this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe(
         (res) => {
           alert('Đã cập nhật lịch làm việc!');
-          // (Tùy chọn) Reset danh sách ngày mới sau khi cập nhật thành công
-          this.newSelectedDatesObject = [];
+          onSuccess();
         },
         (error) => {
           console.error("Lỗi khi cập nhật dữ liệu:", error);
@@ -124,7 +131,7 @@ export class CalendarComponent implements OnInit {
       this.scheduleService.submitSchedule(data).subscribe(
         (res) => {
           alert('Đã lưu lịch làm việc mới!');
-          this.newSelectedDatesObject = [];
+          onSuccess();
         },
         (error) => {
           console.error("Lỗi khi gửi dữ liệu:", error);
@@ -136,9 +143,6 @@ export class CalendarComponent implements OnInit {
   
   
   
-  
-
- 
 
   // Hàm kiểm tra ngày quá khứ (có thể dùng date-fns isBefore)
   isPast(day: Date): boolean {

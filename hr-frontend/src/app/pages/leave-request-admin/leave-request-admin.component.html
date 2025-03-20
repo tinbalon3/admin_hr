@@ -1,85 +1,88 @@
-<div class="content">
-  <h1 class="header-content">DANH SÁCH ĐƠN XIN NGHỈ PHÉP</h1>
-
-  <table mat-table [dataSource]="leaveRequests" class="mat-elevation-z8 custom-table">
-    
-    <!-- Username Column -->
-    <ng-container matColumnDef="username">
-      <th mat-header-cell *matHeaderCellDef> Tên nhân viên </th>
-      <td mat-cell *matCellDef="let element"> {{ element.employee.full_name }} </td>
-    </ng-container>
-
-    <!-- Start Date Column -->
-    <ng-container matColumnDef="startDate">
-      <th mat-header-cell *matHeaderCellDef> Ngày bắt đầu </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.leave_request.start_date | date: 'dd/MM/yyyy' }}
-      </td>
-    </ng-container>
-
-    <!-- End Date Column -->
-    <ng-container matColumnDef="endDate">
-      <th mat-header-cell *matHeaderCellDef> Ngày kết thúc </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.leave_request.end_date | date: 'dd/MM/yyyy' }}
-      </td>
-    </ng-container>
-
-    <!-- Note Column -->
-    <ng-container matColumnDef="note">
-      <th mat-header-cell *matHeaderCellDef> Ghi chú </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.leave_request.notes }}
-      </td>
-    </ng-container>
-
-    <!-- Status Column -->
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
-      <td mat-cell *matCellDef="let element">
-        <span class="status" 
+ <!-- Phần DANH SÁCH ĐƠN XIN NGHỈ PHÉP -->
+ <section>
+  <h1 class="text-3xl font-bold text-black text-center mb-6">
+    DANH SÁCH ĐƠN XIN NGHỈ PHÉP
+  </h1>
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Tên nhân viên
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Ngày bắt đầu
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Ngày kết thúc
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Ghi chú
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Trạng thái
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Loại nghỉ phép
+          </th>
+          <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+            Hành động
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let element of leaveRequests" class="bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+            {{ element.employee?.full_name }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+            {{ element.leave_request?.start_date | date: 'dd/MM/yyyy' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+            {{ element.leave_request?.end_date | date: 'dd/MM/yyyy' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+            {{ element.leave_request?.notes }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span
+              class="px-3 py-1 inline-flex text-xs font-semibold rounded-full uppercase transition-colors duration-200"
               [ngClass]="{
-                'approved': element.leave_request.status === 'Chấp nhận',
-                'rejected': element.leave_request.status === 'Từ chối',
-                'pending': element.leave_request.status === 'Đang xử lý'
-              }">
-          {{ element.leave_request.status }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Type Column -->
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef> Loại nghỉ phép </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.leave_type.type_name }}
-      </td>
-    </ng-container>
-
-    <!-- Action Column -->
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef> Hành động </th>
-      <td mat-cell *matCellDef="let element" class="action-buttons">
-        
-        <button mat-raised-button color="primary" (click)="approveRequest(element)">
-          <mat-icon>check_circle</mat-icon>
-          <span>Chấp nhận</span>
-        </button>
-
-        <button mat-raised-button color="warn" (click)="rejectRequest(element)">
-          <mat-icon>cancel</mat-icon>
-          <span>Từ chối</span>
-        </button>
-
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
-  </table>
-
-  <div *ngIf="leaveRequests.length === 0" class="no-data">
-    <mat-icon>info</mat-icon>
-    <p>Không có đơn nghỉ phép nào.</p>
+                'bg-green-100 text-green-800': element.leave_request?.status === 'APPROVED',
+                'bg-red-100 text-red-800': element.leave_request?.status === 'REJECTED',
+                'bg-yellow-100 text-yellow-800': element.leave_request?.status === 'PROCESSING'
+              }"
+            >
+              {{ element.leave_request?.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+            {{ element.leave_type?.type_name }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex justify-center gap-2">
+              <button
+                (click)="approveRequest(element)"
+                class="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-md shadow transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Chấp nhận</span>
+              </button>
+              <button
+                (click)="rejectRequest(element)"
+                class="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md shadow transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-red-400"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>Từ chối</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-</div>
+</section>

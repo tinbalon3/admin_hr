@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 from sqlalchemy.orm import Session
 from fastapi.security.http import HTTPAuthorizationCredentials
 
@@ -11,7 +11,7 @@ router = APIRouter(tags=["approve"], prefix="/approve")
 
 @router.post("/change_decision", status_code=status.HTTP_200_OK, response_model=ApprovalResponse_V2)
 def change_decision(
-    approveCreate: ApprovalCreate = Depends(),
+    approveCreate: ApprovalCreate = Body(...),
     db: Session = Depends(get_db),
     token: HTTPAuthorizationCredentials = Depends(auth_scheme)
 ):

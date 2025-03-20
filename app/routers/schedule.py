@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import uuid
 
 
-from app.schemas.schedule import WorkScheduleCreate,WorkScheduleResponse,ListWorkScheduleResponse,notification
+from app.schemas.schedule import ListWorkScheduleUserResponse, WorkScheduleCreate,WorkScheduleResponse,ListWorkScheduleResponse,notification
 from app.services.schedule import ScheduleService
 from app.db.database import get_db
 from app.core.security import HTTPBearer, auth_scheme
@@ -47,7 +47,7 @@ def get_current_week_schedule(schedule_id: str,
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/user/list", response_model=ListWorkScheduleResponse, status_code=status.HTTP_200_OK)
+@router.get("/user/list", response_model=ListWorkScheduleUserResponse, status_code=status.HTTP_200_OK)
 def get_schedule_in_month(month: str,
                           token: HTTPAuthorizationCredentials = Depends(auth_scheme),
                           db: Session = Depends(get_db)):

@@ -53,6 +53,20 @@ export const routes: Routes = [
             (m) => m.ScheduleInternComponent
           ),
       },
+      {
+        path: 'approvals',
+        loadComponent: () =>
+          import('./pages/approvals/approvals.component').then(
+            (m) => m.ApprovalsComponent
+          ),
+      },
+      {
+        path: 'list-schedule-intern',
+        loadComponent: () =>
+          import('./pages/list-schedule-intern/list-schedule-intern.component').then(
+            (m) => m.ListScheduleInternComponent
+          ),
+      },
       // {
       //   path: 'leave-list',
       //   loadComponent: () =>

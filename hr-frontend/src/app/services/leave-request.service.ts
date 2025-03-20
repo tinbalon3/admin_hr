@@ -12,6 +12,7 @@ export class LeaveRequestService {
   private API_LEAVE_REQUEST_DELETE = 'http://127.0.0.1:8000/leaveRequest/delete'; // API endpoint
   private API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN = 'http://127.0.0.1:8000/leaveRequest/admin/list'; // API endpoint
   private API_LEAVE_REQUEST_SEND_LEAVE_REQUEST_ADMIN = 'http://127.0.0.1:8000/mail/sendmail'; // API endpoint
+  private API_LEAVE_REQUEST_SEND_CHANGE_DECISION = 'http://127.0.0.1:8000/approve/change_decision'; // API endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -60,5 +61,11 @@ export class LeaveRequestService {
       'Content-Type': 'application/json',
     });
     return this.http.post(this.API_LEAVE_REQUEST_SEND_LEAVE_REQUEST_ADMIN, leaveData, { headers });
+  }
+  changeDecsion(leaveData:any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    return this.http.post(this.API_LEAVE_REQUEST_SEND_CHANGE_DECISION,leaveData, { headers });
   }
 }

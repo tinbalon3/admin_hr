@@ -174,10 +174,12 @@ class LeaveRequestService:
     @staticmethod
     def edit(db: Session, token: HTTPAuthorizationCredentials, id, leave_data: LeaveRequestBase) -> LeaveRequestResponse:
         verify_token(token)
-        logger.info(f"User {123} is editing leave requesthehe")
+    
         user_id = get_current_user(token=token)
-       
+        logger.info(f"User {user_id} is editing leave request {id}")
         employee = check_user_exist(token, db)
+        logger.debug(f"User {employee.id} is editing leave request {id}")
+        logger.debug(f"Fetching leave request {id} for user {user_id}")
         leaveRequest = db.query(LeaveRequest).filter(
             LeaveRequest.id == id,
             LeaveRequest.employee_id == user_id

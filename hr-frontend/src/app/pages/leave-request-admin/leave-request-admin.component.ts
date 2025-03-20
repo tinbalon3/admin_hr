@@ -61,13 +61,13 @@ export class LeaveRequestAdminComponent {
   }
 
   approveRequest(element: any): void {
-    element.leave_request.status = 'Chấp nhận';
-    this.updateLeaveRequest(element);
+    element.leave_request.status = 'APPROVED';
+    this.changeDecision(element);
   }
   
   rejectRequest(element: any): void {
-    element.leave_request.status = 'Từ chối';
-    this.updateLeaveRequest(element);
+    element.leave_request.status = 'REJECTED';
+    this.changeDecision(element);
   }
   
 
@@ -80,22 +80,18 @@ export class LeaveRequestAdminComponent {
     });
   }
 
-  onLeaveTypeChange(element: any, selectedTypeId: string): void {
-    this.leave_type_id_change = selectedTypeId;
-    element.leave_type.id = selectedTypeId;
-    console.log('ID Loại nghỉ phép đã chọn:', this.leave_type_id_change);
-    console.log('Element đã cập nhật:', element);
-  }
+  
  
-  updateLeaveRequest(element: any): void {
+  changeDecision(request: any): void {
+    console.log('request', request);
     const updatedRequest = {
-      start_date: element.leave_request.start_date,
-      end_date: element.leave_request.end_date,
-      notes: element.leave_request.notes,
-      leave_type_id: element.leave_type.id,
+      comments: "OK",
+      leave_request_id: request.leave_request.id,
+      decision: request.leave_request.status,
+      
     };
     console.log('updatedRequest', updatedRequest);
-    this.leaveRequestService.updateLeaveRequest(element.leave_request.id, updatedRequest).subscribe({
+    this.leaveRequestService.changeDecsion(updatedRequest).subscribe({
       next: () => {
         this.snackBar.open('Cập nhật thành công!', 'Đóng', { duration: 3000 });
       },
@@ -107,9 +103,14 @@ export class LeaveRequestAdminComponent {
   }
  
   fetchLeaveRequestAdmin(): void {
-    this.leaveRequestService.getListLeaveRequestAdmin().subscribe((data: any) => {
-      this.leaveRequests = data.data;
-      console.log('leaveRequests', this.leaveRequests);
+    this.leaveRequestService.getListLeaveRequestAdmin().subscribe({
+      next: (data: any) => {
+        this.leaveRequests = data.data;
+        console.log('Leave Requests:', this.leaveRequests);
+      },
+      error: (error) => {
+        console.error('Error fetching leave requests:', error);
+      }
     });
   }
 
@@ -132,7 +133,9 @@ interface LeaveRequest {
     notes: string;
     status: string;
   };
-  leave_type?: { id: string };
+  leave_type?: { 
+    type_name: string;
+    id: string };
   selected?: boolean;
 
 }

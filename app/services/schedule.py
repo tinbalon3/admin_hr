@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime, date, timedelta
 import uuid
 from app.models.models import WorkSchedule, Employee
-from app.schemas.schedule import WorkScheduleCreate, WorkScheduleOut, ListWorkScheduleResponse, Response,Response_2,notification
+from app.schemas.employee import UserInfo
+from app.schemas.schedule import ListWorkScheduleUserResponse, WorkScheduleCreate, WorkScheduleOut, ListWorkScheduleResponse, Response,Response_2,notification
 from app.utils.responses import ResponseHandler
 from app.core.security import verify_token, check_intern, check_admin, check_user_exist
 
@@ -97,6 +98,39 @@ class ScheduleService:
 
 
         return ResponseHandler.success("Đăng ký lịch thành công")
+    # @staticmethod
+    # def getlist(db: Session, token: HTTPAuthorizationCredentials) -> ListWorkScheduleResponse:
+    #     # Kiểm tra token và quyền admin
+    #     verify_token(token=token)
+    #     check_admin(token=token, db=db)
+        
+    #     current_date = datetime.now().date()
+    #     start_month = str(current_date.month)
+    #     start_year = str(current_date.year)
+
+    #     # Lấy danh sách lịch làm việc theo tháng
+    #     schedules = db.query(WorkSchedule).filter(
+    #         WorkSchedule.start_month == start_month,
+    #         WorkSchedule.start_year == start_year
+    #     ).all() or None
+        
+    #     response_data = []
+    #     if schedules:
+    #         # Tạo response data với thông tin employee
+    #         for schedule in schedules:
+    #             employee = db.query(Employee).filter(Employee.id == schedule.employee_id).first()
+    #             response_data.append(Response_2(
+    #                 schedule=WorkScheduleOut.from_orm(schedule),
+    #                 employee=employee  # Nếu cần, chuyển đổi bằng UserInfo.from_orm(employee)
+    #             ))
+    #     else:
+    #         logger.warning("Không tìm thấy lịch làm việc nào trong tháng hiện tại.")
+        
+
+    #     return ListWorkScheduleResponse(
+    #         message="Lấy danh sách thành công",
+    #         data=response_data
+    #     )
     @staticmethod
     def getlist(db: Session, token: HTTPAuthorizationCredentials) -> ListWorkScheduleResponse:
         # Kiểm tra token và quyền admin
@@ -120,18 +154,20 @@ class ScheduleService:
                 employee = db.query(Employee).filter(Employee.id == schedule.employee_id).first()
                 response_data.append(Response(
                     schedule=WorkScheduleOut.from_orm(schedule),
-                    employee=employee  # Nếu cần, chuyển đổi bằng UserInfo.from_orm(employee)
+                    employee=UserInfo.from_orm(employee)  # Chuyển đổi thông tin employee để lấy tên, email, v.v.
                 ))
         else:
             logger.warning("Không tìm thấy lịch làm việc nào trong tháng hiện tại.")
-        
-
+            
+        # Nếu cần, bạn có thể thay đổi schema của ListWorkScheduleResponse
+        # để data là list[Response] thay vì list[Response_2].
         return ListWorkScheduleResponse(
             message="Lấy danh sách thành công",
             data=response_data
         )
+
     @staticmethod
-    def user_get_list_in_month(db: Session, month: str, token: HTTPAuthorizationCredentials) -> ListWorkScheduleResponse:
+    def user_get_list_in_month(db: Session, month: str, token: HTTPAuthorizationCredentials) -> ListWorkScheduleUserResponse:
         
         try:
             month_int = int(month)

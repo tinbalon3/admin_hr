@@ -26,6 +26,8 @@
       <a mat-list-item routerLink="/dashboard/create-leave-request">Tạo đơn nghỉ phép</a>
       <a *ngIf="this.userRole == 'INTERN'" mat-list-item routerLink="/dashboard/intern-schedule">Đăng kí lịch làm (Thực tập sinh)</a>
       <a *ngIf="this.userRole == 'ADMIN'" mat-list-item routerLink="/dashboard/list-leave-request">Danh sách đơn nghỉ phép</a>
+      <a *ngIf="this.userRole == 'ADMIN'" mat-list-item routerLink="/dashboard/approvals">Danh sách đơn đã duyệt</a>
+      <a *ngIf="this.userRole == 'ADMIN'" mat-list-item routerLink="/dashboard/list-schedule-intern">Lịch đăng kí làm việc của intern</a>
     </mat-nav-list>
   </mat-sidenav>
 
