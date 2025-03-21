@@ -238,7 +238,7 @@ class ScheduleService:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lịch đã bắt đầu, không thể sửa.")
 
         # Chuyển đổi new_schedule_data.work_days thành list các dict với key "day_of_week"
-        new_work_days = [{"day_of_week": wd.day_of_week.isoformat()} for wd in new_schedule_data.work_days]
+        new_work_days = [{"day_of_week": wd.day_of_week.isoformat(),"note":wd.note} for wd in new_schedule_data.work_days]
         logger.debug(f"Work_days mới sẽ được cập nhật: {new_work_days}")
 
         # Cập nhật lịch

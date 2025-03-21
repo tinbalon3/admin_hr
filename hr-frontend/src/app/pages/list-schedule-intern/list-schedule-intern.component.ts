@@ -118,6 +118,7 @@ export class ListScheduleInternComponent implements OnInit {
   fetchSchedule(): void {
     this.scheduleService.fectchScheduleList().subscribe({
       next: (res: ApiResponse) => {
+        console.log('Dữ liệu schedule:', res);
         if (res.data && res.data.length > 0) {
           const aggregated: { [key: string]: AggregatedWorkDay } = {};
           res.data.forEach(item => {

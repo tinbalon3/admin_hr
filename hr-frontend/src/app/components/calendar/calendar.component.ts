@@ -90,10 +90,12 @@ export class CalendarComponent implements OnInit {
     const remainingNextWeekDays = this.registeredDays.filter(day =>
       day >= nextWeekStart && day <= nextWeekEnd
     );
-    const existingDays = remainingNextWeekDays.map(day => ({
-      day_of_week: format(day, 'yyyy-MM-dd'),
-      note: false  // Backend có thể coi là full day nếu chưa có thay đổi từ người dùng
-    }));
+    const existingDays = remainingNextWeekDays.map(day => {
+      const formatted = format(day, 'yyyy-MM-dd');
+      const backendEntry = this.registeredDaysObject.find(obj => obj.day_of_week === formatted);
+      return { day_of_week: formatted, note: backendEntry ? backendEntry.note : false };
+    });
+    
   
     // Nếu không có xoá và không có ngày mới được chọn, thì không có gì để cập nhật
     if (!hasRemoved && !hasNewSelections) {
@@ -119,15 +121,16 @@ export class CalendarComponent implements OnInit {
         index === self.findIndex(d => startOfDay(d).getTime() === startOfDay(day).getTime())
       );
       this.selectedDates.set(this.registeredDays);
-  
+      
       // Reset lại các mảng lưu trạng thái người dùng
       this.newSelectedDatesObject = [];
       this.selectedDatesObject = [];
-          this.fetchUserSchedule(format(new Date(), 'MM'))
+      this.fetchUserSchedule(format(new Date(), 'MM'))
 
     };
   
     if (this.schedule_id && this.schedule_id.trim() !== '') {
+      console.log('Cập nhật lịch làm việc cho tuần tiếp theo:', data);
       this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe(
         (res) => {
           alert('Đã cập nhật lịch làm việc!');
@@ -139,6 +142,7 @@ export class CalendarComponent implements OnInit {
         }
       );
     } else {
+      console.log('Gửi lịch làm việc mới:', data);
       this.scheduleService.submitSchedule(data).subscribe(
         (res) => {
           alert('Đã lưu lịch làm việc mới!');
