@@ -24,7 +24,7 @@ Clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/SCGROUPS/admin_hr.git
-cd admin_hr
+cd admin_hr/backend
 ```
 
 ---
