@@ -23,6 +23,8 @@ docs.zip
 archive.zip
 app/logs/
 *.log
+.env
+.env.docker
 # alembic
 alembic/versions/
 .env

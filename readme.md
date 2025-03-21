@@ -14,6 +14,8 @@ The Admin HR System project provides a comprehensive backend built with FastAPI 
   - [Navigate to the Frontend Directory](#navigate-to-the-frontend-directory)
   - [Install Frontend Packages](#install-frontend-packages)
   - [Running the Frontend Application](#running-the-frontend-application)
+- [Docker build](#Docker-build)
+  - [Docker run](#Docker-run)
 
 ---
 
@@ -221,6 +223,16 @@ The frontend application will typically be accessible at `http://localhost:4200`
 
 ---
 
+---
+### Docker Build and Run
+
+#### Docker Compose Configuration
+```bash
+docker-compose up -d --build
+```
+
+---
 ## Conclusion
 
 By following these steps, you will have successfully set up and run both the backend and frontend parts of the Admin HR System.
+---

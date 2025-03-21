@@ -115,7 +115,6 @@ def get_token_payload(token: str) -> dict:
     """
     try:
         decrypted_jwt = fernet.decrypt(token).decode()
-        print(decrypted_jwt)
         payload = jwt.decode(decrypted_jwt, settings.secret_key, [settings.algorithm])
         # logger.debug("Token payload successfully decoded")
         return payload
