@@ -19,7 +19,7 @@ The Admin HR System project provides a comprehensive backend built with FastAPI 
 
 ## Backend Setup
 
-### 1. Clone Repository
+## 1. Clone Repository
 Clone the repository and navigate to the project directory:
 
 ```bash
@@ -29,9 +29,9 @@ cd admin_hr/backend
 
 ---
 
-### 2. Virtual Environment and Package Installation
+## 2. Virtual Environment and Package Installation
 
-#### Create and Activate the Virtual Environment
+## Create and Activate the Virtual Environment
 
 - **For macOS/Linux:**
   ```bash
@@ -223,4 +223,4 @@ The frontend application will typically be accessible at `http://localhost:4200`
 
 ## Conclusion
 
-By following these steps, you will have successfully set up and run both the backend and frontend parts of the Admin HR System. Happy coding!
+By following these steps, you will have successfully set up and run both the backend and frontend parts of the Admin HR System.
