@@ -1,16 +1,6 @@
 
-   <div class="p-6">
-    <app-calendar [markers]="markers" [markerTpl]="markerTpl">
+   
+    <app-calendar>
     </app-calendar>
-  </div>
-  
-  <ng-template #markerTpl let-data>
-    <div class="flex items-center justify-center">
-      <ul class="flex flex-col gap-1">
-        <li *ngFor="let marker of data" class="flex bg-blue-100 text-center text-xs rounded-md px-2 py-1 justify-center items-center">
-          {{marker.data.title}}
-        </li>
-      </ul>
-    </div>
-  </ng-template>
+
   

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { DatePipe, NgClass, NgTemplateOutlet, CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   computed,
@@ -22,6 +22,7 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { ScheduleInternService } from '../../services/schedule-intern-service.service';
 import { startOfDay } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-calendar',
   standalone: true,
@@ -48,7 +49,7 @@ export class CalendarComponent implements OnInit {
   protected currentMonth = computed(() =>
     format(this.currentDate(), 'MMMM yyyy')
   );
-  constructor(private scheduleService: ScheduleInternService) { }
+  constructor(private scheduleService: ScheduleInternService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
     const currentMonth = format(new Date(), 'MM'); // Lấy tháng hiện tại
     this.fetchUserSchedule(currentMonth);
@@ -122,6 +123,8 @@ export class CalendarComponent implements OnInit {
       // Reset lại các mảng lưu trạng thái người dùng
       this.newSelectedDatesObject = [];
       this.selectedDatesObject = [];
+          this.fetchUserSchedule(format(new Date(), 'MM'))
+
     };
   
     if (this.schedule_id && this.schedule_id.trim() !== '') {
@@ -147,6 +150,7 @@ export class CalendarComponent implements OnInit {
         }
       );
     }
+    // this.fetchUserSchedule(format(new Date(), 'MM'))
   }
   
   
