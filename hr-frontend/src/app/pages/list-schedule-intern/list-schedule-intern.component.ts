@@ -127,10 +127,12 @@ export class ListScheduleInternComponent implements OnInit {
               if (!aggregated[key]) {
                 aggregated[key] = { day_of_week: wd.day_of_week, registrations: [] };
               }
+              console.log(wd);
               aggregated[key].registrations.push({ intern: internName, note: wd.note });
             });
           });
           this.aggregatedRegisteredWorkDays = Object.values(aggregated);
+          console.log('Dữ liệu đã tổng hợp:', this.aggregatedRegisteredWorkDays);
         }
       },
       error: (err) => console.error('Lỗi fetch schedule:', err)

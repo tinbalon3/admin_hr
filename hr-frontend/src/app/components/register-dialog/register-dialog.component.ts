@@ -1,22 +1,24 @@
-import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 
 export interface RegistrationData {
-  day: string; // định dạng yyyy-MM-dd
+  day: string; // format "yyyy-MM-dd"
   registrations: { intern: string; note: boolean }[];
 }
 
 @Component({
   selector: 'app-registration-dialog',
-  templateUrl:  './register-dialog.component.html',
-  styleUrl:'./register-dialog.component.css',
-  imports: [MatDialogModule ,CommonModule],
-  standalone: true
+  standalone: true,
+  imports: [MatDialogModule, CommonModule],
+  templateUrl: './register-dialog.component.html',
+  styleUrls: ['./register-dialog.component.css']
 })
 export class RegistrationDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<RegistrationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RegistrationData
-  ) {}
+  ) {
+    console.log('Dialog data:', data);
+  }
 }

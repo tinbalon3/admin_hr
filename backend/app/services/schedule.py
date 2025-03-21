@@ -60,7 +60,7 @@ class ScheduleService:
             month_str = str(d.month)
             year_str = str(d.year)
             key = (week_number, month_str, year_str)
-            groups.setdefault(key, []).append({"day_of_week": d.isoformat()})
+            groups.setdefault(key, []).append({"day_of_week": d.isoformat(),"note": wd.note})
             logger.debug(f"Grouping date {d} into week {week_number}, month {month_str}, year {year_str}")
 
         created_schedules = []
