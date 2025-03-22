@@ -55,7 +55,7 @@ export class EmployeeRegistrationComponent {
         Validators.required,
         Validators.pattern(/^\+?[0-9]{10,15}$/)
       ]],
-      role: ['EMPLOYEE'],
+      role: ['EMPLOYEE', [Validators.required]],
       location: ['', [
         Validators.required
       ]]
@@ -91,6 +91,10 @@ export class EmployeeRegistrationComponent {
       
       case 'location':
         if (errors['required']) return 'Vui lòng chọn địa điểm';
+        break;
+        
+      case 'role':
+        if (errors['required']) return 'Vui lòng chọn chức vụ';
         break;
     }
     

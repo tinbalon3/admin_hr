@@ -56,6 +56,18 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Chức vụ -->
+      <mat-form-field class="w-full">
+        <mat-label>Chức vụ</mat-label>
+        <mat-select formControlName="role">
+          <mat-option [value]="'EMPLOYEE'">Nhân viên</mat-option>
+          <mat-option [value]="'INTERN'">Thực tập sinh</mat-option>
+        </mat-select>
+        <mat-error *ngIf="registrationForm.get('role')?.touched && registrationForm.get('role')?.hasError('required')">
+          Vui lòng chọn chức vụ
+        </mat-error>
+      </mat-form-field>
+
       <!-- Nút submit -->
       <div class="flex justify-end space-x-4 mt-6">
         <button mat-button type="button" 
