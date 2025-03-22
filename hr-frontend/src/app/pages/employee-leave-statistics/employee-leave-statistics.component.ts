@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import * as XLSX from 'xlsx';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -18,6 +19,28 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { EmployeeLeaveDetailsDialogComponent } from '../../components/employee-leave-details-dialog/employee-leave-details-dialog.component';
+
+interface LeaveRequest {
+  start_date: string;
+  end_date: string;
+  status: string;
+  notes: string;
+}
+
+interface LeaveType {
+  type_name: string;
+}
+
+interface Employee {
+  id: string;
+  full_name: string;
+}
+
+interface LeaveData {
+  employee: Employee;
+  leave_request: LeaveRequest;
+  leave_type: LeaveType;
+}
 
 interface LeaveStatistics {
   employeeId: string;
@@ -123,7 +146,42 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
     this.leaveRequestService.getApprovedLeaveRequestAdminList().subscribe({
       next: (response: any) => {
         this.rawLeaveData = response.data;
-        this.dataSource = this.processLeaveData(response.data);
+        let filteredData = response.data;
+
+        // Apply date range filter
+        if (filters.dateRange.start || filters.dateRange.end) {
+          filteredData = filteredData.filter((item: LeaveData) => {
+            const startDate = new Date(item.leave_request.start_date);
+            const endDate = new Date(item.leave_request.end_date);
+            const filterStart = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+            const filterEnd = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
+
+            if (filterStart && filterEnd) {
+              return startDate >= filterStart && endDate <= filterEnd;
+            } else if (filterStart) {
+              return startDate >= filterStart;
+            } else if (filterEnd) {
+              return endDate <= filterEnd;
+            }
+            return true;
+          });
+        }
+
+        // Apply status filter
+        if (filters.status && filters.status.length > 0) {
+          filteredData = filteredData.filter((item: LeaveData) =>
+            filters.status.includes(item.leave_request.status)
+          );
+        }
+
+        // Apply leave type filter
+        if (filters.leaveType && filters.leaveType.length > 0) {
+          filteredData = filteredData.filter((item: LeaveData) =>
+            filters.leaveType.includes(item.leave_type.type_name)
+          );
+        }
+
+        this.dataSource = this.processLeaveData(filteredData);
         this.isLoading = false;
       },
       error: (error: any) => {
@@ -260,6 +318,60 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
   }
 
   exportToExcel(): void {
-    console.log('Export to Excel functionality will be implemented later');
+    if (!this.dataSource || this.dataSource.length === 0) {
+      return;
+    }
+
+    // Create workbook with headers
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    // Add headers
+    XLSX.utils.sheet_add_aoa(worksheet, [[
+      'Tên nhân viên',
+      'Tổng ngày nghỉ',
+      'Ngày còn lại',
+      'Đã duyệt',
+      'Đang chờ',
+      'Từ chối',
+      'Chi tiết loại nghỉ'
+    ]]);
+
+    // Add data rows
+    const data = this.dataSource.map(row => ({
+      'Tên nhân viên': row.employeeName,
+      'Tổng ngày nghỉ': row.totalLeavesTaken,
+      'Ngày còn lại': row.remainingBalance,
+      'Đã duyệt': row.approvedLeaves,
+      'Đang chờ': row.pendingLeaves,
+      'Từ chối': row.rejectedLeaves,
+      'Chi tiết loại nghỉ': Object.entries(row.leaveTypes)
+        .map(([type, days]) => `${type}: ${days} ngày`)
+        .join(', ')
+    }));
+
+    // Add data to worksheet
+    XLSX.utils.sheet_add_json(worksheet, data, { origin: 'A2', skipHeader: true });
+
+    // Auto-size columns
+    const max_width = data.reduce((w, r) => Math.max(w, r['Tên nhân viên'].length), 10);
+    const col_width = Array(7).fill({ wch: max_width });
+    worksheet['!cols'] = col_width;
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leave Statistics');
+
+    // Generate Excel file
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    
+    // Download file
+    const fileName = `leave_statistics_${new Date().toISOString().split('T')[0]}.xlsx`;
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 }

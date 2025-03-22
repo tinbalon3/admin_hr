@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LeveRequestDialogComponent } from '../../components/leve-request-dialog/leve-request-dialog.component';
@@ -12,6 +12,7 @@ import { ListTypeService } from '../../services/list-type.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -24,7 +25,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatCardModule,
     MatTableModule,
     FormsModule,
-    MatIconModule
+    MatIconModule,
+    MatPaginatorModule
   ],
   templateUrl: './leave-request.component.html',
   styleUrls: ['./leave-request.component.css']
