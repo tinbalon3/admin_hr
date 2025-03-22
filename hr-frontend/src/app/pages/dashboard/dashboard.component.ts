@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
     // Lấy thông tin người dùng từ localStorage
     // Kiểm tra nếu đang chạy trong môi trường trình duyệt
     if (typeof window !== 'undefined' && window.localStorage) {
-      const userInfo = localStorage.getItem('inforUser');
+      const userInfo = localStorage.getItem('currentUser');
       if (userInfo) {
         const parsedUser = JSON.parse(userInfo);
         this.userName = parsedUser.full_name ;
@@ -65,15 +65,15 @@ export class DashboardComponent implements OnInit {
     // Xóa thông tin người dùng khỏi localStorage và điều hướng đến trang đăng nhập
     this.authService.logout().subscribe({
       next: () => {
-        localStorage.removeItem('inforUser');
+        localStorage.removeItem('currentUser');
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
     
         this.router.navigate(['/login']); // Thay '/login' bằng route của trang đăng nhập
         console.log('Đăng xuất thành công');
       },
-      error: (error) => {
-        localStorage.removeItem('inforUser');
+      error: (error: any) => {
+        localStorage.removeItem('currentUser');
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         this.router.navigate(['/login']); // Thay '/login' bằng route của trang đăng nhập

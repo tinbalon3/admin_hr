@@ -1,97 +1,89 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
+export interface EmployeeRegistration {
+  full_name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: 'EMPLOYEE';
+  location: string;
+}
+
+export interface LoginResponse {
+  token: {
+    access_token: string;
+    refresh_token: string;
+  };
+  user: {
+    id: number;
+    email: string;
+    full_name: string;
+    role: string;
+    [key: string]: any; // For any additional user properties
+  };
+}
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
+  private isBrowser: boolean;
+
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
-  
-  API_LOGIN = 'http://127.0.0.1:8000/auth/login';
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+  API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
+  API_CREATE_EMPLOYEE = 'http://127.0.0.1:8000/auth/admin/signup';
   API_LOGOUT = 'http://127.0.0.1:8000/auth/logout';
-  private readonly TOKEN_KEY = 'access_token';
-
-  private get isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_LOGIN}`, { email, password });
   }
-
-  login(email: string, password: string): Observable<any> {
-    const data = {
-      "email": email,
-      "password": password
-    };
-  
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-
-    return this.http.post(`${this.API_LOGIN}`, data, { headers });
-  }
-
   logout(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-    return this.http.post(`${this.API_LOGOUT}`, { headers });
+    return this.http.post(`${this.API_LOGOUT}`, {});
+  }
+  adminCreateEmployee(data: EmployeeRegistration): Observable<any> {
+    return this.http.post(`${this.API_CREATE_EMPLOYEE}`, data);
   }
 
   saveToken(token: string): void {
     if (this.isBrowser) {
-      localStorage.setItem(this.TOKEN_KEY, token);
+      localStorage.setItem('accessToken', token);
     }
   }
 
-  getToken(): string | null {
+  saveRefreshToken(token: string): void {
     if (this.isBrowser) {
-      return localStorage.getItem(this.TOKEN_KEY);
+      localStorage.setItem('refreshToken', token);
     }
-    return null;
   }
 
-  removeToken(): void {
+  savecurrentUser(user: LoginResponse['user']): void {
     if (this.isBrowser) {
-      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.setItem('currentUser', JSON.stringify(user));
     }
-  }
-
-  saveRefreshToken(refreshToken: string): void {
-    if (this.isBrowser) {
-      localStorage.setItem('refresh_token', refreshToken);
-    }
-  }
-
-  getRefreshToken(): string | null {
-    if (this.isBrowser) {
-      return localStorage.getItem('refresh_token');
-    }
-    return null;
-  }
-
-  saveInforUser(infor: any): void {
-    if (this.isBrowser) {
-      localStorage.setItem('inforUser', JSON.stringify(infor));
-    }
-  }
-
-  getInforUser(): any {
-    if (this.isBrowser) {
-      const infoStr = localStorage.getItem('inforUser');
-      return infoStr ? JSON.parse(infoStr) : null;
-    }
-    return null;
-  }
-
-  getUserRole(): string {
-    const userInfo = this.getInforUser();
-    return userInfo?.role || '';
   }
 
   isAdmin(): boolean {
-    return this.getUserRole() === 'ADMIN';
+    if (!this.isBrowser) return false;
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    return user?.role === 'ADMIN' || false;
   }
+
+  getToken(): string {
+    if (!this.isBrowser) return '';
+    return localStorage.getItem('accessToken') || '';
+  }
+
+  getUserRole(): string {
+    if (!this.isBrowser) return '';
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    return user.role || '';
+  }
+  
 }

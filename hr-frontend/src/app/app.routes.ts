@@ -77,6 +77,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'admin-create-account',
+        loadComponent: () =>
+          import('./pages/employee-registration/employee-registration.component').then(
+            (m) => m.EmployeeRegistrationComponent
+          ),
+      },
+      {
         path: 'employee-leave-statistics',
         loadComponent: () =>
           import('./pages/employee-leave-statistics/employee-leave-statistics.component').then(

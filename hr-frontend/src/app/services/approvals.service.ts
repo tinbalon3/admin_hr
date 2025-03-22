@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApprovalsService {
-  API_APPROVALS = 'http://127.0.0.1:8000/approve'; // Đổi thành URL backend của bạn
+  API_APPROVALS = 'http://127.0.0.1:8000/approve'; 
   constructor(private http: HttpClient) { }
   getApprovals(): Observable<any> {
     const headers = new HttpHeaders({

@@ -1,0 +1,77 @@
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Tạo tài khoản nhân viên</h2>
+
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <!-- Họ và tên -->
+      <mat-form-field class="w-full">
+        <mat-label>Họ và tên</mat-label>
+        <input matInput formControlName="full_name" placeholder="Nhập họ và tên">
+        <mat-error *ngIf="registrationForm.get('full_name')?.touched">
+          {{ getErrorMessage('full_name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field class="w-full">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="Nhập email">
+        <mat-error *ngIf="registrationForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Mật khẩu -->
+      <mat-form-field class="w-full">
+        <mat-label>Mật khẩu</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+               placeholder="Nhập mật khẩu">
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="registrationForm.get('password')?.touched">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Số điện thoại -->
+      <mat-form-field class="w-full">
+        <mat-label>Số điện thoại</mat-label>
+        <input matInput formControlName="phone" placeholder="Nhập số điện thoại">
+        <mat-error *ngIf="registrationForm.get('phone')?.touched">
+          {{ getErrorMessage('phone') }}
+        </mat-error>
+        <mat-hint>Ví dụ: +84123456789</mat-hint>
+      </mat-form-field>
+
+      <!-- Địa điểm -->
+      <mat-form-field class="w-full">
+        <mat-label>Địa điểm</mat-label>
+        <mat-select formControlName="location">
+          <mat-option [value]="'HCM'">TP. Hồ Chí Minh</mat-option>
+          <mat-option [value]="'ĐN'">TP. Đà Nẵng</mat-option>
+        </mat-select>
+        <mat-error *ngIf="registrationForm.get('location')?.touched && registrationForm.get('location')?.hasError('required')">
+          Vui lòng chọn địa điểm
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Nút submit -->
+      <div class="flex justify-end space-x-4 mt-6">
+        <button mat-button type="button" 
+                (click)="registrationForm.reset()" 
+                [disabled]="loading">
+          Xóa form
+        </button>
+        <button mat-raised-button 
+                color="primary" 
+                type="submit" 
+                [disabled]="loading || registrationForm.invalid"
+                class="min-w-[150px]">
+          <mat-spinner *ngIf="loading" diameter="20" class="mr-2 inline-block"></mat-spinner>
+          <span>Tạo tài khoản</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

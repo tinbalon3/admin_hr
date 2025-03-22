@@ -57,7 +57,7 @@ export class PersonalInfoDialogComponent implements OnInit {
   }
   loadUserProfile(): void {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const storedUser = localStorage.getItem('inforUser');
+      const storedUser = localStorage.getItem('currentUser');
       if (storedUser) {
         const user = JSON.parse(storedUser);
         this.profileForm.patchValue({
@@ -72,7 +72,7 @@ export class PersonalInfoDialogComponent implements OnInit {
   saveProfile(): void {
     if (this.profileForm.valid) {
       const profileData = this.profileForm.getRawValue();
-      localStorage.setItem('inforUser', JSON.stringify(profileData));
+      localStorage.setItem('currentUser', JSON.stringify(profileData));
       const data = {
         'phone': profileData.phone_number,
       }
