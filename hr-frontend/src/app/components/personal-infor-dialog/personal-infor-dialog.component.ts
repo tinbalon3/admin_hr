@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { UsersService } from '../../services/users.service';
+import { NotificationComponent } from '../notification/notification.component';
 @Component({
   selector: 'app-profile',
   standalone : true, // thêm dòng này vào
@@ -51,7 +52,7 @@ export class PersonalInfoDialogComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        alert('Mật khẩu đã được cập nhật thành công!');
+        this.success('Mật khẩu đã được cập nhật thành công!');
       }
     });
   }
@@ -68,7 +69,33 @@ export class PersonalInfoDialogComponent implements OnInit {
       }
     }
   }
-
+private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+     if (this.notificationComponent) {
+       this.notificationComponent.data = {
+         message,
+         type,
+         duration: 3000,
+         dismissable: true
+       };
+     }
+   }
+   @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+ 
+   private success(message: string) {
+     this.notify('success', message);
+   }
+ 
+   private error(message: string) {
+     this.notify('error', message);
+   }
+ 
+   private warn(message: string) {
+     this.notify('warning', message);
+   }
+ 
+   private info(message: string) {
+     this.notify('info', message);
+   }
   saveProfile(): void {
     if (this.profileForm.valid) {
       const profileData = this.profileForm.getRawValue();
@@ -78,10 +105,10 @@ export class PersonalInfoDialogComponent implements OnInit {
       }
       this.userService.updatedUser(data).subscribe(
         (res) => {
-          alert('Cập nhật thông tin thành công!');
+          this.success('Cập nhật thông tin thành công!');
         },
         (error) => {
-          alert('Cập nhật thông tin thất bại!');
+          this.error('Cập nhật thông tin thất bại!');
         }
       );
       this.profileForm.markAsPristine();
@@ -90,8 +117,5 @@ export class PersonalInfoDialogComponent implements OnInit {
 
 
 
-  changeEmail(): void {
-    // Logic mở dialog hoặc form đổi email
-    alert('Chức năng đổi email đang được phát triển!');
-  }
+  
 }

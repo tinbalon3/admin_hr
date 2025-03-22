@@ -92,6 +92,14 @@ export const routes: Routes = [
         canActivate: [adminGuard]
       },
       {
+        path: 'admin-leave-request',
+        loadComponent: () =>
+          import('./pages/admin-leave-request/admin-leave-request.component').then(
+            (m) => m.AdminLeaveRequestComponent
+          ),
+        canActivate: [adminGuard]
+      },
+      {
         path: '',
         redirectTo: 'inforcompany',
         pathMatch: 'full',

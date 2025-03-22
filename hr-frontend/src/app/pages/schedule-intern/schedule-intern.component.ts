@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DatePipe, NgClass, NgTemplateOutlet, CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   computed,
@@ -23,15 +23,23 @@ import { ScheduleInternService } from '../../services/schedule-intern-service.se
 import { startOfDay } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { NotificationService } from '../../services/notification.service';
+import { NotificationComponent } from '../../components/notification/notification.component';
+
+interface NotificationData {
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  duration: number;
+  dismissable?: boolean;
+}
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [DatePipe, NgClass, NgFor, CommonModule,MatTooltipModule, NgIf, MatIconModule],
+  imports: [DatePipe, NgClass, NgFor, CommonModule, MatTooltipModule, NgIf, MatIconModule, NotificationComponent],
   templateUrl: './schedule-intern.component.html',
   styleUrl: './schedule-intern.component.css'
 })
 export class ScheduleInternComponent implements OnInit {
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   public startOfDay = startOfDay;
   @Input() markers: CalendarMarkerData[] = [];
   @Input() markerTpl!: TemplateRef<any>;
@@ -50,10 +58,38 @@ export class ScheduleInternComponent implements OnInit {
   protected currentMonth = computed(() =>
     format(this.currentDate(), 'MMMM yyyy')
   );
-  constructor(private scheduleService: ScheduleInternService, private cdr: ChangeDetectorRef,private notificationService: NotificationService) { }
+  constructor(private scheduleService: ScheduleInternService, private cdr: ChangeDetectorRef) { }
+
   ngOnInit(): void {
     const currentMonth = format(new Date(), 'MM'); // Lấy tháng hiện tại
     this.fetchUserSchedule(currentMonth);
+  }
+
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
+
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
   }
   protected readonly startDateOfSelectedMonth = computed(() => startOfMonth(this.currentDate()));
   protected readonly endDateOfSelectedMonth = computed(() => endOfMonth(this.currentDate()));
@@ -100,7 +136,7 @@ export class ScheduleInternComponent implements OnInit {
   
     // Nếu không có xoá và không có ngày mới được chọn, thì không có gì để cập nhật
     if (!hasRemoved && !hasNewSelections) {
-      this.notificationService.warning('Chưa có thay đổi nào được thực hiện.');
+      this.warn('Chưa có thay đổi nào được thực hiện.');
       return;
     }
     
@@ -134,24 +170,24 @@ export class ScheduleInternComponent implements OnInit {
       console.log('Cập nhật lịch làm việc cho tuần tiếp theo:', data);
       this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe(
         (res) => {
-          this.notificationService.success('Đã cập nhật lịch làm việc!');
+          this.success('Đã cập nhật lịch làm việc!');
           onSuccess();
         },
         (error) => {
           console.error("Lỗi khi cập nhật dữ liệu:", error);
-          this.notificationService.error('Có lỗi xảy ra khi cập nhật lịch làm việc!');
+          this.error('Có lỗi xảy ra khi cập nhật lịch làm việc!');
         }
       );
     } else {
       console.log('Gửi lịch làm việc mới:', data);
       this.scheduleService.submitSchedule(data).subscribe(
         (res) => {
-          this.notificationService.success('Đã lưu lịch làm việc mới!');
+          this.success('Đã lưu lịch làm việc mới!');
           onSuccess();
         },
         (error) => {
           console.error("Lỗi khi gửi dữ liệu:", error);
-          this.notificationService.error('Có lỗi xảy ra khi lưu lịch làm việc!');
+          this.error('Có lỗi xảy ra khi lưu lịch làm việc!');
         }
       );
     }

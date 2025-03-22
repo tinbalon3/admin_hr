@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { NotificationComponent } from '../../components/notification/notification.component';
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -35,13 +36,13 @@ export class LeaveRequestComponent implements OnInit {
   leaveRequests: any[] = [];  // Đảm bảo mảng không bị undefined
   leaveType: any;
   leave_type_id_change: any;
-
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   constructor(
     private dialog: MatDialog,
     private leaveRequestService: LeaveRequestService,
     private listTypeService: ListTypeService,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchLeaveRequestUsers();
@@ -76,13 +77,13 @@ export class LeaveRequestComponent implements OnInit {
       if (request.leave_request.status === 'PENDING') {
         request.selected = isChecked;
       }
-      });
+    });
   }
-  
+
   onLeaveTypeChange(element: any, selectedTypeId: string): void {
     this.leave_type_id_change = selectedTypeId;
     element.leave_type.id = selectedTypeId;
-   
+
   }
   performAction(element: any): void {
     if (element.selectedAction === 'update') {
@@ -101,25 +102,51 @@ export class LeaveRequestComponent implements OnInit {
     };
     this.leaveRequestService.updateLeaveRequest(element.leave_request.id, updatedRequest).subscribe({
       next: () => {
-        this.snackBar.open('Cập nhật thành công!', 'Đóng', { duration: 3000 });
+        this.success('Cập nhật thành công!');
       },
       error: (error) => {
         console.log(error)
-        this.snackBar.open('Cập nhật thất bại!', 'Đóng', { duration: 3000 });
+        this.error('Cập nhật thất bại!');
       }
     });
   }
-  deleteLeaveRequest(element:any): void {
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
+
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
+  }
+  deleteLeaveRequest(element: any): void {
     console.log('element', element);
     const id = element.leave_request.id;
     if (confirm('Bạn có chắc chắn muốn xóa đơn nghỉ phép này?')) {
       this.leaveRequestService.deleteLeaveRequest(id).subscribe({
         next: () => {
-          this.snackBar.open('Xóa thành công!', 'Đóng', { duration: 3000 });
+          this.success('Xóa thành công!');
           this.fetchLeaveRequestUsers(); // Cập nhật lại danh sách sau khi xóa
         },
         error: (err) => {
-          this.snackBar.open('Xóa thất bại!', 'Đóng', { duration: 3000 });
+          this.error('Xóa thất bại!');
           console.error('Lỗi khi xóa:', err);
         }
       });
@@ -140,14 +167,14 @@ export class LeaveRequestComponent implements OnInit {
   }
   hasChanges(request: any): boolean {
     const typeChanged = !request.originalData.leave_type_id ||
-                       request.leave_type.id !== request.originalData.leave_type_id;
-    
+      request.leave_type.id !== request.originalData.leave_type_id;
+
     return request.leave_request.start_date !== request.originalData.start_date ||
-           request.leave_request.end_date !== request.originalData.end_date ||
-           request.leave_request.notes !== request.originalData.notes ||
-           typeChanged;
+      request.leave_request.end_date !== request.originalData.end_date ||
+      request.leave_request.notes !== request.originalData.notes ||
+      typeChanged;
   }
-  
+
 
   hasSelected(): boolean {
     return this.leaveRequests.some(request => request.selected);
@@ -159,7 +186,7 @@ export class LeaveRequestComponent implements OnInit {
     if (!selectedRequest) {
       return;
     }
-  
+
     const formattedData = {
       data: {
         leave_request: {
@@ -176,16 +203,16 @@ export class LeaveRequestComponent implements OnInit {
         }
       }
     };
-  
+
 
     this.leaveRequestService.sendLeaveRequestToAdmin(formattedData).subscribe({
       next: () => {
-        this.snackBar.open('Gửi yêu cầu thành công!', 'Đóng', { duration: 3000 });
+        this.success('Gửi yêu cầu thành công!');
         this.fetchLeaveRequestUsers();
       }
     });
   }
-  
+
 }
 
 interface LeaveRequest {

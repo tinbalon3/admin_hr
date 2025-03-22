@@ -1,76 +1,36 @@
-import { ApplicationRef, ComponentRef, Injectable, NgZone, createComponent } from '@angular/core';
-import { NotificationComponent } from '../components/notification/notification.component';
+import { Injectable } from '@angular/core';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  private activeNotification?: ComponentRef<NotificationComponent>;
+  private config: MatSnackBarConfig = {
+    duration: 3000,
+    horizontalPosition: 'right',
+    verticalPosition: 'top'
+  };
 
-  constructor(
-    private appRef: ApplicationRef,
-    private zone: NgZone
-  ) {}
-
-  private show(message: string, type: 'success' | 'error' | 'info' | 'warning') {
-    this.zone.run(() => {
-      // Remove existing notification if any
-      if (this.activeNotification) {
-        this.activeNotification.destroy();
-      }
-
-      // Create notification component
-      const notification = document.createElement('div');
-      document.body.appendChild(notification);
-
-      const componentRef = createComponent(NotificationComponent, {
-        environmentInjector: this.appRef.injector,
-        hostElement: notification
-      });
-
-      // Set notification data
-      componentRef.instance.data = {
-        message,
-        type,
-        duration: 4000,
-        dismissable: true
-      };
-
-      // Handle animation end for cleanup
-      const element = notification as HTMLElement;
-      element.addEventListener('animationend', (event) => {
-        if (componentRef.instance.state === 'leave') {
-          componentRef.destroy();
-          document.body.removeChild(notification);
-        }
-      });
-
-      // Auto dismiss after duration
-      setTimeout(() => {
-        componentRef.instance.dismiss();
-      }, 4000);
-
-      // Attach to change detection
-      this.appRef.attachView(componentRef.hostView);
-
-      // Store reference
-      this.activeNotification = componentRef;
-    });
-  }
+  constructor(private snackBar: MatSnackBar) {}
 
   success(message: string) {
-    this.show(message, 'success');
+    this.config.panelClass = ['success-snackbar'];
+    this.snackBar.open(message, 'Đóng', this.config);
   }
 
   error(message: string) {
-    this.show(message, 'error');
+    this.config.panelClass = ['error-snackbar'];
+    this.config.duration = 5000; // Longer duration for errors
+    this.snackBar.open(message, 'Đóng', this.config);
+  }
+
+  warn(message: string) {
+    this.config.panelClass = ['warning-snackbar'];
+    this.snackBar.open(message, 'Đóng', this.config);
   }
 
   info(message: string) {
-    this.show(message, 'info');
-  }
-
-  warning(message: string) {
-    this.show(message, 'warning');
+    this.config.panelClass = ['info-snackbar'];
+    this.snackBar.open(message, 'Đóng', this.config);
   }
 }

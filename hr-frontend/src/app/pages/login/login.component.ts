@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,6 +13,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService, LoginResponse } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NotificationComponent } from '../../components/notification/notification.component';
 
 @Component({
   selector: 'app-login',
@@ -44,13 +45,33 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  showNotification(message: string, isError: boolean = false) {
-    if (isError) {
-      this.notificationService.error(message);
-    } else {
-      this.notificationService.success(message);
-    }
-  }
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+     if (this.notificationComponent) {
+       this.notificationComponent.data = {
+         message,
+         type,
+         duration: 3000,
+         dismissable: true
+       };
+     }
+   }
+   @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+ 
+   private success(message: string) {
+     this.notify('success', message);
+   }
+ 
+   private error(message: string) {
+     this.notify('error', message);
+   }
+ 
+   private warn(message: string) {
+     this.notify('warning', message);
+   }
+ 
+   private info(message: string) {
+     this.notify('info', message);
+   }
 
   onLogin() {
     this.authService.login(this.email, this.password).subscribe({
@@ -61,7 +82,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       },
       error: (error: HttpErrorResponse) => {
-        this.showNotification(error.error.detail, true);
+        this.error(error.error.detail);
       },
     });
   }

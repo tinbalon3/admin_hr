@@ -41,7 +41,6 @@ export class LeveRequestDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<LeveRequestDialogComponent>,
     private listTypeService: ListTypeService,
-    private leaveRequestService: LeaveRequestService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
   ngOnInit(): void {

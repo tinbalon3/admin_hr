@@ -44,7 +44,7 @@ interface ApiResponse {
 export class ApprovalsComponent {
   data: ApprovalData[] = [];
 
-  constructor(private http: HttpClient,private approvalService: ApprovalsService) {}
+  constructor(private approvalService: ApprovalsService) {}
 
   ngOnInit(): void {
    this.approvalService.getApprovals() // endpoint trả về JSON như trên

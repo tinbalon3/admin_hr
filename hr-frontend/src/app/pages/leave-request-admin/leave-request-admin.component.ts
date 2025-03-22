@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -19,6 +19,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
 import { CommonModule } from '@angular/common';
+import { NotificationComponent } from '../../components/notification/notification.component';
 @Component({
   selector: 'app-leave-request-admin',
   standalone: true,
@@ -47,7 +48,7 @@ export class LeaveRequestAdminComponent {
   displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'status', 'type', 'action'];
   leaveType: any;
   leave_type_id_change: any;
-
+@ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   constructor(
     private dialog: MatDialog,
     private leaveRequestService: LeaveRequestService,
@@ -59,7 +60,32 @@ export class LeaveRequestAdminComponent {
     this.fetchLeaveRequestAdmin();
     this.fectchLeaveType();
   }
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
 
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
+  }
   approveRequest(element: any): void {
     element.leave_request.status = 'APPROVED';
     this.changeDecision(element);
@@ -92,13 +118,13 @@ export class LeaveRequestAdminComponent {
   
     this.leaveRequestService.changeDecsion(updatedRequest).subscribe({
       next: () => {
-        this.snackBar.open('Cập nhật thành công!', 'Đóng', { duration: 3000 });
+        this.success('Cập nhật thành công!');
         this.fetchLeaveRequestAdmin();
       },
       error: (error) => {
         console.log(error)
         this.fetchLeaveRequestAdmin();
-        this.snackBar.open('Cập nhật thất bại!', 'Đóng', { duration: 3000 });
+        this.error('Cập nhật thất bại!');
       }
     });
   }

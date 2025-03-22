@@ -8,11 +8,9 @@ import { MatCardModule } from '@angular/material/card';
 import { Router, RouterModule } from '@angular/router';
 import { RegisterService } from '../../services/register.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { SuccessDialogComponent } from '../../components/success-dialog/dialog.component';
 @Component({
   selector: 'app-register',
   standalone: true,

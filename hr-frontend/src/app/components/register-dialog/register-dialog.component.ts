@@ -19,6 +19,6 @@ export class RegistrationDialogComponent {
     public dialogRef: MatDialogRef<RegistrationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RegistrationData
   ) {
-    console.log('Dialog data:', data);
+   
   }
 }

@@ -1,8 +1,9 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UsersService } from '../../services/users.service';
+import { NotificationComponent } from '../notification/notification.component';
 
 @Component({
   selector: 'app-change-password-dialog',
@@ -29,11 +30,38 @@ export class ChangePasswordDialogComponent {
       confirmPassword: ['', Validators.required]
     });
   }
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+       if (this.notificationComponent) {
+         this.notificationComponent.data = {
+           message,
+           type,
+           duration: 3000,
+           dismissable: true
+         };
+       }
+     }
+     @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+   
+     private success(message: string) {
+       this.notify('success', message);
+     }
+   
+     private error(message: string) {
+       this.notify('error', message);
+     }
+   
+     private warn(message: string) {
+       this.notify('warning', message);
+     }
+   
+     private info(message: string) {
+       this.notify('info', message);
+     }
 
   onSave(): void {
     if (this.changePasswordForm.valid) {
       if (this.changePasswordForm.value.newPassword !== this.changePasswordForm.value.confirmPassword) {
-        alert('Mật khẩu mới không khớp!');
+        this.warn('Mật khẩu mới không khớp!');
         return;
       }
      
@@ -43,10 +71,10 @@ export class ChangePasswordDialogComponent {
       }
       this.userService.updatedUser(data).subscribe(
         (res) => {
-          console.log(res);
+          this.success(res);
         },
         (error) => {
-         console.log(error);
+         this.error(error);
         }
       );
       this.dialogRef.close(true);

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
+import { NotificationComponent } from '../../components/notification/notification.component';
 
 @Component({
   selector: 'app-employee-registration',
@@ -31,7 +32,7 @@ export class EmployeeRegistrationComponent {
   registrationForm: FormGroup;
   loading = false;
   hidePassword = true;
-
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -61,7 +62,32 @@ export class EmployeeRegistrationComponent {
       ]]
     });
   }
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
 
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
+  }
   getErrorMessage(controlName: string): string {
     const control = this.registrationForm.get(controlName);
     if (!control?.errors || !control.touched) return '';
@@ -116,23 +142,13 @@ export class EmployeeRegistrationComponent {
 
     this.authService.adminCreateEmployee(this.registrationForm.value).subscribe({
       next: () => {
-        this.snackBar.open('Tạo tài khoản thành công!', 'Đóng', {
-          duration: 3000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
-        });
+        this.success('Tạo tài khoản thành công!');
         this.registrationForm.reset();
         this.loading = false;
       },
       error: (error) => {
         const message = error.error?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
-        this.snackBar.open(message, 'Đóng', {
-          duration: 5000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['error-snackbar']
-        });
+        this.error(message);
         this.loading = false;
       }
     });

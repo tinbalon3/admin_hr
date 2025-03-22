@@ -113,6 +113,6 @@ class EmployeeService:
         logger.debug(f"Admin ID: {admin_id}")
 
         # Lấy danh sách người dùng (sắp xếp theo Employee.id và đặt admin cuối danh sách)
-        db_users = db.query(Employee).order_by(Employee.id, Employee.id != admin_id).all()
+        db_users = db.query(Employee).order_by(Employee.id, Employee.id != admin_id).filter(Employee.role != "ADMIN")
         logger.info("User list retrieved successfully")
         return ResponseHandler.success('lấy danh sách thành công', db_users)
