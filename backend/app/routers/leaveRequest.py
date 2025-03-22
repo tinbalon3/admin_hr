@@ -26,12 +26,19 @@ def getListRequestForAdmin(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return LeaveRequestService.get_list_request_admin(db, token)
 
+@router.get("/admin/approved/list", response_model=ListLeaveRequest)
+def getListRequestForAdmin(
+        db: Session = Depends(get_db),
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+    return LeaveRequestService.get_list_request_approved_admin(db, token)
+
 @router.post("/create", response_model=LeaveRequestResponse, status_code=201)
 def create_leave_type(
         leave_request: LeaveRequestFormchange,
         db: Session = Depends(get_db),
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return LeaveRequestService.create(db, token,leave_request)
+
 
 @router.put("/edit/{id}", response_model=LeaveRequestResponse)
 def edit_leave_type(

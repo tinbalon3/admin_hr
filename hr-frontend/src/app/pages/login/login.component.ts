@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,9 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../services/notification.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -21,32 +23,37 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
+    MatIconModule,
+    MatCheckboxModule,
     RouterModule,
-    
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
-  ngOnInit(): void {
-    
-  }
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
-  constructor(private authService: AuthService, private router: Router,private snackBar: MatSnackBar) {}
+  hidePassword = true;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {}
+
+  ngOnInit(): void {}
+
   showNotification(message: string, isError: boolean = false) {
-    this.snackBar.open(message, 'Đóng', {
-      duration: 4000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: isError ? 'error-snackbar' : 'success-snackbar',
-    });
+    if (isError) {
+      this.notificationService.error(message);
+    } else {
+      this.notificationService.success(message);
+    }
   }
+
   onLogin() {
-    
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        
         this.authService.saveToken(response.token.access_token);
         this.authService.saveRefreshToken(response.token.refresh_token);
         this.authService.saveInforUser(response.user);

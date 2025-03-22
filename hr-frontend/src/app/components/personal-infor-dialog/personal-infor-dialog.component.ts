@@ -4,9 +4,10 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { UsersService } from '../../services/users.service';
-;
 @Component({
   selector: 'app-profile',
   standalone : true, // thêm dòng này vào
@@ -17,7 +18,8 @@ import { UsersService } from '../../services/users.service';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './personal-infor-dialog.component.html',
   styleUrls: ['./personal-infor-dialog.component.css']

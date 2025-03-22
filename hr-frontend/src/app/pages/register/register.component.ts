@@ -7,9 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Router, RouterModule } from '@angular/router';
 import { RegisterService } from '../../services/register.service';
-import { log } from 'console';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../services/notification.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SuccessDialogComponent } from '../../components/success-dialog/dialog.component';
 @Component({
   selector: 'app-register',
@@ -23,28 +25,38 @@ import { SuccessDialogComponent } from '../../components/success-dialog/dialog.c
     MatCardModule,
     RouterModule,
     MatSnackBarModule,
+    MatIconModule,
+    MatCheckboxModule,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit{
-  full_name = ''
+  full_name = '';
   email = '';
   password = '';
-  phone = ''
-  location = ''
+  confirmPassword = '';
+  phone = '';
+  location = '';
+  hidePassword = true;
+  hideConfirmPassword = true;
 
-  constructor(private registerService: RegisterService, private router: Router,private snackBar: MatSnackBar) {}
+  constructor(
+    private registerService: RegisterService,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {}
+
   ngOnInit(): void {
     console.log('RegisterComponent initialized!');
   }
+
   showNotification(message: string, isError: boolean = false) {
-    this.snackBar.open(message, 'Đóng', {
-      duration: 4000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: isError ? 'error-snackbar' : 'success-snackbar',
-    });
+    if (isError) {
+      this.notificationService.error(message);
+    } else {
+      this.notificationService.success(message);
+    }
   }
   /**
    * Xử lý khi người dùng đăng ký

@@ -7,10 +7,12 @@ import { AuthService } from '../services/auth.service';
 export const tokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
 
+  console.log('TokenInterceptor: Starting request interception', req.url);
   const token = authService.getToken();
   let authReq = req;
-
+  console.log('TokenInterceptor: Retrieved token:', token ? 'Present' : 'Missing');
   if (token) {
+    console.log('TokenInterceptor: Adding auth header');
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`

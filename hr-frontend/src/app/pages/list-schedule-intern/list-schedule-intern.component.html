@@ -21,7 +21,12 @@
       </div>
     </div>
   </header>
-
+ <!-- Hàng tiêu đề hiển thị thứ cho từng cột -->
+ <div class="grid grid-cols-7 mb-2">
+  <div *ngFor="let day of dayNamesFormatted" class="text-center font-bold text-gray-700">
+    {{ day.dayName }}
+  </div>
+</div>
   <!-- Lưới lịch: sử dụng daysEnriched() -->
   <div class="mt-2 grid grid-cols-7 gap-3">
     <div *ngFor="let day of daysEnriched()"

@@ -11,7 +11,10 @@
               Người duyệt
             </th>
             <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
-              Email
+              Người tạo đơn
+            </th>
+            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
+              Email người duyệt
             </th>
             <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
               Quyết định
@@ -22,9 +25,7 @@
             <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
               Ghi chú
             </th>
-            <th class="px-6 py-3 text-center text-sm font-medium text-black uppercase">
-              Mã đơn nghỉ
-            </th>
+          
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -33,10 +34,13 @@
             class="bg-gray-50"
           >
             <td class="px-6 py-4 whitespace-nowrap text-center text-black">
-              {{ item.employee_id.full_name }}
+              {{ item.approver.full_name }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-center text-black">
-              {{ item.employee_id.email }}
+              {{ item.creator.full_name }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
+              {{ item.approver.email }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-center text-black">
               <span
@@ -55,9 +59,7 @@
             <td class="px-6 py-4 whitespace-nowrap text-center text-black">
               {{ item.approval.comments }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-black">
-              {{ item.approval.leave_request_id }}
-            </td>
+           
           </tr>
         </tbody>
       </table>

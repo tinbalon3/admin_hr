@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PersonalInforDialogComponent } from './personal-infor-dialog.component';
+import { PersonalInfoDialogComponent } from './personal-infor-dialog.component';
 
-describe('PersonalInforDialogComponent', () => {
-  let component: PersonalInforDialogComponent;
-  let fixture: ComponentFixture<PersonalInforDialogComponent>;
+describe('PersonalInfoDialogComponent', () => {
+  let component: PersonalInfoDialogComponent;
+  let fixture: ComponentFixture<PersonalInfoDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PersonalInforDialogComponent]
+      imports: [PersonalInfoDialogComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(PersonalInforDialogComponent);
+    fixture = TestBed.createComponent(PersonalInfoDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

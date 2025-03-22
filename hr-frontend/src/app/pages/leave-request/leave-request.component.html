@@ -38,6 +38,9 @@
                 Ngày kết thúc
               </th>
               <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Loại nghỉ phép
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
                 Ghi chú
               </th>
               <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
@@ -64,6 +67,18 @@
               </td>
               <td class="py-3 px-4 border">
                 <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.end_date" />
+              </td>
+              <td class="py-3 px-4 border">
+                <select
+                  class="w-full"
+                  [disabled]="request.leave_request.status != 'PENDING'"
+                  [(ngModel)]="request.leave_type.id"
+                  (change)="onLeaveTypeChange(request, request.leave_type.id)"
+                >
+                  <option *ngFor="let type of leaveType" [value]="type.id">
+                    {{ type.type_name }}
+                  </option>
+                </select>
               </td>
               <td class="py-3 px-4 border">
                 <input type="text" placeholder="Nhập ghi chú" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.notes" />

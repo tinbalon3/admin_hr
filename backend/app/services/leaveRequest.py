@@ -96,6 +96,31 @@ class LeaveRequestService:
         return ResponseHandler.success("Lấy danh sách thành công", data_response)
     
     @staticmethod
+    def get_list_request_approved_admin(db: Session, token: HTTPAuthorizationCredentials):
+        verify_token(token)
+        user_id = get_current_user(token=token)
+        logger.info(f"Fetching leave requests for admin {user_id}")
+        if check_admin(token, db):
+            leave_requests = db.query(LeaveRequest).filter(
+                LeaveRequest.employee_id != user_id,
+                LeaveRequest.status == "APPROVED"
+            ).all()
+            logger.debug(f"Admin {user_id} has {len(leave_requests)} processing leave requests")
+        else:
+            leave_requests = db.query(LeaveRequest).order_by(LeaveRequest.created_at).all()
+            logger.debug(f"User not admin, fetched all leave requests: {len(leave_requests)}")
+        
+        data_response = [
+            LeaveRequestOut(
+                leave_request=LeaveRequestInfo.from_orm(lr),
+                employee=UserInfo.from_orm(lr.employee) if lr.employee else None,
+                leave_type=LeaveTypeOut.from_orm(lr.leave_type) if lr.leave_type else None
+            )
+            for lr in leave_requests
+        ]
+        logger.info("Successfully fetched leave requests for admin")
+        return ResponseHandler.success("Lấy danh sách thành công", data_response)
+    @staticmethod
     def create(db: Session, token: HTTPAuthorizationCredentials, leave_data: LeaveRequestBase):
         verify_token(token)
         user_id = get_current_user(token=token)

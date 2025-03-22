@@ -1,85 +1,97 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { json } from 'stream/consumers';
-
-
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
-  API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
-  API_LOGOUT = 'http://127.0.0.1:8000/auth/logout'; // Đổi thành URL backend của bạn
-
-  /**
-   * Gọi API để đăng nhập
-   * @param username - Tên đăng nhập
-   * @param password - Mật khẩu
-   * @returns Observable
-   */
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+  
+  API_LOGIN = 'http://127.0.0.1:8000/auth/login';
+  API_LOGOUT = 'http://127.0.0.1:8000/auth/logout';
   private readonly TOKEN_KEY = 'access_token';
 
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   login(email: string, password: string): Observable<any> {
-   const data = {
-    "email": email,
-    "password": password
-   }
+    const data = {
+      "email": email,
+      "password": password
+    };
   
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
 
-    return this.http.post(`${this.API_LOGIN}`,data, { headers });
+    return this.http.post(`${this.API_LOGIN}`, data, { headers });
   }
+
   logout(): Observable<any> {
-    
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    return this.http.post(`${this.API_LOGOUT}`,{ headers });
+    return this.http.post(`${this.API_LOGOUT}`, { headers });
   }
 
   saveToken(token: string): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (this.isBrowser) {
       localStorage.setItem(this.TOKEN_KEY, token);
     }
   }
 
-  // Lấy token từ localStorage
   getToken(): string | null {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (this.isBrowser) {
       return localStorage.getItem(this.TOKEN_KEY);
     }
     return null;
   }
 
-  // Xoá token khỏi localStorage
   removeToken(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (this.isBrowser) {
       localStorage.removeItem(this.TOKEN_KEY);
     }
   }
-  /**
-   * Lưu token vào localStorage
-   */
- 
 
-  /**
-   * Lấy token từ localStorage
-   */
-  
   saveRefreshToken(refreshToken: string): void {
-    localStorage.setItem('refresh_token', refreshToken);
+    if (this.isBrowser) {
+      localStorage.setItem('refresh_token', refreshToken);
+    }
   }
+
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    if (this.isBrowser) {
+      return localStorage.getItem('refresh_token');
+    }
+    return null;
   }
-  saveInforUser(infor:any){
-    localStorage.setItem('inforUser', JSON.stringify(infor));
+
+  saveInforUser(infor: any): void {
+    if (this.isBrowser) {
+      localStorage.setItem('inforUser', JSON.stringify(infor));
+    }
   }
-  getInforUser(): string | null {
-    return localStorage.getItem('inforUser');
+
+  getInforUser(): any {
+    if (this.isBrowser) {
+      const infoStr = localStorage.getItem('inforUser');
+      return infoStr ? JSON.parse(infoStr) : null;
+    }
+    return null;
+  }
+
+  getUserRole(): string {
+    const userInfo = this.getInforUser();
+    return userInfo?.role || '';
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'ADMIN';
   }
 }

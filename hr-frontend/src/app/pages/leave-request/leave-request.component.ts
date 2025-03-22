@@ -11,13 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ListTypeService } from '../../services/list-type.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -30,13 +24,7 @@ import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
     MatCardModule,
     MatTableModule,
     FormsModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatMenuModule
+    MatIconModule
   ],
   templateUrl: './leave-request.component.html',
   styleUrls: ['./leave-request.component.css']
@@ -76,12 +64,13 @@ export class LeaveRequestComponent implements OnInit {
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {
       this.leaveType = data.data;
-      console.log('leaveType', this.leaveType);
+
     });
   }
   toggleSelectAll(event: any): void {
     const isChecked = event.target.checked;
     this.leaveRequests.forEach(request => {
+      console.log('request', request);
       if (request.leave_request.status === 'PENDING') {
         request.selected = isChecked;
       }
@@ -101,6 +90,7 @@ export class LeaveRequestComponent implements OnInit {
     }
   }
   updateLeaveRequest(element: any): void {
+    console.log('element', element);
     const updatedRequest = {
       start_date: element.leave_request.start_date,
       end_date: element.leave_request.end_date,
@@ -137,15 +127,23 @@ export class LeaveRequestComponent implements OnInit {
     this.leaveRequestService.getListLeaveRequestUser().subscribe((data: any) => {
       this.leaveRequests = data.data;
       this.leaveRequests.forEach(request => {
-        request.originalData = JSON.parse(JSON.stringify(request.leave_request));
-        request.selected = false;  // nếu chưa có thì thêm vào luôn
+        request.originalData = {
+          ...JSON.parse(JSON.stringify(request.leave_request)),
+          leave_type_id: request.leave_type.id
+        };
+        console.log('request with type:', request.originalData);
+        request.selected = false;
       });
     });
   }
   hasChanges(request: any): boolean {
+    const typeChanged = !request.originalData.leave_type_id ||
+                       request.leave_type.id !== request.originalData.leave_type_id;
+    
     return request.leave_request.start_date !== request.originalData.start_date ||
            request.leave_request.end_date !== request.originalData.end_date ||
-           request.leave_request.notes !== request.originalData.notes;
+           request.leave_request.notes !== request.originalData.notes ||
+           typeChanged;
   }
   
 

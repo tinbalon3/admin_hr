@@ -10,7 +10,16 @@ interface ApprovalData {
     decision_date: string;
     leave_request_id: string;
   };
-  employee_id: {
+  approver: {
+    full_name: string;
+    email: string;
+    role: string;
+    phone: string;
+    location: string;
+    id: string;
+    created_at: string;
+  };
+  creator: {
     full_name: string;
     email: string;
     role: string;

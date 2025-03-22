@@ -106,7 +106,7 @@ class EmployeeService:
     def list(db: Session, token: HTTPAuthorizationCredentials):
         verify_token(token)
       
-        check_admin(token=token, db=db)
+        # c(token=token, db=db)
  
         logger.info("Listing all users")
         admin_id = get_current_user(token=token)

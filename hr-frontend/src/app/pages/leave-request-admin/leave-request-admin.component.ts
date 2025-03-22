@@ -76,27 +76,28 @@ export class LeaveRequestAdminComponent {
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {
       this.leaveType = data.data;
-      console.log('leaveType', this.leaveType);
+     
     });
   }
 
   
  
   changeDecision(request: any): void {
-    console.log('request', request);
     const updatedRequest = {
       comments: "OK",
       leave_request_id: request.leave_request.id,
       decision: request.leave_request.status,
       
     };
-    console.log('updatedRequest', updatedRequest);
+  
     this.leaveRequestService.changeDecsion(updatedRequest).subscribe({
       next: () => {
         this.snackBar.open('Cập nhật thành công!', 'Đóng', { duration: 3000 });
+        this.fetchLeaveRequestAdmin();
       },
       error: (error) => {
         console.log(error)
+        this.fetchLeaveRequestAdmin();
         this.snackBar.open('Cập nhật thất bại!', 'Đóng', { duration: 3000 });
       }
     });

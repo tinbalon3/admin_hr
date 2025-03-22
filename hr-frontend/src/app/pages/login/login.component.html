@@ -1,60 +1,86 @@
-<div class="bg-gradient-to-r from-blue-500 to-indigo-600 min-h-screen flex items-center justify-center">
-  <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-      
-      <!-- Logo HR AIAIVN -->
-      <div class="flex flex-col items-center mb-6">
-          <img src="\assets\logos\AIAIVN-05-Logo-DarkBackground.png" class="w-32 h-32" alt="HR AIAIVN Logo" />
-          <h2 class="text-2xl font-bold text-indigo-700">HR AIAIVN</h2>
-          <p class="text-gray-500 text-sm">Hệ thống quản lý nhân sự</p>
-      </div>
+<div class="login-container">
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
 
-      <h2 class="text-xl font-bold text-center mb-6">Đăng nhập</h2>
+    <header class="header">
+        <img src="\assets\logos\AIAIVN-05-Logo-DarkBackground.png" class="logo" alt="HR AIAIVN Logo" />
+        <h1 class="title">HR AIAIVN</h1>
+        <p class="subtitle">Hệ thống quản lý nhân sự</p>
+    </header>
 
-      <form (ngSubmit)="onLogin()">
-          <div class="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-100">
-              <i class="fas fa-user text-gray-500 mr-2"></i>
-              <input class="w-full focus:outline-none bg-transparent" 
-                     [(ngModel)]="email" 
-                     name="email" 
-                     placeholder="Email nhân sự" 
-                     type="text" 
-                     required />
-          </div>
-          <div class="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-100">
-              <i class="fas fa-lock text-gray-500 mr-2"></i>
-              <input class="w-full focus:outline-none bg-transparent" 
-                     [(ngModel)]="password" 
-                     name="password" 
-                     placeholder="Mật khẩu" 
-                     type="password" 
-                     required />
-          </div>
+    <mat-card class="login-card animate-entry">
+        <div class="card-header">
+            <mat-icon class="header-icon">login</mat-icon>
+            <h2>Đăng nhập</h2>
+        </div>
 
-          <div class="flex items-center justify-between mb-4">
-              <label class="flex items-center">
-                  <input type="checkbox" class="mr-2" />
-                  <span class="text-gray-600 text-sm">Nhớ tài khoản</span>
-              </label>
-              <a class="text-blue-500 text-sm hover:underline cursor-pointer">Quên mật khẩu?</a>
-          </div>
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="login-form">
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Email</mat-label>
+                <mat-icon matPrefix class="field-icon">email</mat-icon>
+                <input matInput [(ngModel)]="email" name="email" required email #emailField="ngModel" />
+                <mat-error *ngIf="emailField.invalid && emailField.touched">
+                    Email không hợp lệ
+                </mat-error>
+            </mat-form-field>
 
-          <button class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition" type="submit">
-              Đăng nhập
-          </button>
-      </form>
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Mật khẩu</mat-label>
+                <mat-icon matPrefix class="field-icon">lock</mat-icon>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" 
+                       [(ngModel)]="password" name="password" 
+                       required #passwordField="ngModel" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hidePassword = !hidePassword">
+                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordField.invalid && passwordField.touched">
+                    Vui lòng nhập mật khẩu
+                </mat-error>
+            </mat-form-field>
 
-      <div class="text-center my-4">
-          <p class="text-gray-500">Hoặc đăng nhập bằng</p>
-          <div class="flex justify-center gap-4 mt-2">
-              <a class="text-blue-700 text-2xl" href="#"><i class="fab fa-facebook-f"></i></a>
-              <a class="text-blue-400 text-2xl" href="#"><i class="fab fa-twitter"></i></a>
-              <a class="text-red-600 text-2xl" href="#"><i class="fab fa-google"></i></a>
-          </div>
-      </div>
+            <div class="form-options">
+                <mat-checkbox color="primary" class="remember-me">
+                    Nhớ tài khoản
+                </mat-checkbox>
+                <a mat-button color="primary" class="forgot-password">
+                    Quên mật khẩu?
+                </a>
+            </div>
 
-      <div class="text-center mt-4">
-          <p class="text-gray-600 text-sm">Chưa có tài khoản?</p>
-          <a class="text-blue-500 text-sm hover:underline cursor-pointer" routerLink="/register">Đăng ký ngay</a>
-      </div>
-  </div>
+            <button mat-raised-button color="primary" 
+                    class="submit-button" 
+                    type="submit"
+                    [disabled]="!loginForm.form.valid">
+                <mat-icon>login</mat-icon>
+                <span>Đăng nhập</span>
+            </button>
+        </form>
+
+        <div class="social-login">
+            <p class="social-text">Hoặc đăng nhập bằng</p>
+            <div class="social-buttons">
+                <button mat-mini-fab color="primary" class="facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </button>
+                <button mat-mini-fab color="accent" class="google">
+                    <i class="fab fa-google"></i>
+                </button>
+                <button mat-mini-fab class="twitter">
+                    <i class="fab fa-twitter"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="register-link">
+            <span class="register-text">Chưa có tài khoản?</span>
+            <a mat-button color="accent" [routerLink]="['/register']">
+                Đăng ký ngay
+                <mat-icon>arrow_forward</mat-icon>
+            </a>
+        </div>
+    </mat-card>
 </div>

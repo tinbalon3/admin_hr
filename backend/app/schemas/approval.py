@@ -65,8 +65,8 @@ class ApprovalResponse_V2(BaseModel):
 
 class ApprovalResponseList(BaseModel):
     approval: ApprovalData
-    employee_id: UserInfo
-
+    approver: UserInfo
+    creator: UserInfo
     class Config:
         from_attributes = True
         orm_mode = True

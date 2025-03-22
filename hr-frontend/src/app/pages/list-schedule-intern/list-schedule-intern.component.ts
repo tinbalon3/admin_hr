@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { format, startOfMonth, endOfMonth, addDays, isEqual, startOfDay, isBefore } from 'date-fns';
+import { format, startOfMonth, endOfMonth, addDays, isEqual, startOfDay, isBefore, startOfToday } from 'date-fns';
 import { ScheduleInternService } from '../../services/schedule-intern-service.service';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -114,7 +114,11 @@ export class ListScheduleInternComponent implements OnInit {
     }
     return '';
   }
-
+ readonly #dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  protected readonly dayNamesFormatted = this.#dayNames.map((dayName) => ({
+    dayName: dayName,
+    isToday: dayName === format(startOfToday(), 'eee'),
+  }));
   fetchSchedule(): void {
     this.scheduleService.fectchScheduleList().subscribe({
       next: (res: ApiResponse) => {

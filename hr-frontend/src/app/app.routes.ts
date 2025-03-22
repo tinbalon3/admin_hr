@@ -4,8 +4,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { LeaveRequestComponent } from './pages/leave-request/leave-request.component';
 import { InforcompanyComponent } from './pages/inforcompany/inforcompany.component';
-// import { LeaveListComponent } from './pages/leave-list/leave-list.component'; // Giả định component này tồn tại
-// import { InternScheduleComponent } from './pages/intern-schedule/intern-schedule.component'; // Giả định component này tồn tại
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -45,6 +44,7 @@ export const routes: Routes = [
           import('./pages/leave-request-admin/leave-request-admin.component').then(
             (m) => m.LeaveRequestAdminComponent
           ),
+        canActivate: [adminGuard]
       },
       {
         path: 'intern-schedule',
@@ -59,6 +59,7 @@ export const routes: Routes = [
           import('./pages/approvals/approvals.component').then(
             (m) => m.ApprovalsComponent
           ),
+        canActivate: [adminGuard]
       },
       {
         path: 'list-schedule-intern',
@@ -66,23 +67,25 @@ export const routes: Routes = [
           import('./pages/list-schedule-intern/list-schedule-intern.component').then(
             (m) => m.ListScheduleInternComponent
           ),
+        canActivate: [adminGuard]
       },
-      // {
-      //   path: 'leave-list',
-      //   loadComponent: () =>
-      //     import('./pages/leave-list/leave-list.component').then(
-      //       (m) => m.LeaveListComponent
-      //     ),
-      // },
-      // {
-      //   path: 'intern-schedule',
-      //   loadComponent: () =>
-      //     import('./pages/intern-schedule/intern-schedule.component').then(
-      //       (m) => m.InternScheduleComponent
-      //     ),
-      // },
       {
-        path: '', // Default route khi vào /dashboard
+        path: 'leave-balance',
+        loadComponent: () =>
+          import('./pages/leave-balance-chart/leave-balance-chart.component').then(
+            (m) => m.LeaveBalanceChartComponent
+          ),
+      },
+      {
+        path: 'employee-leave-statistics',
+        loadComponent: () =>
+          import('./pages/employee-leave-statistics/employee-leave-statistics.component').then(
+            (m) => m.EmployeeLeaveStatisticsComponent
+          ),
+        canActivate: [adminGuard]
+      },
+      {
+        path: '',
         redirectTo: 'inforcompany',
         pathMatch: 'full',
       },

@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 import logging
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from fastapi import HTTPException, status
 
 from app.models.models import Approval, LeaveRequest, Employee
@@ -91,16 +91,24 @@ class ApproveService:
         logger.info("Admin requested the list of approvals.")
 
         # Use join to fetch approvals along with corresponding employee data
+        creator = aliased(Employee)
         approvals_with_employee = (
-            db.query(Approval, Employee)
-              .join(Employee, Employee.id == Approval.employee_id)
-              .all()
+            db.query(Approval, Employee, LeaveRequest, creator)
+            .join(Employee, Employee.id == Approval.employee_id)
+            .join(LeaveRequest, LeaveRequest.id == Approval.leave_request_id)
+            .join(creator, creator.id == LeaveRequest.employee_id)
+            .all()
         )
+       
         logger.debug(f"Found {len(approvals_with_employee)} approval records.")
-
+        logger.debug(f"Found {approvals_with_employee} approval records.")
         result = []
-        for approval, employee in approvals_with_employee:
-            # Map the data into the ApprovalResponseList schema
+        for approval, approver, leave_request, creator in approvals_with_employee:
+            # Map data for the approver and creator using model validation
+            # full_name is already included in UserInfo schema
+            approver_data = UserInfo.model_validate(approver)
+            creator_data = UserInfo.model_validate(creator)
+            logger.debug(f"Approval data formatted - approver: {approver_data.full_name}, creator: {creator_data.full_name}")
             approval_response = ApprovalResponseList(
                 approval={
                     "id": approval.id,
@@ -109,10 +117,11 @@ class ApproveService:
                     "decision_date": approval.decision_date,
                     "leave_request_id": approval.leave_request_id,
                 },
-                employee_id=UserInfo.model_validate(employee)
+                approver=approver_data,
+                creator=creator_data
             )
             result.append(approval_response)
-            logger.debug(f"Processed approval record {approval.id} for employee {employee.id}")
+            logger.debug(f"Processed approval record {approval.id} for approver {approver.id} and creator {creator.id}")
 
         logger.info("Approval list retrieval successful.")
         return ResponseHandler.success("Lấy danh sách thành công", result)

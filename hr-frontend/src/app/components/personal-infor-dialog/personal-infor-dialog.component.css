@@ -1,62 +1,196 @@
+.dialog-container {
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .dialog-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .full-width {
-    width: 100%;
-  }
-  
-  mat-form-field {
-    margin-bottom: 16px;
-  }
-  
-  mat-dialog-actions {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.dialog-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  background: #f0f2f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #1e88e5;
+}
+
+.dialog-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e3c72;
+  margin: 0 0 8px;
+}
+
+.dialog-subtitle {
+  color: #666;
+  margin: 0;
+  font-size: 14px;
+}
+
+.profile-form {
+  margin-top: 24px;
+}
+
+.form-field {
+  margin-bottom: 24px;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 4px 12px;
+  transition: all 0.3s;
+}
+
+.input-container:focus-within {
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.1);
+  background: white;
+}
+
+.field-icon {
+  color: #666;
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.field-input {
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  width: 100%;
+  font-size: 15px;
+  color: #333;
+  outline: none;
+}
+
+.field-input:disabled {
+  color: #666;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  gap: 16px;
+}
+
+.password-button {
+  flex: 1;
+}
+
+.update-button {
+  flex: 1;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+button mat-icon {
+  font-size: 20px;
+}
+
+button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .dialog-container {
     padding: 16px;
   }
-  
-  /* Đảm bảo tiêu đề không bị che khuất và có khoảng cách phía dưới */
-  mat-dialog-title {
+
+  .dialog-content {
+    padding: 24px;
+  }
+
+  .user-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatar-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .dialog-title {
     font-size: 20px;
-    padding: 16px 16px 8px 16px; /* Tăng padding và giảm padding-bottom */
-    margin: 0;
-    white-space: normal;
-    overflow: visible;
   }
-  
-  /* Đảm bảo dialog có đủ không gian */
-  mat-dialog-container {
-    min-height: 400px;
-    padding: 0 !important;
+
+  .form-actions {
+    flex-direction: column;
   }
-  
-  /* Thêm padding-top để tạo khoảng cách giữa tiêu đề và nội dung */
-  mat-dialog-content {
-    padding: 24px 16px 16px 16px; /* Tăng padding-top để đẩy nội dung xuống */
-  }
-  
-  /* Đảm bảo mat-form-field đầu tiên không bị đẩy lên sát tiêu đề */
-  mat-form-field:first-child {
-    margin-top: 8px; /* Thêm margin-top cho trường đầu tiên */
-  }
-  
-  mat-error {
-    color: #f44336;
-    font-size: 12px;
-    margin-top: -8px;
-    margin-bottom: 8px;
-  }
-  
-  .change-password-button {
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-align: center;
+
+  button {
     width: 100%;
   }
-  
-  .change-password-button:hover {
-    background-color: #d0d0d0;
-  }
+}

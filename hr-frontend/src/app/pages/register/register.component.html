@@ -1,43 +1,110 @@
 <div class="register-container">
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
     <header class="header">
+        <img src="\assets\logos\AIAIVN-05-Logo-DarkBackground.png" class="logo" alt="HR AIAIVN Logo" />
         <h1 class="title">HR AIAIVN</h1>
+        <p class="subtitle">Hệ thống quản lý nhân sự</p>
     </header>
 
-    <mat-card class="register-card">
-        <h2>Đăng kí</h2>
-        <form (ngSubmit)="onRegister()">
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Full name</mat-label>
-                <input matInput [(ngModel)]="full_name" name="full_name" required />
-              </mat-form-field>
-              
-              <mat-form-field appearance="outline" class="full-width">
+    <mat-card class="register-card animate-entry">
+        <div class="card-header">
+            <mat-icon class="header-icon">person_add</mat-icon>
+            <h2>Đăng ký</h2>
+        </div>
+
+        <form (ngSubmit)="onRegister()" #registerForm="ngForm" class="register-form">
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Họ và tên</mat-label>
+                <mat-icon matPrefix class="field-icon">person</mat-icon>
+                <input matInput [(ngModel)]="full_name" name="full_name" required #fullNameField="ngModel" />
+                <mat-error *ngIf="fullNameField.invalid && fullNameField.touched">
+                    Vui lòng nhập họ và tên
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="form-field">
                 <mat-label>Email</mat-label>
-                <input matInput [(ngModel)]="email" name="email" required />
-              </mat-form-field>
+                <mat-icon matPrefix class="field-icon">email</mat-icon>
+                <input matInput [(ngModel)]="email" name="email" required email #emailField="ngModel" />
+                <mat-error *ngIf="emailField.invalid && emailField.touched">
+                    Email không hợp lệ
+                </mat-error>
+            </mat-form-field>
 
-              <mat-form-field appearance="outline" class="full-width">
+            <mat-form-field appearance="fill" class="form-field">
                 <mat-label>Số điện thoại</mat-label>
-                <input matInput [(ngModel)]="phone" name="phone" required />
-              </mat-form-field>
+                <mat-icon matPrefix class="field-icon">phone</mat-icon>
+                <input matInput [(ngModel)]="phone" name="phone" required #phoneField="ngModel" />
+                <mat-error *ngIf="phoneField.invalid && phoneField.touched">
+                    Vui lòng nhập số điện thoại
+                </mat-error>
+            </mat-form-field>
 
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Địa điểm làm việc</mat-label>
-                <input matInput [(ngModel)]="location" name="location" required />
-              </mat-form-field>
-              
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Password</mat-label>
-                <input matInput type="password" [(ngModel)]="password" name="password" required />
-              </mat-form-field>
-              
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Mật khẩu</mat-label>
+                <mat-icon matPrefix class="field-icon">lock</mat-icon>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" 
+                       [(ngModel)]="password" name="password" 
+                       required #passwordField="ngModel" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hidePassword = !hidePassword">
+                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordField.invalid && passwordField.touched">
+                    Vui lòng nhập mật khẩu
+                </mat-error>
+            </mat-form-field>
 
-            <button mat-raised-button color="primary" class="full-width">Đăng kí</button>
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Xác nhận mật khẩu</mat-label>
+                <mat-icon matPrefix class="field-icon">lock</mat-icon>
+                <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" 
+                       [(ngModel)]="confirmPassword" name="confirmPassword" 
+                       required #confirmPasswordField="ngModel" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideConfirmPassword = !hideConfirmPassword">
+                    <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="confirmPasswordField.invalid && confirmPasswordField.touched">
+                    Vui lòng xác nhận mật khẩu
+                </mat-error>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" 
+                    class="submit-button" 
+                    type="submit"
+                    [disabled]="!registerForm.form.valid">
+                <mat-icon>person_add</mat-icon>
+                <span>Đăng ký</span>
+            </button>
         </form>
 
-        <!-- Nút quay lại trang Login -->
+        <div class="social-login">
+            <p class="social-text">Hoặc đăng ký bằng</p>
+            <div class="social-buttons">
+                <button mat-mini-fab color="primary" class="facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </button>
+                <button mat-mini-fab color="accent" class="google">
+                    <i class="fab fa-google"></i>
+                </button>
+                <button mat-mini-fab class="twitter">
+                    <i class="fab fa-twitter"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="login-link">
-            <button mat-button color="accent" [routerLink]="['/login']">Quay lại đăng nhập</button>
+            <span class="login-text">Đã có tài khoản?</span>
+            <a mat-button color="accent" [routerLink]="['/login']">
+                Đăng nhập
+                <mat-icon>arrow_forward</mat-icon>
+            </a>
         </div>
     </mat-card>
 </div>
