@@ -1,11 +1,11 @@
-# Sử dụng Python 3.13.1 nếu có sẵn trên Docker Hub, nếu không, thay bằng phiên bản phù hợp.
+# Sử dụng Python 3.13.1-slim-bullseye từ Docker Hub (nếu có, nếu không hãy thay bằng phiên bản phù hợp)
 FROM python:3.13.1-slim-bullseye
 
-# Tắt tạo file .pyc và unbuffered output cho Python
+# Vô hiệu hóa tạo file .pyc và bật chế độ unbuffered output cho Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Cài đặt các gói cần thiết
+# Cài đặt các gói hệ thống cần thiết
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libffi-dev \
@@ -13,20 +13,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Đặt thư mục làm việc trong container
+# Thiết lập thư mục làm việc trong container
 WORKDIR /app
 
-# Copy file requirements.txt từ thư mục hiện tại (backend/) vào container
+# Sao chép file requirements.txt vào thư mục làm việc trong container
 COPY requirements.txt /app/
 
-# Cài đặt các package cần thiết từ requirements.txt
+# Cài đặt các package Python cần thiết từ file requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy toàn bộ mã nguồn backend (bao gồm app/, alembic/, v.v.) vào container
+# Sao chép toàn bộ mã nguồn backend (bao gồm app/, alembic/, v.v.) vào container
 COPY . /app
 
-# Mở cổng 8000 cho FastAPI
+# Mở cổng 8000 để ứng dụng FastAPI có thể truy cập từ bên ngoài
 EXPOSE 8000
 
-# CMD khởi chạy migration và sau đó chạy server FastAPI
+# CMD: Chạy migration với Alembic, sau đó khởi động server FastAPI
 CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000

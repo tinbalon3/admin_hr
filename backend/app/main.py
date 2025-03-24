@@ -33,6 +33,7 @@ def create_admin_if_not_exists(db: Session):
         )
         db.add(new_admin)
         db.commit()
+        db.refresh(new_admin)
         print("Admin account created.")
     else:
         print("Admin account already exists.")
