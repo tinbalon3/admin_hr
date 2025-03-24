@@ -65,7 +65,6 @@ DB_PASSWORD=YOUR_DATABASE_PASSWORD
 DB_HOSTNAME=localhost
 DB_PORT=YOUR_DATABASE_PORT
 DB_NAME=YOUR_DATABASE_NAME
-DATABASE_URL=postgresql://user:password@localhost/db_name
 
 # JWT Configuration
 SECRET_KEY=supersecretkey123
