@@ -72,11 +72,6 @@ ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 FERNET_SECRET_KEY=yoursecretkey
 
-# Redis Configuration
-REDIS_HOST=localhost
-REDIS_PORT=6379  # default Redis port is 6379
-REDIS_DB=0
-
 # SMTP Configuration
 SENDER_EMAIL="your_email@example.com"  # Replace with your system email
 SENDER_PASSWORD="your_app_password"     # Use an app password if required
