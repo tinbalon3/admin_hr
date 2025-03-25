@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { LeaveRequestComponent } from './pages/leave-request/leave-request.component';
-import { InforcompanyComponent } from './pages/inforcompany/inforcompany.component';
+// import { LeaveRequestComponent } from './pages/leave-request/leave-request.component';
+// import { InforcompanyComponent } from './pages/inforcompany/inforcompany.component';
 import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
