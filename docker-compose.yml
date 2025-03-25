@@ -12,12 +12,8 @@ services:
       - .env.docker
     environment:
       - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     depends_on:
       - db
-      - redis
-
   frontend:
     build:
       context: ./hr-frontend
@@ -44,15 +40,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7
-    container_name: redis_server
-    env_file:
-      - .env.docker
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
 
 volumes:
   postgres_data:
