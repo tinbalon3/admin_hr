@@ -46,7 +46,7 @@ export class RegisterComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    console.log('RegisterComponent initialized!');
+  
   }
 
   showNotification(message: string, isError: boolean = false) {
