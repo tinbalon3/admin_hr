@@ -26,86 +26,66 @@ export const routes: Routes = [
       {
         path: 'inforcompany',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/inforcompany/inforcompany.component');
-          return m.InforcompanyComponent;
-        },
+        loadComponent: () => import('./pages/inforcompany/inforcompany.component')
+          .then(m => m.InforcompanyComponent),
       },
       {
         path: 'create-leave-request',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/leave-request/leave-request.component');
-          return m.LeaveRequestComponent;
-        },
+        loadComponent: () => import('./pages/leave-request/leave-request.component')
+          .then(m => m.LeaveRequestComponent),
       },
       {
         path: 'list-leave-request',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/leave-request-admin/leave-request-admin.component');
-          return m.LeaveRequestAdminComponent;
-        },
+        loadComponent: () => import('./pages/leave-request-admin/leave-request-admin.component')
+          .then(m => m.LeaveRequestAdminComponent),
         canActivate: [adminGuard]
       },
       {
         path: 'intern-schedule',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/schedule-intern/schedule-intern.component');
-          return m.ScheduleInternComponent;
-        },
+        loadComponent: () => import('./pages/schedule-intern/schedule-intern.component')
+          .then(m => m.ScheduleInternComponent),
       },
       {
         path: 'approvals',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/approvals/approvals.component');
-          return m.ApprovalsComponent;
-        },
+        loadComponent: () => import('./pages/approvals/approvals.component')
+          .then(m => m.ApprovalsComponent),
         canActivate: [adminGuard]
       },
       {
         path: 'list-schedule-intern',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/list-schedule-intern/list-schedule-intern.component');
-          return m.ListScheduleInternComponent;
-        },
+        loadComponent: () => import('./pages/list-schedule-intern/list-schedule-intern.component')
+          .then(m => m.ListScheduleInternComponent),
         canActivate: [adminGuard]
       },
       {
         path: 'leave-balance',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/leave-balance-chart/leave-balance-chart.component');
-          return m.LeaveBalanceChartComponent;
-        },
+        loadComponent: () => import('./pages/leave-balance-chart/leave-balance-chart.component')
+          .then(m => m.LeaveBalanceChartComponent),
       },
       {
         path: 'admin-create-account',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/employee-registration/employee-registration.component');
-          return m.EmployeeRegistrationComponent;
-        },
+        loadComponent: () => import('./pages/employee-registration/employee-registration.component')
+          .then(m => m.EmployeeRegistrationComponent),
       },
       {
         path: 'employee-leave-statistics',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/employee-leave-statistics/employee-leave-statistics.component');
-          return m.EmployeeLeaveStatisticsComponent;
-        },
+        loadComponent: () => import('./pages/employee-leave-statistics/employee-leave-statistics.component')
+          .then(m => m.EmployeeLeaveStatisticsComponent),
         canActivate: [adminGuard]
       },
       {
         path: 'admin-leave-request',
         // Using standardized dynamic import path
-        loadComponent: async () => {
-          const m = await import('./pages/admin-leave-request/admin-leave-request.component');
-          return m.AdminLeaveRequestComponent;
-        },
+        loadComponent:() => import ('./pages/admin-leave-request/admin-leave-request.component')
+          .then(m => m.AdminLeaveRequestComponent),
         canActivate: [adminGuard]
       },
       {
