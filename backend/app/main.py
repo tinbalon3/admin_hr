@@ -1,10 +1,20 @@
 
 from fastapi import FastAPI
+
+app = FastAPI(
+    title="Test API App",
+    swagger_ui_parameters={
+        "syntaxHighlight.theme": "monokai",
+        "layout": "BaseLayout",
+        "filter": True,
+        "tryItOutEnabled": True,
+        "onComplete": "Ok"
+    }
+)
+
 from fastapi.middleware.cors import CORSMiddleware
 import uuid
-
 from app.routers import auth, employee, leavatype, leaveRequest, approval, schedule, sendmail
-
 
 from fastapi import FastAPI
 from sqlalchemy.orm import Session # ví dụ session của SQLAlchemy
@@ -12,12 +22,13 @@ from fastapi import Depends
 from app.db.database import get_db
 from app.models.models import Employee  # giả sử bạn có model User
 
-
 from app.core.config import settings
 from app.core.security import get_password_hash
+from .apscheduler import TokenManager
 
 
-app = FastAPI()
+
+
 
 def create_admin_if_not_exists(db: Session):
     admin = db.query(Employee).filter(Employee.role == "ADMIN").first()
@@ -39,17 +50,7 @@ def create_admin_if_not_exists(db: Session):
         print("Admin account already exists.")
     db.close()
 
-
-app = FastAPI(
-    title="Test API App",
-    swagger_ui_parameters={
-        "syntaxHighlight.theme": "monokai",
-        "layout": "BaseLayout",
-        "filter": True,
-        "tryItOutEnabled": True,
-        "onComplete": "Ok"
-    }
-)
+app.state.token_manager = TokenManager()
 
 # Cấu hình CORS cho Angular frontend
 app.add_middleware(
@@ -76,5 +77,6 @@ async def startup_event():
 # Sự kiện shutdown: dùng để đóng các kết nối, dọn dẹp tài nguyên, v.v.
 @app.on_event("shutdown")
 async def shutdown_event():
+    if hasattr(app.state, 'token_manager'):
+        app.state.token_manager.scheduler.shutdown()
     print("Ứng dụng đang tắt...")
-

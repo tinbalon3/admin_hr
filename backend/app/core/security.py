@@ -17,15 +17,19 @@ from app.core.config import settings
 from app.schemas.auth import TokenResponse
 from app.models.models import Employee
 from app.db.database import get_db
-from app.db.redis import check_token
 from app.utils.responses import ResponseHandler
+from app.main import app
 import asyncio
 
-def get_and_print_token(token):
-    result =check_token(token)
-    return result
+# def get_and_print_token(token):
+#     result =check_token(token)
+#     return result
 
-
+def gettoken(token):
+    """
+    Kiểm tra xem token có bị blacklist không.
+    """
+    
 
 # --- Logger Setup ---
 logger = logging.getLogger(__name__)
@@ -138,13 +142,26 @@ def get_current_user(token: HTTPAuthorizationCredentials) -> str:
     return user_id
 
 # --- Token Verification ---
+# def verify_token(token: HTTPAuthorizationCredentials):
+#     """
+#     Kiểm tra xem token có bị blacklist không và giải mã payload.
+#     """
+#     result = get_and_print_token(token.credentials)
+#     logger.debug(f'verify_token {result}')
+#     if result is not None:
+#         logger.warning("Token is blacklisted")
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Token is blacklisted."
+#         )
+
 def verify_token(token: HTTPAuthorizationCredentials):
     """
     Kiểm tra xem token có bị blacklist không và giải mã payload.
     """
-    result = get_and_print_token(token.credentials)
+    result = app.state.token_manager.is_token_revoked(token.credentials)
     logger.debug(f'verify_token {result}')
-    if result is not None:
+    if result is True:
         logger.warning("Token is blacklisted")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

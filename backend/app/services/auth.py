@@ -3,10 +3,9 @@ from datetime import datetime
 import logging
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Depends
-
+from app.main import app
 from app.models.models import Employee
 from app.db.database import get_db
-from app.db.redis import redis_client
 from app.core.security import (
     verify_password,
     get_user_token,
@@ -133,6 +132,6 @@ class AuthService:
                 )
         expire_time = datetime.utcfromtimestamp(exp) - datetime.utcnow()
         ttl = int(expire_time.total_seconds())
-        redis_client.set(token.credentials, "blacklisted", ex=ttl)
+        app.state.token_manager.revoke_token(token.credentials, ttl)
         logger.info("Token successfully blacklisted")
         return {"message": "Đăng xuất thành công."}

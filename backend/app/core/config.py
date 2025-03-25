@@ -15,9 +15,6 @@ class Settings(BaseSettings):
     access_token_expire_minutes: float = Field(..., env="ACCESS_TOKEN_EXPIRE_MINUTES")
     fernet_secret_key: str = Field(..., env="FERNET_SECRET_KEY")
     
-    redis_host: str = Field(..., env="REDIS_HOST")
-    redis_port: int = Field(6379, env="REDIS_PORT")
-    redis_db: int = Field(0, env="REDIS_DB")
     
     SENDER_EMAIL: str = Field(..., env="SENDER_EMAIL")
     SENDER_PASSWORD: str = Field(..., env="SENDER_PASSWORD")
