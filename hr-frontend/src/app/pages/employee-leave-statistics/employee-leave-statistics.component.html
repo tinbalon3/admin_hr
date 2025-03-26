@@ -69,7 +69,7 @@
 
       <!-- Data Table -->
       <div class="table-container" *ngIf="!isLoading && !error">
-        <table mat-table [dataSource]="dataSource" matSort>
+        <table mat-table [dataSource]="pagedData" matSort>
           <!-- Employee Name Column -->
           <ng-container matColumnDef="employeeName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Tên nhân viên</th>
@@ -108,25 +108,63 @@
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
-            <td mat-cell *matCellDef="let row">
-              <button mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon>more_vert</mat-icon>
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">Thao tác</th>
+            <td mat-cell *matCellDef="let row" style="text-align: center">
+              <button mat-icon-button (click)="viewDetails(row.employeeId, row.employeeName)">
+                <mat-icon>visibility</mat-icon>
               </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="viewDetails(row.employeeId, row.employeeName)">
-                  <mat-icon>visibility</mat-icon>
-                  <span>Xem chi tiết</span>
-                </button>
-              </mat-menu>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Empty state row -->
+          <tr *ngIf="!pagedData?.length" class="mat-row">
+            <td [attr.colspan]="displayedColumns.length" class="text-center py-4 text-gray-500">
+              Không có dữ liệu
+            </td>
+          </tr>
         </table>
 
-        <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        <!-- Pagination controls -->
+        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div class="flex items-center">
+            <label class="mr-2 text-sm text-gray-600">Số mục mỗi trang:</label>
+            <select 
+              [(ngModel)]="pageSize" 
+              (ngModelChange)="onPageSizeChange($event)"
+              class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+            >
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+    
+          <div class="flex items-center space-x-2">
+            <button
+              (click)="onPageChange(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Trước
+            </button>
+            
+            <span class="text-sm text-gray-700">
+              Trang {{ currentPage }} / {{ totalPages }}
+            </span>
+    
+            <button
+              (click)="onPageChange(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>

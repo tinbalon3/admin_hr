@@ -44,6 +44,7 @@ export class ScheduleInternComponent implements OnInit {
   @Input() markers: CalendarMarkerData[] = [];
   @Input() markerTpl!: TemplateRef<any>;
   datesToRemove: Date[] = [];
+  selectMonth: Date = new Date();
   public monthChange = output<Date>();
   protected currentDate = signal(startOfToday());
   protected selectedDate = signal<Date | null>(null);  // Ngày được chọn
@@ -58,13 +59,13 @@ export class ScheduleInternComponent implements OnInit {
   protected currentMonth = computed(() =>
     format(this.currentDate(), 'MMMM yyyy')
   );
-  constructor(private scheduleService: ScheduleInternService, private cdr: ChangeDetectorRef) { }
+  
 
   ngOnInit(): void {
     const currentMonth = format(new Date(), 'MM'); // Lấy tháng hiện tại
     this.fetchUserSchedule(currentMonth);
   }
-
+  constructor(private scheduleService: ScheduleInternService, private cdr: ChangeDetectorRef) { }
   private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
     if (this.notificationComponent) {
       this.notificationComponent.data = {
@@ -157,41 +158,44 @@ export class ScheduleInternComponent implements OnInit {
       this.registeredDays = mergedDays.filter((day, index, self) =>
         index === self.findIndex(d => startOfDay(d).getTime() === startOfDay(day).getTime())
       );
+     
       this.selectedDates.set(this.registeredDays);
       
       // Reset lại các mảng lưu trạng thái người dùng
       this.newSelectedDatesObject = [];
       this.selectedDatesObject = [];
-      this.fetchUserSchedule(format(new Date(), 'MM'))
+      this.fetchUserSchedule(format(this.currentDate(), 'MM'));
 
     };
   
     if (this.schedule_id && this.schedule_id.trim() !== '') {
       console.log('Cập nhật lịch làm việc cho tuần tiếp theo:', data);
-      this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe(
-        (res) => {
+      this.scheduleService.editScheduleIntern(data, this.schedule_id).subscribe({
+        next: () => {
           this.success('Đã cập nhật lịch làm việc!');
           onSuccess();
+          this.cdr.detectChanges();
         },
-        (error) => {
-          console.error("Lỗi khi cập nhật dữ liệu:", error);
+        error: (err) => {
+          console.error("Lỗi khi cập nhật dữ liệu:", err);
           this.error('Có lỗi xảy ra khi cập nhật lịch làm việc!');
         }
-      );
+      });
     } else {
       console.log('Gửi lịch làm việc mới:', data);
-      this.scheduleService.submitSchedule(data).subscribe(
-        (res) => {
+      this.scheduleService.submitSchedule(data).subscribe({
+        next: () => {
           this.success('Đã lưu lịch làm việc mới!');
           onSuccess();
+          this.cdr.detectChanges();
         },
-        (error) => {
-          console.error("Lỗi khi gửi dữ liệu:", error);
+        error: (err) => {
+          console.error("Lỗi khi gửi dữ liệu:", err);
           this.error('Có lỗi xảy ra khi lưu lịch làm việc!');
         }
-      );
+      });
     }
-    // this.fetchUserSchedule(format(new Date(), 'MM'))
+    this.fetchUserSchedule(format(this.currentDate(), 'MM'));
   }
   
   
@@ -392,7 +396,7 @@ export class ScheduleInternComponent implements OnInit {
       if (!reg) {
         reg = this.registeredDaysObject.find(obj => obj.day_of_week === formattedDay);
       }
-      return (reg && reg.note === true) ? '½' : 'F';
+      return (reg && reg.note === true) ? '½ ngày' : '1 ngày';
     }
     return '';
   }
@@ -435,13 +439,13 @@ export class ScheduleInternComponent implements OnInit {
   }
 
   fetchUserSchedule(month: string): void {
-    this.scheduleService.fecthScheduleIntern(month).subscribe(
-      (res: { 
-        message: string; 
-        data: { 
+    this.scheduleService.fecthScheduleIntern(month).subscribe({
+      next: (res: {
+        message: string;
+        data: {
           schedule: { work_days: { day_of_week: string; note: boolean }[], id: string, created_at: string },
-          employee: any 
-        }[] 
+          employee: any
+        }[]
       }) => {
         const today = new Date();
         const currentWeekStart = this.getStartOfWeek(today);
@@ -481,10 +485,10 @@ export class ScheduleInternComponent implements OnInit {
         
         console.log("Danh sách ngày đã đăng ký:", this.registeredDays);
       },
-      (error) => {
-        console.error("Lỗi khi fetch lịch đã đăng ký:", error);
+      error: (err) => {
+        console.error("Lỗi khi fetch lịch đã đăng ký:", err);
       }
-    );
+    });
   }
   
   

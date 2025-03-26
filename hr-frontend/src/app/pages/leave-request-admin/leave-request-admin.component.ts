@@ -1,5 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LeveRequestDialogComponent } from '../../components/leve-request-dialog/leve-request-dialog.component';
@@ -7,59 +8,67 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
-import { FormsModule } from '@angular/forms';
-import { ListTypeService } from '../../services/list-type.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
+import { ListTypeService } from '../../services/list-type.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu'; // Thêm MatMenuModule
-import { CommonModule } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
 import { NotificationComponent } from '../../components/notification/notification.component';
+
 @Component({
   selector: 'app-leave-request-admin',
   standalone: true,
   imports: [
-        CommonModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatSidenavModule,
-        MatCheckboxModule,
-        MatCardModule,
-        MatTableModule,
-        FormsModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatInputModule,
-        MatMenuModule
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    MatCardModule,
+    MatTableModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatMenuModule,
+    NotificationComponent
   ],
   templateUrl: './leave-request-admin.component.html',
   styleUrl: './leave-request-admin.component.css'
 })
-export class LeaveRequestAdminComponent {
+export class LeaveRequestAdminComponent implements OnInit {
   leaveRequests: LeaveRequest[] = [];
+  pagedData: LeaveRequest[] = [];
+  pageSize: number = 10;
+  currentPage: number = 1;
+  totalPages: number = 1;
+
   displayedColumns: string[] = ['username', 'startDate', 'endDate', 'note', 'status', 'type', 'action'];
   leaveType: any;
   leave_type_id_change: any;
-@ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+  
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+
   constructor(
-    private dialog: MatDialog,
+
     private leaveRequestService: LeaveRequestService,
     private listTypeService: ListTypeService,
-    private snackBar: MatSnackBar
+  
   ) {}
 
   ngOnInit(): void {
     this.fetchLeaveRequestAdmin();
     this.fectchLeaveType();
   }
+
   private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
     if (this.notificationComponent) {
       this.notificationComponent.data = {
@@ -86,6 +95,7 @@ export class LeaveRequestAdminComponent {
   private info(message: string) {
     this.notify('info', message);
   }
+
   approveRequest(element: any): void {
     element.leave_request.status = 'APPROVED';
     this.changeDecision(element);
@@ -95,25 +105,18 @@ export class LeaveRequestAdminComponent {
     element.leave_request.status = 'REJECTED';
     this.changeDecision(element);
   }
-  
-
-  
 
   fectchLeaveType(): void {
     this.listTypeService.get_list_type().subscribe((data: any) => {
       this.leaveType = data.data;
-     
     });
   }
 
-  
- 
   changeDecision(request: any): void {
     const updatedRequest = {
       comments: "OK",
       leave_request_id: request.leave_request.id,
       decision: request.leave_request.status,
-      
     };
   
     this.leaveRequestService.changeDecsion(updatedRequest).subscribe({
@@ -133,12 +136,33 @@ export class LeaveRequestAdminComponent {
     this.leaveRequestService.getListLeaveRequestAdmin().subscribe({
       next: (data: any) => {
         this.leaveRequests = data.data;
+        this.updatePagedData();
         console.log('Leave Requests:', this.leaveRequests);
       },
       error: (error) => {
         console.error('Error fetching leave requests:', error);
       }
     });
+  }
+
+  updatePagedData(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, this.leaveRequests.length);
+    this.pagedData = this.leaveRequests.slice(startIndex, endIndex);
+    this.totalPages = Math.max(1, Math.ceil(this.leaveRequests.length / this.pageSize));
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagedData();
+    }
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1; // Reset to first page
+    this.updatePagedData();
   }
 
   hasSelected(): boolean {
@@ -159,10 +183,11 @@ interface LeaveRequest {
     end_date: Date | string;
     notes: string;
     status: string;
+    id: string;
   };
   leave_type?: { 
     type_name: string;
-    id: string };
+    id: string 
+  };
   selected?: boolean;
-
 }

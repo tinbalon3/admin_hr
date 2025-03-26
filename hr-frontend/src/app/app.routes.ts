@@ -39,6 +39,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'submitted-leave-requests',
+        loadComponent: () =>
+          import('./pages/submitted-leave-requests/submitted-leave-requests.component').then(
+            (m) => m.SubmittedLeaveRequestsComponent
+          ),
+      },
+      {
         path: 'list-leave-request',
         loadComponent: () =>
           import('./pages/leave-request-admin/leave-request-admin.component').then(

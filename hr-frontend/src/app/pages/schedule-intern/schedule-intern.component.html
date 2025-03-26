@@ -3,11 +3,7 @@
     <header class="calendar-header mb-4 flex items-center justify-between">
       <h2 class="text-2xl font-bold text-indigo-700">{{ currentMonth() }}</h2>
       <div class="flex items-center gap-3">
-        <button
-          class="px-3 py-2 border bg-pink-500 border-indigo-500 text-white rounded-lg hover:bg-indigo-500 transition"
-          (click)="updateSchedule()">
-          Đăng kí
-        </button>
+        
         <button
           class="px-3 py-2 border border-indigo-500 rounded-lg text-indigo-500 hover:bg-indigo-500 hover:text-white transition"
           (click)="toCurrentMonth()">
@@ -49,12 +45,12 @@
            ]">
         <!-- Nút toggle đăng ký nửa ngày, chỉ xuất hiện nếu ngày được chọn và chưa quá khứ -->
         <div *ngIf="isSelected(day.day) && !day.isPast" class="absolute top-2 left-2">
-          <button matTooltip="{{ isHalfDay(day.day) ? 'Nhấp để chuyển sang Full day' : 'Nhấp để chuyển sang Half day' }}"
+          <button matTooltip="{{ !isHalfDay(day.day) ? 'Nhấp để chuyển sang nửa ngày' : 'Nhấp để chuyển sang 1 ngày' }}"
             (click)="toggleHalfDay(day.day); $event.stopPropagation()"
             class="text-xs px-1 py-0.5 rounded bg-gray-100 text-blue-600 border border-blue-600 flex items-center gap-1">
-            <mat-icon *ngIf="isHalfDay(day.day)">access_time</mat-icon>
             <mat-icon *ngIf="!isHalfDay(day.day)">schedule</mat-icon>
-            <span>{{ isHalfDay(day.day) ? 'Full day' : 'Half day' }}</span>
+            <mat-icon *ngIf="isHalfDay(day.day)">access_time</mat-icon>
+            <span>{{ !isHalfDay(day.day) ? '1 ngày' : 'nửa ngày' }}</span>
           </button>
         </div>
   
@@ -70,7 +66,13 @@
         </div>
       </div>
     </div>
-  
+    <div class="fixed bottom-4 right-4">
+      <button
+        class="px-3 py-2 border bg-pink-500 border-indigo-500 text-white rounded-lg hover:bg-indigo-500 transition shadow-lg"
+        (click)="updateSchedule()">
+        Đăng kí
+      </button>
+    </div>
   
   
   

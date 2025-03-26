@@ -1,8 +1,7 @@
-<!-- <div class="container mx-auto p-6 bg-gray-100 min-h-screen font-sans"> -->
-    <!-- Phần TẠO ĐƠN XIN NGHỈ PHÉP -->
-    <section class="mb-12">
+<app-notification></app-notification>
+<section class="mb-12">
       <h1 class="text-3xl font-bold text-black text-center mb-6">
-        TẠO ĐƠN XIN NGHỈ PHÉP
+        DANH SÁCH ĐƠN ĐANG CHỜ XỬ LÝ
       </h1>
       <!-- Nút hành động -->
       <div class="flex justify-between mb-6">
@@ -25,12 +24,6 @@
         <table class="min-w-full">
           <thead class="bg-gray-200">
             <tr>
-              <th class="py-3 px-4 border">
-                <input class="w-full h-full" type="checkbox" (change)="toggleSelectAll($event)" />
-              </th>
-              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
-                Tên nhân viên
-              </th>
               <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
                 Ngày bắt đầu
               </th>
@@ -47,21 +40,12 @@
                 Trạng thái
               </th>
               <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
-                Xoá đơn
-              </th>
-              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
-                Cập nhật
+                Thao tác
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <tr *ngFor="let request of leaveRequests" class="bg-gray-50">
-              <td class="py-3 px-4 border">
-                <input class="w-full h-full" type="checkbox" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.selected"/>
-              </td>
-              <td class="py-3 px-4 border text-center text-black">
-                {{ request.employee?.full_name }}
-              </td>
+            <tr *ngFor="let request of pagedData" class="bg-gray-50">
               <td class="py-3 px-4 border">
                 <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.start_date" />
               </td>
@@ -70,18 +54,25 @@
               </td>
               <td class="py-3 px-4 border">
                 <select
-                  class="w-full"
+                  class="w-full border rounded px-2 py-1"
                   [disabled]="request.leave_request.status != 'PENDING'"
                   [(ngModel)]="request.leave_type.id"
                   (change)="onLeaveTypeChange(request, request.leave_type.id)"
                 >
-                  <option *ngFor="let type of leaveType" [value]="type.id">
+                  <option *ngFor="let type of leaveType" [value]="type.id" [ngStyle]="{'white-space': 'normal'}">
                     {{ type.type_name }}
                   </option>
                 </select>
               </td>
               <td class="py-3 px-4 border">
-                <input type="text" placeholder="Nhập ghi chú" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.notes" />
+                <textarea 
+                  placeholder="Nhập ghi chú" 
+                  class="border rounded px-2 py-1 w-full resize-none" 
+                  [disabled]="request.leave_request.status != 'PENDING'" 
+                  [(ngModel)]="request.leave_request.notes"
+                  rows="2"
+                  style="white-space: pre-wrap; word-wrap: break-word;"
+                ></textarea>
               </td>
               <td class="py-3 px-4 border text-center">
                 <span
@@ -96,25 +87,74 @@
                 </span>
               </td>
               <td class="py-3 px-4 border text-center">
-                <button 
-                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                  [disabled]="request.leave_request.status != 'PENDING'"
-                  (click)="deleteLeaveRequest(request)"
-                >
-                  Xóa
-                </button>
-              </td>
-              <td class="py-3 px-4 border text-center">
-                <button 
-                  class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                  [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"
-                  (click)="updateLeaveRequest(request)"
-                >
-                  Cập nhật
-                </button>
+                <div class="flex gap-2 justify-center">
+                  <button 
+                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                    [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
+                    [disabled]="request.leave_request.status != 'PENDING'"
+                    (click)="submitSelected()"
+                  >
+                    Gửi
+                  </button>
+                  <button 
+                  [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
+                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    [disabled]="request.leave_request.status != 'PENDING'"
+                    (click)="deleteLeaveRequest(request)"
+                  >
+                    Xóa
+                  </button>
+                  <button 
+                  [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
+                    class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                    [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"
+                    (click)="updateLeaveRequest(request)"
+                  >
+                    Cập nhật
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!-- Pagination controls -->
+        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div class="flex items-center">
+            <label class="mr-2 text-sm text-gray-600">Số mục mỗi trang:</label>
+            <select 
+              [(ngModel)]="pageSize" 
+              (ngModelChange)="onPageSizeChange($event)"
+              class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+            >
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+    
+          <div class="flex items-center space-x-2">
+            <button
+              (click)="onPageChange(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Trước
+            </button>
+            
+            <span class="text-sm text-gray-700">
+              Trang {{ currentPage }} / {{ totalPages }}
+            </span>
+    
+            <button
+              (click)="onPageChange(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
       </div>
     </section>

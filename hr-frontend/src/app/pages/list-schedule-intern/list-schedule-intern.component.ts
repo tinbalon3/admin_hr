@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { format, startOfMonth, endOfMonth, addDays, isEqual, startOfDay, isBefore, startOfToday } from 'date-fns';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { startOfMonth, endOfMonth, addDays, isEqual, startOfDay, isBefore, startOfToday, format } from 'date-fns';
+import { formatWithOptions } from 'date-fns/fp';
+import { vi } from 'date-fns/locale';
 import { ScheduleInternService } from '../../services/schedule-intern-service.service';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RegistrationData, RegistrationDialogComponent } from '../../components/register-dialog/register-dialog.component';
+import { NotificationComponent } from '../../components/notification/notification.component';
 
 
 interface WorkDay {
@@ -39,7 +42,7 @@ interface ApiResponse {
   selector: 'app-list-schedule-intern',
   templateUrl: './list-schedule-intern.component.html',
   styleUrls: ['./list-schedule-intern.component.css'],
-  imports: [CommonModule, MatDialogModule]
+  imports: [CommonModule, MatDialogModule,NotificationComponent]
 })
 export class ListScheduleInternComponent implements OnInit {
   currentDate: Date = new Date();
@@ -61,7 +64,8 @@ export class ListScheduleInternComponent implements OnInit {
   }
 
   currentMonth(): string {
-    return format(this.currentDate, 'MMMM yyyy');
+    const formatLocalized = formatWithOptions({ locale: vi });
+    return formatLocalized('LLLL yyyy')(this.currentDate);
   }
 
   daysInMonth(): Date[] {
@@ -76,16 +80,17 @@ export class ListScheduleInternComponent implements OnInit {
     return days;
   }
 
-  // Enrich ngày để hiển thị thêm thông tin (ví dụ: isToday, isPast, colStartClass)
   daysEnriched(): any[] {
     const days = this.daysInMonth();
-    return days.map((day, i) => ({
-      day: day,
-      isToday: isEqual(day, startOfDay(new Date())),
-      isPast: isBefore(day, startOfDay(new Date())),
-      colStartClass: i === 0 ? this.COL_START_CLASSES[day.getDay()] : '',
-      disableSelection: false
-    }));
+    const today = startOfDay(new Date());
+    
+    return days.map((day, i) => {
+      return {
+        day: day,
+        isToday: isEqual(day, today),
+        colStartClass: i === 0 ? this.COL_START_CLASSES[day.getDay()] : ''
+      };
+    });
   }
 
   // Kiểm tra xem ngày có đăng ký (từ dữ liệu đã tổng hợp) không
@@ -114,15 +119,17 @@ export class ListScheduleInternComponent implements OnInit {
     }
     return '';
   }
- readonly #dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  readonly #dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  private formatDate = formatWithOptions({ locale: vi });
+
   protected readonly dayNamesFormatted = this.#dayNames.map((dayName) => ({
     dayName: dayName,
-    isToday: dayName === format(startOfToday(), 'eee'),
+    isToday: dayName === this.formatDate('eee')(startOfToday()),
   }));
   fetchSchedule(): void {
     this.scheduleService.fectchScheduleList().subscribe({
       next: (res: ApiResponse) => {
-        console.log('Dữ liệu schedule:', res);
+       
         if (res.data && res.data.length > 0) {
           const aggregated: { [key: string]: AggregatedWorkDay } = {};
           res.data.forEach(item => {
@@ -132,25 +139,53 @@ export class ListScheduleInternComponent implements OnInit {
               if (!aggregated[key]) {
                 aggregated[key] = { day_of_week: wd.day_of_week, registrations: [] };
               }
-              console.log(wd);
+              
               aggregated[key].registrations.push({ intern: internName, note: wd.note });
             });
           });
           this.aggregatedRegisteredWorkDays = Object.values(aggregated);
-          console.log('Dữ liệu đã tổng hợp:', this.aggregatedRegisteredWorkDays);
+        
         }
       },
-      error: (err) => console.error('Lỗi fetch schedule:', err)
+      error: (err) => this.error(err.error.detail || 'Đã xảy ra lỗi khi tải dữ liệu lịch')
     });
   }
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
 
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
+  }
   prevMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+    const newDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+    this.currentDate = newDate;
     this.fetchSchedule();
   }
 
   nextMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+    const newDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+    this.currentDate = newDate;
     this.fetchSchedule();
   }
 
@@ -177,13 +212,13 @@ export class ListScheduleInternComponent implements OnInit {
     if (registrationData) {
       this.dialog.open(RegistrationDialogComponent, {
         data: {
-          day: format(day, 'yyyy-MM-dd'),
+          day: this.formatDate('yyyy-MM-dd')(day),
           registrations: registrationData.registrations
         } as RegistrationData,
         width: '300px'
       });
     } else {
-      console.log('Ngày chưa có đăng ký:', day);
+      this.warn(`Ngày chưa có đăng ký:, ${this.formatDate('dd/MM/yyyy')(day)}`);
     }
   }
 }

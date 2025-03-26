@@ -137,8 +137,8 @@ interface DialogData {
   styles: [`
     :host {
       display: block;
-      max-width: 800px;
-      width: 90vw;
+
+      width: 100%;
     }
 
     mat-dialog-content {

@@ -9,8 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
-import { NotificationComponent } from '../../components/notification/notification.component';
 
+import { NotificationComponent } from '../../components/notification/notification.component';
 @Component({
   selector: 'app-employee-registration',
   templateUrl: './employee-registration.component.html',
@@ -25,7 +25,8 @@ import { NotificationComponent } from '../../components/notification/notificatio
     MatIconModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatSelectModule
+    MatSelectModule,
+    NotificationComponent
   ]
 })
 export class EmployeeRegistrationComponent {
@@ -36,7 +37,7 @@ export class EmployeeRegistrationComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+ 
   ) {
     this.registrationForm = this.fb.group({
       full_name: ['', [
@@ -141,13 +142,19 @@ export class EmployeeRegistrationComponent {
     this.loading = true;
 
     this.authService.adminCreateEmployee(this.registrationForm.value).subscribe({
-      next: () => {
-        this.success('Tạo tài khoản thành công!');
+      next: (response) => {
+        console.log(response)
+        this.success(response.message);
         this.registrationForm.reset();
+        Object.keys(this.registrationForm.controls).forEach(key => {
+          const control = this.registrationForm.get(key);
+          control?.setErrors(null);
+          control?.markAsUntouched();
+        });
         this.loading = false;
       },
       error: (error) => {
-        const message = error.error?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+        const message = error.error?.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.';
         this.error(message);
         this.loading = false;
       }

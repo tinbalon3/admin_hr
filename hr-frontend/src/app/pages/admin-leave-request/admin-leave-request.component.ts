@@ -1,209 +1,182 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, DateAdapter, NativeDateAdapter } from '@angular/material/core';
+import { MatNativeDateModule } from '@angular/material/core';
+import { LeaveTypeService } from '../../services/leave-type.service';
+import { LeaveRequestService } from '../../services/leave-request.service';
+import { NotificationComponent } from '../../components/notification/notification.component';
 import { UsersService } from '../../services/users.service';
-import { CreateLeaveRequestDialogComponent } from './create-leave-request-dialog.component';
 
 interface Employee {
   id: string;
   full_name: string;
-  email: string;
-  role: string;
-  phone: string;
-  location: string;
-  created_at: string;
+}
+
+interface LeaveType {
+  id: string;
+  name: string;
 }
 
 @Component({
   selector: 'app-admin-leave-request',
-  template: `
-    <div class="container mx-auto px-4 py-8">
-      <h2 class="text-2xl font-bold mb-6 text-gray-800">Danh sách nhân viên</h2>
-      
-      <!-- Loading spinner -->
-      <div *ngIf="loading" class="flex justify-center my-8">
-        <mat-spinner diameter="40"></mat-spinner>
-      </div>
-
-      <!-- Employee table -->
-      <div *ngIf="!loading" class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <table mat-table [dataSource]="dataSource" class="w-full">
-          <!-- Full Name Column -->
-          <ng-container matColumnDef="full_name">
-            <th mat-header-cell *matHeaderCellDef> Họ và tên </th>
-            <td mat-cell *matCellDef="let employee"> {{employee.full_name}} </td>
-          </ng-container>
-
-          <!-- Email Column -->
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef> Email </th>
-            <td mat-cell *matCellDef="let employee"> {{employee.email}} </td>
-          </ng-container>
-
-          <!-- Phone Column -->
-          <ng-container matColumnDef="phone">
-            <th mat-header-cell *matHeaderCellDef> Số điện thoại </th>
-            <td mat-cell *matCellDef="let employee"> {{employee.phone}} </td>
-          </ng-container>
-
-          <!-- Role Column -->
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef> Chức vụ </th>
-            <td mat-cell *matCellDef="let employee">
-              <span [ngClass]="{
-                'text-blue-600': employee.role === 'INTERN',
-                'text-green-600': employee.role === 'EMPLOYEE',
-                'text-red-600': employee.role === 'ADMIN'
-              }">
-                {{employee.role}}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Location Column -->
-          <ng-container matColumnDef="location">
-            <th mat-header-cell *matHeaderCellDef> Địa điểm </th>
-            <td mat-cell *matCellDef="let employee"> {{employee.location}} </td>
-          </ng-container>
-
-          <!-- Created At Column -->
-          <ng-container matColumnDef="created_at">
-            <th mat-header-cell *matHeaderCellDef> Ngày tạo </th>
-            <td mat-cell *matCellDef="let employee"> 
-              {{employee.created_at | date:'dd/MM/yyyy HH:mm'}}
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef> Thao tác </th>
-            <td mat-cell *matCellDef="let employee">
-              <button mat-raised-button color="primary"
-                      (click)="createLeaveRequest(employee)"
-                      [disabled]="loading">
-                <mat-icon class="mr-2">note_add</mat-icon>
-                Tạo đơn
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-      </div>
-
-      <!-- No data message -->
-      <div *ngIf="!loading && dataSource.data.length === 0" 
-           class="text-center py-8 text-gray-500">
-        Không có nhân viên nào
-      </div>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-    .mat-mdc-row:hover {
-      background-color: #f5f5f5;
-    }
-    .mat-mdc-header-cell {
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.87);
-    }
-    .mat-column-actions {
-      width: 120px;
-      text-align: center;
-    }
-    .mat-column-role {
-      width: 100px;
-    }
-    .mat-column-created_at {
-      width: 150px;
-    }
-  `],
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
-    MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NotificationComponent
   ],
-  providers: [
-    MatDatepickerModule,
-    { provide: DateAdapter, useClass: NativeDateAdapter }
-  ]
+  templateUrl: './admin-leave-request.component.html',
+  styleUrl: './admin-leave-request.component.css'
 })
 export class AdminLeaveRequestComponent implements OnInit {
-  dataSource: MatTableDataSource<Employee>;
+  leaveRequestForm: FormGroup;
+  leaveTypes: LeaveType[] = [];
+  allEmployees: Employee[] = [];
+  employees: Employee[] = [];
   loading = false;
-  displayedColumns: string[] = [
-    'full_name',
-    'email',
-    'phone',
-    'role',
-    'location',
-    'created_at',
-    'actions'
-  ];
+  pageSize: number = 10;
+  currentPage: number = 1;
+  totalPages: number = 1;
+
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
 
   constructor(
-    private usersService: UsersService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private fb: FormBuilder,
+    private leaveTypeService: LeaveTypeService,
+    private leaveRequestService: LeaveRequestService,
+    private usersService: UsersService
   ) {
-    this.dataSource = new MatTableDataSource<Employee>([]);
+    this.leaveRequestForm = this.fb.group({
+      employee_id: ['', Validators.required],
+      leave_type_id: ['', Validators.required],
+      start_date: ['', Validators.required],
+      end_date: ['', Validators.required],
+      notes: ['']
+    });
   }
 
-  ngOnInit() {
-    this.loadEmployees();
+  ngOnInit(): void {
+    this.fetchLeaveTypes();
+    this.fetchEmployees();
   }
 
-  loadEmployees() {
-    this.loading = true;
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
+
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  fetchLeaveTypes(): void {
+    this.leaveTypeService.getLeaveTypes().subscribe({
+      next: (response: { data: LeaveType[] }) => {
+        this.leaveTypes = response.data;
+      },
+      error: (error: Error) => {
+        console.error('Error fetching leave types:', error);
+        this.error('Không thể tải danh sách loại nghỉ phép');
+      }
+    });
+  }
+
+  fetchEmployees(): void {
+    // Simulating employee data fetch since actual service is not available
     this.usersService.getListUser().subscribe({
       next: (response) => {
-        this.dataSource.data = response.data;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading employees:', error);
-        this.snackBar.open('Không thể tải danh sách nhân viên', 'Đóng', {
-          duration: 3000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['error-snackbar']
-        });
-        this.loading = false;
+        this.allEmployees = response.data;
+        this.updatePagedEmployees();
       }
-    });
+    })
   }
 
-  createLeaveRequest(employee: Employee) {
-    const dialogRef = this.dialog.open(CreateLeaveRequestDialogComponent, {
-      width: '600px',
-      data: {
-        employeeId: employee.id,
-        employeeName: employee.full_name
-      }
-    });
+  updatePagedEmployees(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, this.allEmployees.length);
+    this.employees = this.allEmployees.slice(startIndex, endIndex);
+    this.totalPages = Math.max(1, Math.ceil(this.allEmployees.length / this.pageSize));
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // Optionally reload the data if needed
-        // this.loadEmployees();
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagedEmployees();
+    }
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1;
+    this.updatePagedEmployees();
+  }
+
+  getErrorMessage(field: string): string {
+    const control = this.leaveRequestForm.get(field);
+    if (control?.hasError('required')) {
+      switch (field) {
+        case 'employee_id':
+          return 'Vui lòng chọn nhân viên';
+        case 'leave_type_id':
+          return 'Vui lòng chọn loại nghỉ phép';
+        case 'start_date':
+          return 'Vui lòng chọn ngày bắt đầu';
+        case 'end_date':
+          return 'Vui lòng chọn ngày kết thúc';
+        default:
+          return 'Trường này là bắt buộc';
       }
-    });
+    }
+    return '';
+  }
+
+  onSubmit(): void {
+    if (this.leaveRequestForm.valid) {
+      this.loading = true;
+      this.leaveRequestService.createLeaveRequest(this.leaveRequestForm.value).subscribe({
+        next: (response) => {
+          this.success(response.message);
+          this.leaveRequestForm.reset();
+          this.loading = false;
+        },
+        error: (error) => {
+     
+          this.error(error.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+          this.loading = false;
+        }
+      });
+    } else {
+      Object.keys(this.leaveRequestForm.controls).forEach(key => {
+        const control = this.leaveRequestForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+    }
   }
 }

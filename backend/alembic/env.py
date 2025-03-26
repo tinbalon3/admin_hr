@@ -2,7 +2,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-from app.models.models import Employee, LeaveType, LeaveRequest, Approval, WorkSchedule  # Import all models
+
 from app.core.config import settings
 from app.db.database import Base
 
