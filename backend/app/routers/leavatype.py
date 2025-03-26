@@ -19,7 +19,7 @@ def get_my_info(
         token: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     return LeaveTypeService.get_list(db, token)
 
-@router.post("/create", response_model=LeaveType, status_code=201)
+@router.post("/create", response_model=LeaveTypeResponse, status_code=201)
 def create_leave_type(
         leaveTypes: LeaveTypeCreate,
         db: Session = Depends(get_db),
