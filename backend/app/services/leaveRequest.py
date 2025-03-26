@@ -23,9 +23,8 @@ from app.schemas.approval import ApprovalData
 from app.core.security import (
     get_current_user,
     check_admin,
-    check_user,
     check_user_exist,
-    check_intern,
+    check_leaveRequest_remain,
     verify_token
 )
 
@@ -149,6 +148,20 @@ class LeaveRequestService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Ngay bắt đầu phải trước ngày kết thúc"
             )
+        
+        # kiểm tra ngày nghỉ có vượt quá số ngày nghỉ phép còn lại không
+        leave_request_numbers = db.query(LeaveRequest).filter(
+            LeaveRequest.employee_id == db_user.id,
+            LeaveRequest.status == "APPROVED"
+        ).all()
+        
+        if not check_leaveRequest_remain(leave_request_numbers):
+            logger.error(f"Leave request exceeds leave balance for user {db_user.id}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Số ngày nghỉ phép đã vượt quá số ngày còn lại"
+            )
+        
         # Tạo đơn nghỉ mới
         leave_request = LeaveRequest(
             id=uuid.uuid4(),

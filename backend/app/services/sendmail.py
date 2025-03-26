@@ -4,7 +4,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.models import LeaveRequest
-
+from app.core.security import auth_scheme, check_leaveRequest_remain
+from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import Depends
+from app.db.database import get_db
 
 from fastapi import HTTPException, status
 from datetime import datetime
@@ -13,6 +16,13 @@ from datetime import datetime
 from app.core.config import settings
 # Hàm gửi email
 def send_leave_request_email(db: Session,leave_request: dict, employee: dict, leave_type: dict):
+    #kiểm tra ngày nghỉ còn lại có hợp lệ không
+    leave_request_numbers = db.query(LeaveRequest).filter(
+        LeaveRequest.employee_id == leave_request['employee_id'],
+        LeaveRequest.status == "APPROVED"
+    ).all()
+    if not check_leaveRequest_remain(leave_request_numbers):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Số ngày nghỉ phép đã vượt quá số ngày còn lại")
     
     leave_request_db = db.query(LeaveRequest).filter(LeaveRequest.id == leave_request["id"]).first()
     if not leave_request_db:
