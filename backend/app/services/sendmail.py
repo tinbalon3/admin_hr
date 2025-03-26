@@ -34,20 +34,23 @@ def send_leave_request_email(db: Session,leave_request: dict, employee: dict, le
     leave_type_name = leave_type["type_name"]
 
     subject = f"Yêu cầu nghỉ phép của {employee_name}"
-    body = f"""\
-    Xin chào {employee_name},
+    body = f"""
+    Kính gửi {employee_name},
 
-    Dưới đây là thông tin yêu cầu nghỉ phép của nhân viên:
+    Chúng tôi xin thông báo rằng yêu cầu nghỉ phép của bạn đã được ghi nhận với các thông tin sau:
 
-    - Tên nhân viên: {employee_name}
-    - Email nhân viên: {employee["email"]}
-    - Loại nghỉ: {leave_type_name}
-    - Ngày bắt đầu nghỉ: {start_date}
-    - Ngày kết thúc nghỉ: {end_date}
+    - Họ và tên: {employee_name}
+    - Email: {employee["email"]}
+    - Loại nghỉ phép: {leave_type_name}
+    - Từ ngày: {start_date}
+    - Đến ngày: {end_date}
+
+    Nếu bạn có bất kỳ thắc mắc hay cần hỗ trợ thêm, xin vui lòng liên hệ với phòng nhân sự.
 
     Trân trọng,
-    Hệ thống quản lý nhân sự
+    Hệ thống Quản lý Nhân Sự
     """
+
     
     msg = MIMEText(body)
     msg["Subject"] = subject

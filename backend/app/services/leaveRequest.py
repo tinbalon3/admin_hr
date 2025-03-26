@@ -132,7 +132,7 @@ class LeaveRequestService:
             logger.error(f"User not found with id {user_id}")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Invalid user token"
+                detail="không tìm thầy thông tin người dùng"
             )
         # Kiểm tra loại nghỉ phép tồn tại
         leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first()
@@ -140,14 +140,14 @@ class LeaveRequestService:
             logger.error("Leave type not found")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid Leave Type"
+                detail="Không tìm thấy loại nghỉ phép"
             )
         # Kiểm tra ngày bắt đầu và kết thúc
         if leave_data.start_date > leave_data.end_date:
             logger.error("Start date is after end date")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Start date must be before end date"
+                detail="Ngay bắt đầu phải trước ngày kết thúc"
             )
         # Tạo đơn nghỉ mới
         leave_request = LeaveRequest(
@@ -179,7 +179,7 @@ class LeaveRequestService:
         logger.info(f"User {user_id} requested deletion of leave request {id}")
         if user_id is None:
             logger.error("Invalid token: no user id")
-            raise ResponseHandler.invalid_token("access")
+            raise ResponseHandler.invalid_token("đăng")
         check_user_exist(token, db)
         leaveRequest = db.query(LeaveRequest).filter(LeaveRequest.id == id).first()
         if not leaveRequest:
@@ -213,7 +213,7 @@ class LeaveRequestService:
             logger.error(f"Leave request {id} not found for user {user_id}")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Invalid Leave Request"
+                detail="không tìm thấy yêu cầu nghỉ phép"
             )
         # Kiểm tra loại nghỉ tồn tại
         leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first()
@@ -221,26 +221,26 @@ class LeaveRequestService:
             logger.error("Leave type not found during edit")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid Leave Type"
+                detail="không tìm thấy loại nghỉ phép"
             )
         # Kiểm tra thời gian hợp lệ
         if leave_data.start_date > leave_data.end_date:
             logger.error("Start date is after end date during edit")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Start date must be before end date"
+                detail="Ngày bắt đầu không thể lớn hơn ngày kết thúc"
             )
         elif leave_data.start_date < date.today():
                 logger.error("start day is before today during edit")
                 raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="End date must be after today"
+                detail="ngày bắt đầu nghỉ không thể nhỏ hơn ngày hiện tại"
                 )
         elif leave_data.end_date < date.today():
             logger.error("End date is before today during edit")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="End date must be after today"
+                detail="ngày nghỉ không thể nhỏ hơn ngày hiện tại"
             )
         if leaveRequest.status in ["APPROVED", "REJECTED", "PROCESSING"]:
             logger.warning(f"Leave request {id} already resolved with status {leaveRequest.status}")
@@ -272,21 +272,21 @@ class LeaveRequestService:
         if not db_user:
             logger.error(f"Employee with id {leave_data.employee_id} does not exist")
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Employee does not exist."
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Không tìm thấy nhân viên."
             )
         leave_type = db.query(LeaveType).filter(LeaveType.id == leave_data.leave_type_id).first()
         if not leave_type:
             logger.error("Leave type does not exist")
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Leave type does not exist."
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="loại nghỉ phép không tồn tại."
             )
         if leave_data.start_date > leave_data.end_date:
             logger.error("Start date is after end date in admin creation")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Start date must be before end date."
+                detail="Ngày bắt đầu không thể lớn hơn ngày kết thúc"
             )
         leave_request = LeaveRequest(
             id=uuid.uuid4(),

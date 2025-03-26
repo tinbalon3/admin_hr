@@ -165,7 +165,7 @@ def verify_token(token: HTTPAuthorizationCredentials):
         logger.warning("Token is blacklisted")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is blacklisted."
+            detail="Đăng nhập quá hạn"
         )
 
 # --- Utility: Lấy user từ DB dựa trên token ---

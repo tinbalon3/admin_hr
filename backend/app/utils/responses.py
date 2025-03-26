@@ -28,14 +28,14 @@ class ResponseHandler:
 
     @staticmethod
     def not_found_error(name="", id=None):
-        message = f"Không tìm thấy thông tin"
+        message = f"Không tìm thấy thông tin {name}"
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
 
     @staticmethod
     def invalid_token(name=""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid {name} token.",
+            detail=f"vui lòng {name} lại.",
             headers={"WWW-Authenticate": "Bearer"})
     @staticmethod
     def userExists():
