@@ -17,6 +17,7 @@ import { NotificationComponent } from '../../components/notification/notificatio
 @Component({
   selector: 'app-create-leave-request-dialog',
   template: `
+    <app-notification></app-notification>
     <div class="p-6">
       <h2 mat-dialog-title class="text-xl font-bold mb-4">Tạo đơn nghỉ phép cho {{data.employeeName}}</h2>
       <mat-dialog-content>
@@ -94,7 +95,8 @@ import { NotificationComponent } from '../../components/notification/notificatio
     MatSelectModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NotificationComponent
   ],
   providers: [
     MatDatepickerModule,
@@ -163,6 +165,7 @@ export class CreateLeaveRequestDialogComponent implements OnInit {
     
     return 'Giá trị không hợp lệ';
   }
+  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
     if (this.notificationComponent) {
       this.notificationComponent.data = {
@@ -173,7 +176,7 @@ export class CreateLeaveRequestDialogComponent implements OnInit {
       };
     }
   }
-  @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
+  
 
   private success(message: string) {
     this.notify('success', message);
@@ -219,11 +222,17 @@ export class CreateLeaveRequestDialogComponent implements OnInit {
     this.leaveRequestService.createAdminLeaveRequest(request).subscribe({
       next: () => {
         this.success('Tạo đơn nghỉ phép thành công!');
-        this.dialogRef.close(true);
+        // Delay closing dialog to allow notification to be shown
+        setTimeout(() => {
+          this.dialogRef.close(true);
+        }, 3000);
       },
       error: (error) => {
         const message = error.error?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
         this.error(message);
+        setTimeout(() => {
+          this.dialogRef.close(true);
+        }, 3000);
         this.loading = false;
       }
     });

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ListTypeService } from '../../services/list-type.service';
 import { format } from 'date-fns';
 import { LeaveRequestService } from '../../services/leave-request.service';
+import { NotificationComponent } from '../notification/notification.component';
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -23,7 +24,8 @@ import { LeaveRequestService } from '../../services/leave-request.service';
     MatNativeDateModule,
     MatSelectModule,
     MatButtonModule,
-  ],
+    NotificationComponent
+],
   providers: [
     provideNativeDateAdapter(), // Cung cấp DateAdapter và MAT_DATE_FORMATS mặc định
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' }, // Đặt locale là tiếng Việt (tùy chọn)
@@ -35,7 +37,7 @@ export class LeveRequestDialogComponent implements OnInit {
   startDate: Date | null= null;
   endDate: Date | null= null;
   note: string = '';
-
+ @ViewChild(NotificationComponent) notificationComponent?: NotificationComponent;
   leaveType :any;
   selectedLeaveType: string = '';
   constructor(
@@ -47,8 +49,6 @@ export class LeveRequestDialogComponent implements OnInit {
     this.fectchLeaveType();
   }
  
- 
-
   cancel(): void {
     this.dialogRef.close();
   }
@@ -58,6 +58,32 @@ export class LeveRequestDialogComponent implements OnInit {
     }
     )
   }
+  private notify(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+    if (this.notificationComponent) {
+      this.notificationComponent.data = {
+        message,
+        type,
+        duration: 3000,
+        dismissable: true
+      };
+    }
+  }
+
+  private success(message: string) {
+    this.notify('success', message);
+  }
+
+  private error(message: string) {
+    this.notify('error', message);
+  }
+
+  private warn(message: string) {
+    this.notify('warning', message);
+  }
+
+  private info(message: string) {
+    this.notify('info', message);
+  }
   submit(): void {
    
       const leaveRequest = {
@@ -66,7 +92,7 @@ export class LeveRequestDialogComponent implements OnInit {
         leave_type_id: this.selectedLeaveType,
         notes: this.note,
       };
-   
+      
         this.dialogRef.close(leaveRequest);
      
   }

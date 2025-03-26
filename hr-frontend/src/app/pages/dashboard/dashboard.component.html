@@ -32,9 +32,13 @@
             <mat-icon>dashboard</mat-icon>
             <span>Bảng tin</span>
           </a>
-          <a mat-list-item routerLink="/dashboard/create-leave-request" routerLinkActive="active">
+          <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/create-leave-request" routerLinkActive="active">
             <mat-icon>event_note</mat-icon>
             <span>Tạo đơn nghỉ phép</span>
+          </a>
+          <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/submitted-leave-requests" routerLinkActive="active">
+            <mat-icon>event_note</mat-icon>
+            <span>Danh sách đơn đã xử lý</span>
           </a>
           <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/leave-balance" routerLinkActive="active">
             <mat-icon>date_range</mat-icon>

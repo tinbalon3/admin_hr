@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_FORMATS, DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
@@ -19,6 +19,32 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { EmployeeLeaveDetailsDialogComponent } from '../../components/employee-leave-details-dialog/employee-leave-details-dialog.component';
+
+// Custom Date Adapter
+export class CustomDateAdapter extends NativeDateAdapter {
+  override format(date: Date, displayFormat: Object): string {
+    if (displayFormat === 'input') {
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    }
+    return date.toDateString();
+  }
+}
+
+// Custom date formats
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'MM/DD/YYYY',
+  },
+  display: {
+    dateInput: 'input',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 interface LeaveRequest {
   start_date: string;
@@ -84,6 +110,10 @@ interface FilterOptions {
     FormsModule,
     ReactiveFormsModule
   ],
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
+  ],
   templateUrl: './employee-leave-statistics.component.html',
   styleUrls: ['./employee-leave-statistics.component.css']
 })
@@ -97,9 +127,13 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
     'rejectedLeaves',
     'actions'
   ];
-  
+
   filterForm: FormGroup;
   dataSource: LeaveStatistics[] = [];
+  pagedData: LeaveStatistics[] = [];
+  pageSize: number = 10;
+  currentPage: number = 1;
+  totalPages: number = 1;
   isLoading = false;
   error: string | null = null;
   leaveTypes: string[] = ['Nghỉ phép', 'Nghỉ bệnh', 'Nghỉ không lương', 'Nghỉ khác'];
@@ -107,14 +141,14 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
 
   private rawLeaveData: any[] = [];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<LeaveStatistics>;
 
   constructor(
     private leaveRequestService: LeaveRequestService,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private dateAdapter: DateAdapter<Date>
   ) {
     this.filterForm = this.fb.group({
       dateRange: this.fb.group({
@@ -124,6 +158,8 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
       status: [[]],
       leaveType: [[]]
     });
+
+    this.dateAdapter.setLocale('en-US');
   }
 
   ngOnInit(): void {
@@ -148,7 +184,7 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
         this.rawLeaveData = response.data;
         let filteredData = response.data;
 
-        // Apply date range filter
+        // Apply filters
         if (filters.dateRange.start || filters.dateRange.end) {
           filteredData = filteredData.filter((item: LeaveData) => {
             const startDate = new Date(item.leave_request.start_date);
@@ -167,14 +203,12 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
           });
         }
 
-        // Apply status filter
         if (filters.status && filters.status.length > 0) {
           filteredData = filteredData.filter((item: LeaveData) =>
             filters.status.includes(item.leave_request.status)
           );
         }
 
-        // Apply leave type filter
         if (filters.leaveType && filters.leaveType.length > 0) {
           filteredData = filteredData.filter((item: LeaveData) =>
             filters.leaveType.includes(item.leave_type.type_name)
@@ -182,6 +216,7 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
         }
 
         this.dataSource = this.processLeaveData(filteredData);
+        this.updatePagedData();
         this.isLoading = false;
       },
       error: (error: any) => {
@@ -192,9 +227,35 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
     });
   }
 
+  updatePagedData(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, this.dataSource.length);
+    this.pagedData = this.dataSource.slice(startIndex, endIndex);
+    this.totalPages = Math.max(1, Math.ceil(this.dataSource.length / this.pageSize));
+
+    // Ensure current page is valid
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+      this.updatePagedData();
+    }
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagedData();
+    }
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1; // Reset to first page
+    this.updatePagedData();
+  }
+
   private processLeaveData(data: any[]): LeaveStatistics[] {
     const employeeMap = new Map<string, any[]>();
-    
+
     data.forEach(item => {
       const employeeId = item.employee.id;
       if (!employeeMap.has(employeeId)) {
@@ -220,7 +281,7 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
 
   viewDetails(employeeId: string, employeeName: string): void {
     const employeeLeaves = this.rawLeaveData.filter(item => item.employee.id === employeeId);
-    
+
     const monthlyStats = this.calculateMonthlyStats(employeeLeaves);
     const leaveTypes = this.categorizeLeavesByType(employeeLeaves);
     const totalLeaves = this.calculateTotalLeaves(employeeLeaves);
@@ -256,12 +317,10 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
       'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
     ];
 
-    // Initialize all months
     monthNames.forEach(month => {
       monthStats[month] = { count: 0, days: 0 };
     });
 
-    // Calculate stats for each leave request
     leaves.forEach(leave => {
       const startDate = new Date(leave.leave_request.start_date);
       const monthName = monthNames[startDate.getMonth()];
@@ -288,7 +347,7 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
   }
 
   private calculateRemainingBalance(leaves: any[]): number {
-    const totalAnnualLeave = 12; // This should come from configuration
+    const totalAnnualLeave = 12;
     return totalAnnualLeave - this.calculateTotalLeaves(leaves);
   }
 
@@ -322,11 +381,9 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
       return;
     }
 
-    // Create workbook with headers
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    // Add headers
     XLSX.utils.sheet_add_aoa(worksheet, [[
       'Tên nhân viên',
       'Tổng ngày nghỉ',
@@ -337,7 +394,6 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
       'Chi tiết loại nghỉ'
     ]]);
 
-    // Add data rows
     const data = this.dataSource.map(row => ({
       'Tên nhân viên': row.employeeName,
       'Tổng ngày nghỉ': row.totalLeavesTaken,
@@ -350,22 +406,17 @@ export class EmployeeLeaveStatisticsComponent implements OnInit {
         .join(', ')
     }));
 
-    // Add data to worksheet
     XLSX.utils.sheet_add_json(worksheet, data, { origin: 'A2', skipHeader: true });
 
-    // Auto-size columns
     const max_width = data.reduce((w, r) => Math.max(w, r['Tên nhân viên'].length), 10);
     const col_width = Array(7).fill({ wch: max_width });
     worksheet['!cols'] = col_width;
 
-    // Add worksheet to workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Leave Statistics');
 
-    // Generate Excel file
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    
-    // Download file
+
     const fileName = `leave_statistics_${new Date().toISOString().split('T')[0]}.xlsx`;
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

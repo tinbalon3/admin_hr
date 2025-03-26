@@ -1,9 +1,10 @@
- <!-- Phần DANH SÁCH ĐƠN XIN NGHỈ PHÉP -->
- <section>
-  <h1 class="text-3xl font-bold text-black text-center mb-6">
+<!-- Phần DANH SÁCH ĐƠN XIN NGHỈ PHÉP -->
+ <app-notification></app-notification>
+<div class="p-6 bg-gray-100 min-h-screen">
+  <h1 class="text-2xl font-semibold text-black text-center mb-6">
     DANH SÁCH ĐƠN XIN NGHỈ PHÉP
   </h1>
-  <div class="overflow-x-auto rounded-lg shadow">
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
     <table class="min-w-full">
       <thead class="bg-gray-200">
         <tr>
@@ -31,7 +32,7 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        <tr *ngFor="let element of leaveRequests" class="bg-gray-50">
+        <tr *ngFor="let element of pagedData" class="bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
           <td class="px-6 py-4 whitespace-nowrap text-center text-black">
             {{ element.employee?.full_name }}
           </td>
@@ -82,7 +83,53 @@
             </div>
           </td>
         </tr>
+
+        <!-- Empty state row -->
+        <tr *ngIf="!pagedData?.length">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            Không có dữ liệu
+          </td>
+        </tr>
       </tbody>
     </table>
+
+    <!-- Pagination controls -->
+    <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+      <div class="flex items-center">
+        <label class="mr-2 text-sm text-gray-600">Số mục mỗi trang:</label>
+        <select 
+          [(ngModel)]="pageSize" 
+          (ngModelChange)="onPageSizeChange($event)"
+          class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+        >
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Trước
+        </button>
+        
+        <span class="text-sm text-gray-700">
+          Trang {{ currentPage }} / {{ totalPages }}
+        </span>
+
+        <button
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Sau
+        </button>
+      </div>
+    </div>
   </div>
-</section>
+</div>

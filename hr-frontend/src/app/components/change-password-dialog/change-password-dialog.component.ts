@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { UsersService } from '../../services/users.service';
 import { NotificationComponent } from '../notification/notification.component';
 
+
 @Component({
   selector: 'app-change-password-dialog',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
-  ],
+    ReactiveFormsModule,
+    NotificationComponent
+],
   templateUrl: './change-password-dialog.component.html',
   styleUrls: ['./change-password-dialog.component.css']
 })
@@ -71,13 +73,17 @@ export class ChangePasswordDialogComponent {
       }
       this.userService.updatedUser(data).subscribe(
         (res) => {
-          this.success(res);
+          this.success(res.message);
         },
         (error) => {
-         this.error(error);
+         this.error(error.error.detail);
         }
       );
-      this.dialogRef.close(true);
+      setTimeout(() => {
+        this.dialogRef.close(true);
+      }
+      , 3000
+      );
     }
   }
 

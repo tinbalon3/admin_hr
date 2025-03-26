@@ -9,7 +9,7 @@ import { UsersService } from '../../services/users.service';
 
 interface User {
   id: number;
-  location: 'HCM' | 'DN';
+  location: 'HCM' | 'ĐN';
   role: string;
   full_name: string;
   created_at: string;
@@ -92,7 +92,7 @@ export class InforcompanyComponent implements OnInit {
   private processUserData() {
     // Group users by location and role
     const hcmUsers = this.users.filter(user => user.location === 'HCM');
-    const danangUsers = this.users.filter(user => user.location === 'DN');
+    const danangUsers = this.users.filter(user => user.location === 'ĐN');
 
     // Process HCM data
     const hcmRoles = this.groupByRole(hcmUsers);
