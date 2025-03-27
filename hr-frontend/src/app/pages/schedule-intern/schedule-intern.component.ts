@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DatePipe, NgClass, NgTemplateOutlet, CommonModule, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, CommonModule, NgFor, NgIf } from '@angular/common';
 import {
   computed,
-  input,
+
   output,
   signal,
 } from '@angular/core';
@@ -17,13 +17,13 @@ import {
   addDays,
   isBefore,
 } from 'date-fns';
-
-import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { formatWithOptions } from 'date-fns/fp';
+import {  MatTooltipModule } from '@angular/material/tooltip';
 import { ScheduleInternService } from '../../services/schedule-intern-service.service';
 import { startOfDay } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
 import { NotificationComponent } from '../../components/notification/notification.component';
+import { vi } from 'date-fns/locale'
 
 interface NotificationData {
   message: string;
@@ -115,7 +115,6 @@ export class ScheduleInternComponent implements OnInit {
   
     // Nếu có xoá, loại bỏ các ngày đó khỏi registeredDays
     if (hasRemoved) {
-      console.log('Có ngày bị xoá:', this.datesToRemove);
       this.registeredDays = this.registeredDays.filter(day =>
         this.datesToRemove.every(rem =>
           startOfDay(rem).getTime() !== startOfDay(day).getTime()
@@ -319,10 +318,11 @@ export class ScheduleInternComponent implements OnInit {
     this.fetchUserSchedule(nextMonth);
     this.monthChange.emit(this.currentDate());
   }
+  private formatDate = formatWithOptions({ locale: vi });
   readonly #dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
   protected readonly dayNamesFormatted = this.#dayNames.map((dayName) => ({
     dayName: dayName,
-    isToday: dayName === format(startOfToday(), 'eee'),
+    isToday: dayName === this.formatDate('eee')(startOfToday()),
   }));
 
   protected prevMonth() {

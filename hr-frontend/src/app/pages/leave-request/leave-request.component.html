@@ -5,19 +5,15 @@
       </h1>
       <!-- Nút hành động -->
       <div class="flex justify-between mb-6">
-        <button 
+        <button
           class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 flex items-center gap-2"
           (click)="openDialog()"
+          [attr.aria-label]="'Tạo đơn nghỉ phép mới'"
+          tabindex="0"
         >
-          ➕ Tạo đơn
+          <span aria-hidden="true">➕</span> Tạo đơn
         </button>
-        <button 
-          class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
-          *ngIf="hasSelected()"
-          (click)="submitSelected()"
-        >
-          📩 Gửi đơn
-        </button>
+        
       </div>
       <!-- Bảng tạo đơn -->
       <div class="overflow-x-auto rounded-lg shadow">
@@ -47,10 +43,10 @@
           <tbody class="divide-y divide-gray-200">
             <tr *ngFor="let request of pagedData" class="bg-gray-50">
               <td class="py-3 px-4 border">
-                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.start_date" />
+                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.start_date" [ngModel]="request.leave_request.start_date | date:'yyyy-MM-dd'" />
               </td>
               <td class="py-3 px-4 border">
-                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.end_date" />
+                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.end_date" [ngModel]="request.leave_request.end_date | date:'yyyy-MM-dd'" />
               </td>
               <td class="py-3 px-4 border">
                 <select
@@ -88,30 +84,36 @@
               </td>
               <td class="py-3 px-4 border text-center">
                 <div class="flex gap-2 justify-center">
-                  <button 
-                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                    [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
-                    [disabled]="request.leave_request.status != 'PENDING'"
-                    (click)="submitSelected()"
-                  >
-                    Gửi
-                  </button>
-                  <button 
-                  [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
-                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                    [disabled]="request.leave_request.status != 'PENDING'"
-                    (click)="deleteLeaveRequest(request)"
-                  >
-                    Xóa
-                  </button>
-                  <button 
-                  [ngClass]="{'opacity-50 cursor-not-allowed': request.leave_request.status != 'PENDING'}"
-                    class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                    [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"
-                    (click)="updateLeaveRequest(request)"
-                  >
-                    Cập nhật
-                  </button>
+                  <button
+                   class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   [disabled]="request.leave_request.status != 'PENDING'"
+                   (click)="submitSelected(request)"
+                   [attr.aria-label]="'Gửi đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Gửi
+                 </button>
+                 <button
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                   [disabled]="request.leave_request.status != 'PENDING'"
+                   (click)="deleteLeaveRequest(request)"
+                   [attr.aria-label]="'Xóa đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Xóa
+                 </button>
+                 <button
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                   [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"
+                   (click)="updateLeaveRequest(request)"
+                   [attr.aria-label]="'Cập nhật đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Cập nhật
+                 </button>
                 </div>
               </td>
             </tr>
@@ -138,19 +140,23 @@
             <button
               (click)="onPageChange(currentPage - 1)"
               [disabled]="currentPage === 1"
-              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              [attr.aria-label]="'Trang trước'"
+              tabindex="0"
             >
               Trước
             </button>
             
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-gray-700" role="status" aria-live="polite">
               Trang {{ currentPage }} / {{ totalPages }}
             </span>
     
             <button
               (click)="onPageChange(currentPage + 1)"
               [disabled]="currentPage === totalPages"
-              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              [attr.aria-label]="'Trang sau'"
+              tabindex="0"
             >
               Sau
             </button>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -42,12 +42,17 @@ export interface NotificationData {
   `,
   styles: [`
     :host {
-      display: block;
+      display: none;
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 1000;
+      z-index: -1;
       width: 320px;
+    }
+
+    :host(.visible) {
+      z-index: 1000;
+      display: block;
     }
 
     .notification-container {
@@ -250,6 +255,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   private hideTimeout?: number;
 
+  constructor(private elementRef: ElementRef) {}
+
   ngOnInit() {}
 
   ngOnDestroy() {
@@ -260,11 +267,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   show() {
     this.state = 'enter';
+    this.elementRef.nativeElement.classList.add('visible');
     this.hideTimeout = window.setTimeout(() => this.hide(), this._data.duration);
   }
 
   hide() {
     this.state = 'leave';
+    this.elementRef.nativeElement.classList.remove('visible');
     setTimeout(() => this.state = 'void', 300);
   }
 

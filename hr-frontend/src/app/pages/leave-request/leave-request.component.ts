@@ -179,11 +179,11 @@ export class LeaveRequestComponent implements OnInit {
     if (confirm('Bạn có chắc chắn muốn xóa đơn nghỉ phép này?')) {
       this.leaveRequestService.deleteLeaveRequest(id).subscribe({
         next: (response) => {
-          this.success('Xóa thành công!');
+          this.success(response.message);
           this.fetchLeaveRequestUsers();
         },
         error: (err) => {
-          this.error('Xóa thất bại!');
+          this.error(err.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
           console.error('Lỗi khi xóa:', err);
         }
       });
@@ -221,8 +221,8 @@ export class LeaveRequestComponent implements OnInit {
     return this.leaveRequests.some(request => request.selected);
   }
 
-  submitSelected(): void {
-    const selectedRequest = this.leaveRequests.find(request => request.selected);
+  submitSelected(selectedRequest: any): void {
+  
 
     if (!selectedRequest) {
       return;
