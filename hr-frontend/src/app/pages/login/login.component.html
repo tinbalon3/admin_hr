@@ -34,27 +34,23 @@
 
             <mat-form-field appearance="fill" class="form-field">
                 <mat-label>Mật khẩu</mat-label>
-                <mat-icon matPrefix class="field-icon">lock</mat-icon>
-                <input matInput [type]="hidePassword ? 'password' : 'text'" 
-                       [(ngModel)]="password" name="password" 
-                       required #passwordField="ngModel" />
-                <button mat-icon-button matSuffix type="button" 
-                        (click)="hidePassword = !hidePassword">
-                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <input matInput [type]="hidePassword ? 'password' : 'text'"
+                       [(ngModel)]="password" name="password"
+                       required #passwordField="ngModel"
+                       autocomplete="current-password"
+                       class="password-input" />
+                <button mat-button matSuffix type="button"
+                        (click)="hidePassword = !hidePassword"
+                        [attr.aria-label]="hidePassword ? 'Hiện mật khẩu' : 'Ẩn mật khẩu'"
+                        [attr.aria-pressed]="!hidePassword"
+                        class="visibility-toggle">
+                    {{hidePassword ? 'Hiện' : 'Ẩn'}}
                 </button>
                 <mat-error *ngIf="passwordField.invalid && passwordField.touched">
                     Vui lòng nhập mật khẩu
                 </mat-error>
             </mat-form-field>
 
-            <!-- <div class="form-options">
-                <mat-checkbox color="primary" class="remember-me">
-                    Nhớ tài khoản
-                </mat-checkbox>
-                <a mat-button color="primary" class="forgot-password">
-                    Quên mật khẩu?
-                </a>
-            </div> -->
 
             <button mat-raised-button color="primary" 
                     class="submit-button" 
