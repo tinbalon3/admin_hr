@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { log } from 'console';
+import { environment } from '../../environments/environment.prod';
 
 
 @Injectable({
@@ -9,7 +10,7 @@ import { log } from 'console';
 })
 export class RegisterService {
   constructor(private http: HttpClient) {}
-  API_REGISTER = 'http://127.0.0.1:8000/auth/signup'; // Đổi thành URL backend của bạn
+  API_REGISTER = environment.apiBaseUrl +'/auth/signup'; // Đổi thành URL backend của bạn
 
   /**
    * API đăng ký người dùng

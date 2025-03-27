@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService, LoginResponse } from '../../services/auth.service';
-import { NotificationService } from '../../services/notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NotificationComponent } from '../../components/notification/notification.component';
 
@@ -28,7 +27,8 @@ import { NotificationComponent } from '../../components/notification/notificatio
     MatIconModule,
     MatCheckboxModule,
     RouterModule,
-  ],
+    NotificationComponent
+],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {}
@@ -75,7 +74,8 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     this.authService.login(this.email, this.password).subscribe({
-      next: (response: LoginResponse) => {
+      next: (response) => {
+        this.success("Đăng nhập thành công");
         this.authService.saveToken(response.token.access_token);
         this.authService.saveRefreshToken(response.token.refresh_token);
         this.authService.savecurrentUser(response.user);

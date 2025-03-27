@@ -1,17 +1,18 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
- const API_LIST_TYPE = "http://127.0.0.1:8000/leaveType/list"
+import { environment } from '../../environments/environment.prod';
 @Injectable({
   providedIn: 'root'
 })
 export class ListTypeService {
- 
+  API_LIST_TYPE = environment.apiBaseUrl + "/leaveType/list"
+
   constructor(private http: HttpClient) { }
   get_list_type():Observable<any> {
   const headers = new HttpHeaders({
           'Content-Type': 'application/json',
         });
-    return this.http.get<any>(`${API_LIST_TYPE}`, { headers });
+    return this.http.get<any>(`${this.API_LIST_TYPE}`, { headers });
   }
 }

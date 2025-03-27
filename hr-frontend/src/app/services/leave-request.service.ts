@@ -1,20 +1,21 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LeaveRequestService {
-  private API_LEAVE_REQUEST_CREATE = 'http://127.0.0.1:8000/leaveRequest/create'; // API endpoint
-  private API_LEAVE_REQUEST_GET_LIST_REQUEST_USER = 'http://127.0.0.1:8000/leaveRequest/user/list'; // API endpoint
-  private API_LEAVE_REQUEST_EDIT = 'http://127.0.0.1:8000/leaveRequest/edit'; // API endpoint
-  private API_LEAVE_REQUEST_DELETE = 'http://127.0.0.1:8000/leaveRequest/delete'; // API endpoint
-  private API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN = 'http://127.0.0.1:8000/leaveRequest/admin/list'; // API endpoint
-  private API_LEAVE_REQUEST_SEND_LEAVE_REQUEST_ADMIN = 'http://127.0.0.1:8000/mail/sendmail'; // API endpoint
-  private API_LEAVE_REQUEST_SEND_CHANGE_DECISION = 'http://127.0.0.1:8000/approve/change_decision'; // API endpoint
-  private API_LEAVE_REQUEST_APPROVED_ADMIN_LIST = 'http://127.0.0.1:8000/leaveRequest/admin/approved/list'; // API endpoint
-  private API_LEAVE_REQUEST_CREATE_ADMIN = 'http://127.0.0.1:8000/leaveRequest/createadmin'; // API endpoint
+  private API_LEAVE_REQUEST_CREATE = environment.apiBaseUrl +'/leaveRequest/create'; // API endpoint
+  private API_LEAVE_REQUEST_GET_LIST_REQUEST_USER = environment.apiBaseUrl +'/leaveRequest/user/list'; // API endpoint
+  private API_LEAVE_REQUEST_EDIT = environment.apiBaseUrl +'/leaveRequest/edit'; // API endpoint
+  private API_LEAVE_REQUEST_DELETE = environment.apiBaseUrl +'/leaveRequest/delete'; // API endpoint
+  private API_LEAVE_REQUEST_GET_LIST_REQUEST_ADMIN = environment.apiBaseUrl +'/leaveRequest/admin/list'; // API endpoint
+  private API_LEAVE_REQUEST_SEND_LEAVE_REQUEST_ADMIN = environment.apiBaseUrl +'/mail/sendmail'; // API endpoint
+  private API_LEAVE_REQUEST_SEND_CHANGE_DECISION = environment.apiBaseUrl +'/approve/change_decision'; // API endpoint
+  private API_LEAVE_REQUEST_APPROVED_ADMIN_LIST = environment.apiBaseUrl +'/leaveRequest/admin/approved/list'; // API endpoint
+  private API_LEAVE_REQUEST_CREATE_ADMIN = environment.apiBaseUrl +'/leaveRequest/createadmin'; // API endpoint
   constructor(private http: HttpClient) { }
 
   createLeaveRequest(leaveData: any): Observable<any> {

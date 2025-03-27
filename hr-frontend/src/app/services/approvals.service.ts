@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApprovalsService {
-  API_APPROVALS = 'http://127.0.0.1:8000/approve'; 
+  API_APPROVALS = environment.apiBaseUrl + '/approve'; 
   constructor(private http: HttpClient) { }
   getApprovals(): Observable<any> {
     const headers = new HttpHeaders({

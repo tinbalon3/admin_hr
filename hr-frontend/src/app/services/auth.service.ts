@@ -2,6 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../environments/environment.prod';
 
 export interface EmployeeRegistration {
   full_name: string;
@@ -38,9 +39,9 @@ export class AuthService {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
-  API_LOGIN = 'http://127.0.0.1:8000/auth/login'; // Đổi thành URL backend của bạn
-  API_CREATE_EMPLOYEE = 'http://127.0.0.1:8000/auth/admin/signup';
-  API_LOGOUT = 'http://127.0.0.1:8000/auth/logout';
+  API_LOGIN = environment.apiBaseUrl +'/auth/login'; // Đổi thành URL backend của bạn
+  API_CREATE_EMPLOYEE =environment.apiBaseUrl +'/auth/admin/signup/';
+  API_LOGOUT =environment.apiBaseUrl + '/auth/logout';
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_LOGIN}`, { email, password });
   }

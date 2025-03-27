@@ -1,16 +1,17 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScheduleInternService {
 
-  API_SCHEDULE_CREATE = 'http://127.0.0.1:8000/schedules/create';
-  API_SCHEDULE_USER_GET = 'http://127.0.0.1:8000/schedules/user/list';
-  API_SCHEDULE_EDIT = 'http://127.0.0.1:8000/schedules/edit';
-  API_SCHEDULE_GET_LIST = 'http://127.0.0.1:8000/schedules/list';
+  API_SCHEDULE_CREATE = environment.apiBaseUrl +'/schedules/create';
+  API_SCHEDULE_USER_GET = environment.apiBaseUrl +'/schedules/user/list';
+  API_SCHEDULE_EDIT = environment.apiBaseUrl +'/schedules/edit';
+  API_SCHEDULE_GET_LIST = environment.apiBaseUrl +'/schedules/list';
   constructor(private http: HttpClient) {}
 
   submitSchedule(data: any): Observable<any> {

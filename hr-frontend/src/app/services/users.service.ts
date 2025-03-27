@@ -1,14 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
 
-  private API_USER_UPDATED = 'http://127.0.0.1:8000/user/update'; // API endpoint
-  private API_USER_LIST = 'http://127.0.0.1:8000/user/list'; // API endpoint
+  private API_USER_UPDATED = environment.apiBaseUrl +'/user/update'; // API endpoint
+  private API_USER_LIST = environment.apiBaseUrl +'/user/list'; // API endpoint
   constructor(private http: HttpClient) {}
 
   updatedUser(data: any) :Observable<any> {
