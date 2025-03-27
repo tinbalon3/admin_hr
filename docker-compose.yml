@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: my_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    environment:
+      - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    depends_on:
+      - db
+  frontend:
+    build:
+      context: ./hr-frontend
+      dockerfile: Dockerfile
+    container_name: my_frontend
+    ports:
+      - "4200:4200"
+    env_file:
+      - .env.docker
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    env_file:
+      - .env.docker
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"   # Nếu port 5432 của host đã bị chiếm, bạn có thể map sang 5433
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
+  redis_data:
