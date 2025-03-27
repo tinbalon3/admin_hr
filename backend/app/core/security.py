@@ -165,7 +165,7 @@ def verify_token(token: HTTPAuthorizationCredentials):
         logger.warning("Token is blacklisted")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is blacklisted."
+            detail="Đăng nhập quá hạn"
         )
 
 # --- Utility: Lấy user từ DB dựa trên token ---
@@ -221,3 +221,12 @@ def check_intern(
         return False
     logger.debug("Intern user validated: %s", user.id)
     return user
+
+def check_leaveRequest_remain(list: list):
+    """
+    Kiểm tra xem số ngày nghỉ phép còn lại có đủ không.
+    """
+    if (len(list) > 12):
+        logger.warning("Leave request out of limit")
+        raise HTTPException(status_code=400, detail="Đã hết số ngày nghỉ phép trong năm.") 
+    return True

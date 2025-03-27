@@ -8,7 +8,11 @@ from app.models.models import Approval, LeaveRequest, Employee
 from app.schemas.approval import ApprovalCreate, ApprovalResponse_V2, ApprovalData, ApprovalResponseList
 from app.schemas.employee import UserInfo
 from app.utils.responses import ResponseHandler
-from app.core.security import check_admin,verify_token
+from app.core.security import ( 
+                              check_admin,
+                              verify_token,
+                              check_leaveRequest_remain
+                              )
 
 # Setup logger for this module
 logger = logging.getLogger(__name__)
@@ -37,12 +41,34 @@ class ApproveService:
         leave_request = db.query(LeaveRequest).filter(
             LeaveRequest.id == approveCreate.leave_request_id
         ).first()
+        
         if not leave_request:
             logger.error(f"Leave request {approveCreate.leave_request_id} not found")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Không tìm thấy yêu cầu nghỉ")
 
-
+        leave_request_numbers = db.query(LeaveRequest).filter(
+            LeaveRequest.employee_id == leave_request.employee_id, LeaveRequest.status == "APPROVED"
+        ).all()
+        
+        if not check_leaveRequest_remain(leave_request_numbers):
+            logger.error(f"Leave request {approveCreate.leave_request_id} exceeds leave balance")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Số ngày nghỉ phép đã vượt quá số ngày còn lại")
+  
         logger.info(f"Updating leave request {leave_request.id} status to {approveCreate.decision}")
+
+        # Check if the leave request is already processed
+        if leave_request.status in ["APPROVED", "REJECTED"]:
+            logger.error(f"Leave request {leave_request.id} has already been processed")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Yêu cầu nghỉ đã được xử lý trước đó")
+        # Check if the decision is valid
+        if approveCreate.decision not in ["APPROVED", "REJECTED"]:
+            logger.error(f"Invalid decision '{approveCreate.decision}' for leave request {leave_request.id}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Quyết định không hợp lệ")
+        
+        # Check if the leave request is already processed
+        if leave_request.status in ["APPROVED", "REJECTED"]:
+            logger.error(f"Leave request {leave_request.id} has already been processed")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Yêu cầu nghỉ đã được xử lý trước đó")
 
         # Update the leave request status
         leave_request.status = approveCreate.decision

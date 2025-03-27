@@ -4,7 +4,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.models import LeaveRequest
-
+from app.core.security import auth_scheme, check_leaveRequest_remain
+from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import Depends
+from app.db.database import get_db
 
 from fastapi import HTTPException, status
 from datetime import datetime
@@ -13,6 +16,13 @@ from datetime import datetime
 from app.core.config import settings
 # Hàm gửi email
 def send_leave_request_email(db: Session,leave_request: dict, employee: dict, leave_type: dict):
+    #kiểm tra ngày nghỉ còn lại có hợp lệ không
+    leave_request_numbers = db.query(LeaveRequest).filter(
+        LeaveRequest.employee_id == leave_request['employee_id'],
+        LeaveRequest.status == "APPROVED"
+    ).all()
+    if not check_leaveRequest_remain(leave_request_numbers):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Số ngày nghỉ phép đã vượt quá số ngày còn lại")
     
     leave_request_db = db.query(LeaveRequest).filter(LeaveRequest.id == leave_request["id"]).first()
     if not leave_request_db:
@@ -34,20 +44,23 @@ def send_leave_request_email(db: Session,leave_request: dict, employee: dict, le
     leave_type_name = leave_type["type_name"]
 
     subject = f"Yêu cầu nghỉ phép của {employee_name}"
-    body = f"""\
-    Xin chào {employee_name},
+    body = f"""
+    Kính gửi {employee_name},
 
-    Dưới đây là thông tin yêu cầu nghỉ phép của nhân viên:
+    Chúng tôi xin thông báo rằng yêu cầu nghỉ phép của bạn đã được ghi nhận với các thông tin sau:
 
-    - Tên nhân viên: {employee_name}
-    - Email nhân viên: {employee["email"]}
-    - Loại nghỉ: {leave_type_name}
-    - Ngày bắt đầu nghỉ: {start_date}
-    - Ngày kết thúc nghỉ: {end_date}
+    - Họ và tên: {employee_name}
+    - Email: {employee["email"]}
+    - Loại nghỉ phép: {leave_type_name}
+    - Từ ngày: {start_date}
+    - Đến ngày: {end_date}
+
+    Nếu bạn có bất kỳ thắc mắc hay cần hỗ trợ thêm, xin vui lòng liên hệ với phòng nhân sự.
 
     Trân trọng,
-    Hệ thống quản lý nhân sự
+    Hệ thống Quản lý Nhân Sự
     """
+
     
     msg = MIMEText(body)
     msg["Subject"] = subject

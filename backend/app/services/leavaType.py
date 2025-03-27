@@ -103,7 +103,7 @@ class LeaveTypeService:
         logger.info(f"User {user_id} attempts to delete leave type with id {id}")
         if user_id is None:
             logger.error("Invalid token: no user id extracted")
-            raise ResponseHandler.invalid_token("access")
+            raise ResponseHandler.invalid_token("nhập")
         
         check_admin(token, db)
         
