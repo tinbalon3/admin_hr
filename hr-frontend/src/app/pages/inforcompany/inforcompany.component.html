@@ -1,0 +1,94 @@
+<div class="content">
+  <h1>BẢNG TIN CÔNG TY</h1>
+
+  <mat-card *ngIf="loading" class="loading">
+    <mat-card-content>
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </mat-card-content>
+  </mat-card>
+
+
+  <div *ngIf="!loading && !error" class="main-container">
+    <mat-card class="total-card">
+      <mat-card-content>
+        <h2>Tổng số nhân viên</h2>
+        <div class="total-number">{{ totalEmployees }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="chart-container">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Cơ sở HCM</mat-card-title>
+          <mat-card-subtitle>Phân bố theo vai trò</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="hcmData"
+            [legend]="showLegend"
+            [legendPosition]="legendPosition"
+            [doughnut]="true"
+            [labels]="true"
+            [gradient]="true">
+          </ngx-charts-pie-chart>
+          <div class="location-total">
+            Tổng số: {{ getLocationTotal(hcmData) }} nhân viên
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Cơ sở Đà Nẵng</mat-card-title>
+          <mat-card-subtitle>Phân bố theo vai trò</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <ngx-charts-pie-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="danangData"
+            [legend]="showLegend"
+            [legendPosition]="legendPosition"
+            [doughnut]="true"
+            [labels]="true"
+            [gradient]="true">
+          </ngx-charts-pie-chart>
+          <div class="location-total">
+            Tổng số: {{ getLocationTotal(danangData) }} nhân viên
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="news-card">
+      <mat-card-header>
+        <mat-card-title>
+          <span class="welcome-icon">🎉</span> Chào mừng thành viên mới
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ng-container *ngIf="newUsers.length > 0">
+          <p class="welcome-text">
+            Thành viên mới gia nhập trong 7 ngày qua:
+          </p>
+          <ul class="welcome-list">
+            <li *ngFor="let user of newUsers" class="welcome-item">
+              <div class="user-info">
+                <span class="user-name">{{ user.full_name }}</span>
+                <span class="user-location">{{ user.location === 'HCM' ? 'Hồ Chí Minh' : 'Đà Nẵng' }}</span>
+              </div>
+              <span class="join-date">Ngày tham gia: {{ user.created_at | date:'dd/MM/yyyy' }}</span>
+            </li>
+          </ul>
+        </ng-container>
+        <div *ngIf="newUsers.length === 0" class="no-new-users">
+          <span class="info-icon">ℹ️</span>
+          <p>Chưa có thành viên mới trong 7 ngày qua</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

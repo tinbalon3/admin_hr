@@ -1,0 +1,24 @@
+Làm nhỏ label
+.mat-form-field-label {
+  font-size: 12px !important;
+  color: #4a4a4a;
+}
+
+/* Tạo bo góc và làm nhỏ padding */
+.custom-datepicker .mat-form-field-wrapper {
+  padding: 6px 8px !important;
+}
+
+.custom-datepicker .mat-form-field-outline {
+  border-radius: 8px !important;
+}
+
+/* Tăng khoảng cách giữa hai input */
+.custom-datepicker {
+  margin-bottom: 8px;
+}
+
+/* Hover và Focus */
+.custom-datepicker.mat-focused .mat-form-field-outline {
+  border-color: #3b82f6 !important; /* Màu xanh khi focus */
+}

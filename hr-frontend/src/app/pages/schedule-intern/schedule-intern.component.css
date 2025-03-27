@@ -1,0 +1,28 @@
+.schedule-container {
+    padding: 16px;
+  }
+  
+  .submit-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  mat-header-cell, mat-cell {
+    text-align: center;
+    padding: 12px;
+  }
+  
+  mat-header-cell {
+    font-weight: bold;
+    background-color: #f5f5f5;
+  }
+  
+  mat-checkbox {
+    transform: scale(1.2);
+  }

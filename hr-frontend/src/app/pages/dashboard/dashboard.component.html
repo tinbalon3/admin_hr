@@ -1,0 +1,96 @@
+<mat-toolbar color="primary" class="header">
+  <div class="logo-section">
+    <img src="\assets\logos\AIAIVN-05-Logo-DarkBackground.png" alt="HR AIAIVN Logo" class="logo-img">
+    <span class="logo">HR AIAIVN</span>
+  </div>
+  <span class="spacer"></span>
+  <div class="user-section" [matMenuTriggerFor]="userMenu">
+    <div class="user-info">
+      <span class="username">{{ userName }}</span>
+      <mat-icon class="user-icon">account_circle</mat-icon>
+    </div>
+  </div>
+  <mat-menu #userMenu="matMenu" class="user-menu">
+    <button mat-menu-item (click)="openPersonalInfo()">
+      <mat-icon>person</mat-icon>
+      <span>Thông tin cá nhân</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Đăng xuất</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <div class="sidenav-content">
+      <div class="nav-group">
+        <span class="nav-group-title">Chung</span>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/dashboard/inforcompany" routerLinkActive="active">
+            <mat-icon>dashboard</mat-icon>
+            <span>Bảng tin</span>
+          </a>
+          <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/create-leave-request" routerLinkActive="active">
+            <mat-icon>event_note</mat-icon>
+            <span>Tạo đơn nghỉ phép</span>
+          </a>
+          <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/submitted-leave-requests" routerLinkActive="active">
+            <mat-icon>event_note</mat-icon>
+            <span>Danh sách đơn đã gửi</span>
+          </a>
+          <a *ngIf="this.userRole != 'ADMIN'" mat-list-item routerLink="/dashboard/leave-balance" routerLinkActive="active">
+            <mat-icon>date_range</mat-icon>
+            <span>Thống kê ngày nghỉ</span>
+          </a>
+        </mat-nav-list>
+      </div>
+
+      <div class="nav-group" *ngIf="this.userRole == 'INTERN'">
+        <span class="nav-group-title">Thực tập sinh</span>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/dashboard/intern-schedule" routerLinkActive="active">
+            <mat-icon>schedule</mat-icon>
+            <span>Đăng ký lịch làm</span>
+          </a>
+        </mat-nav-list>
+      </div>
+
+      <div class="nav-group" *ngIf="this.userRole == 'ADMIN'">
+        <span class="nav-group-title">Quản lý</span>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/dashboard/list-leave-request" routerLinkActive="active">
+            <mat-icon>list_alt</mat-icon>
+            <span>Đơn nghỉ phép</span>
+          </a>
+          <a mat-list-item routerLink="/dashboard/approvals" routerLinkActive="active">
+            <mat-icon>done_all</mat-icon>
+            <span>Đơn đã duyệt</span>
+          </a>
+          <a mat-list-item routerLink="/dashboard/admin-leave-request" routerLinkActive="active" aria-label="Tạo đơn mới">
+            <mat-icon>note_add</mat-icon>
+            <span>Tạo đơn</span>
+          </a>
+          <a mat-list-item routerLink="/dashboard/list-schedule-intern" routerLinkActive="active">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Lịch làm Intern</span>
+          </a>
+          <a mat-list-item routerLink="/dashboard/employee-leave-statistics" routerLinkActive="active">
+            <mat-icon>analytics</mat-icon>
+            <span>Thống kê nghỉ phép</span>
+          </a>
+          <a mat-list-item routerLink="/dashboard/admin-create-account" routerLinkActive="active" aria-label="Tạo tài khoản mới">
+            <mat-icon>person_add</mat-icon>
+            <span>Tạo tài khoản</span>
+          </a>
+         
+        </mat-nav-list>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

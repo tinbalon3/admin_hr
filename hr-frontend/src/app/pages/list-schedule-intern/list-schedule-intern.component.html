@@ -1,0 +1,62 @@
+
+<div class="calendar-container p-4 bg-gray-100 rounded-lg shadow-md">
+  <header class="calendar-header mb-4 flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-indigo-700">{{ currentMonth() }}</h2>
+    <div class="flex items-center gap-3">
+      <button 
+          class="px-3 py-2 border border-indigo-500 rounded-lg text-indigo-500 hover:bg-indigo-500 hover:text-white transition"
+          (click)="toCurrentMonth()">
+          Hôm nay
+      </button>
+      <div class="flex gap-2">
+          <button 
+              class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
+              (click)="prevMonth()">
+              Tháng trước
+          </button>
+          <button 
+              class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
+              (click)="nextMonth()">
+              Tháng sau
+          </button>
+      </div>
+    </div>
+  </header>
+ <!-- Hàng tiêu đề hiển thị thứ cho từng cột -->
+ <div class="grid grid-cols-7 mb-2">
+  <div *ngFor="let day of dayNamesFormatted" class="text-center font-bold text-gray-700">
+    {{ day.dayName }}
+  </div>
+</div>
+  <!-- Lưới lịch: sử dụng daysEnriched() -->
+  <div class="mt-2 grid grid-cols-7 gap-3">
+    <div *ngFor="let day of daysEnriched()"
+         (click)="handleDayClick(day.day)"
+         [ngClass]="[
+           'relative flex flex-col items-center justify-center rounded-lg p-3 h-24 transition',
+           day.colStartClass,
+           day.isToday ? 'bg-yellow-100 text-gray-800' : '',
+           day.isPast ? 'bg-gray-200 text-gray-500' : '',
+           isRegistered(day.day)
+             ? (isMarkedForRemoval(day.day) ? 'bg-red-200 text-white' : 'bg-blue-200 text-white')
+             : '',
+           isSelected(day.day) ? 'bg-green-200 text-gray-900' : '',
+           !day.isToday && !day.isPast && !isSelected(day.day) && !isRegistered(day.day) ? 'bg-white' : '',
+           day.disableSelection ? 'opacity-50 pointer-events-none' : '',
+           'hover:ring-2 hover:ring-blue-400'
+         ]">
+      <!-- Hiển thị số ngày ở góc dưới bên phải -->
+      <div class="absolute bottom-2 right-2 w-6 h-6 flex items-center justify-center bg-gray-200 text-gray-700 rounded-full text-xs font-semibold">
+        {{ day.day | date: 'd' }}
+      </div>
+      <!-- Badge hiển thị số lượng intern đã đăng ký, nếu có -->
+      <div *ngIf="isRegistered(day.day)"
+           class="absolute top-1 left-1 text-xs text-white bg-blue-600 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer">
+        {{ getRegistrationCount(day.day) }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 flex justify-center w-full">
+  <app-notification></app-notification>
+</div>

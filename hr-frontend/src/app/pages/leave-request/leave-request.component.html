@@ -1,0 +1,169 @@
+<div class="relative">
+  <div class="fixed bottom-4 right-4 z-50">
+    <app-notification></app-notification>
+  </div>
+</div>
+<section class="mb-12">
+      <h1 class="text-3xl font-bold text-black text-center mb-6">
+        DANH SÁCH ĐƠN ĐANG CHỜ XỬ LÝ
+      </h1>
+      <!-- Nút hành động -->
+      <div class="flex justify-between mb-6">
+        <button
+          class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 flex items-center gap-2"
+          (click)="openDialog()"
+          [attr.aria-label]="'Tạo đơn nghỉ phép mới'"
+          tabindex="0"
+        >
+          <span aria-hidden="true">➕</span> Tạo đơn
+        </button>
+        
+      </div>
+      <!-- Bảng tạo đơn -->
+      <div class="overflow-x-auto rounded-lg shadow">
+        <table class="min-w-full">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Ngày bắt đầu
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Ngày kết thúc
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Loại nghỉ phép
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Ghi chú
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Trạng thái
+              </th>
+              <th class="py-3 px-4 border text-black text-center uppercase text-sm font-medium">
+                Thao tác
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let request of pagedData" class="bg-gray-50">
+              <td class="py-3 px-4 border">
+                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.start_date" [ngModel]="request.leave_request.start_date | date:'yyyy-MM-dd'" />
+              </td>
+              <td class="py-3 px-4 border">
+                <input type="date" class="border rounded px-2 py-1 w-full" [disabled]="request.leave_request.status != 'PENDING'" [(ngModel)]="request.leave_request.end_date" [ngModel]="request.leave_request.end_date | date:'yyyy-MM-dd'" />
+              </td>
+              <td class="py-3 px-4 border">
+                <select
+                  class="w-full border rounded px-2 py-1"
+                  [disabled]="request.leave_request.status != 'PENDING'"
+                  [(ngModel)]="request.leave_type.id"
+                  (change)="onLeaveTypeChange(request, request.leave_type.id)"
+                >
+                  <option *ngFor="let type of leaveType" [value]="type.id" [ngStyle]="{'white-space': 'normal'}">
+                    {{ type.type_name }}
+                  </option>
+                </select>
+              </td>
+              <td class="py-3 px-4 border">
+                <textarea 
+                  placeholder="Nhập ghi chú" 
+                  class="border rounded px-2 py-1 w-full resize-none" 
+                  [disabled]="request.leave_request.status != 'PENDING'" 
+                  [(ngModel)]="request.leave_request.notes"
+                  rows="2"
+                  style="white-space: pre-wrap; word-wrap: break-word;"
+                ></textarea>
+              </td>
+              <td class="py-3 px-4 border text-center">
+                <span
+                  class="px-3 py-1 inline-flex text-xs font-semibold rounded-full uppercase transition-colors duration-200"
+                  [ngClass]="{
+                    'bg-green-100 text-green-800': request.leave_request?.status === 'PENDING',
+                   
+                  }"
+                >
+                  {{ request.leave_request?.status }}
+                </span>
+              </td>
+              <td class="py-3 px-4 border text-center">
+                <div class="flex gap-2 justify-center">
+                  <button
+                   class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   [disabled]="request.leave_request.status != 'PENDING'"
+                   (click)="submitSelected(request)"
+                   [attr.aria-label]="'Gửi đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Gửi
+                 </button>
+                 <button
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                   [disabled]="request.leave_request.status != 'PENDING'"
+                   (click)="deleteLeaveRequest(request)"
+                   [attr.aria-label]="'Xóa đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Xóa
+                 </button>
+                 <button
+                   [ngClass]="{'opacity-50': request.leave_request.status != 'PENDING'}"
+                   class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                   [disabled]="request.leave_request.status != 'PENDING' || !hasChanges(request)"
+                   (click)="updateLeaveRequest(request)"
+                   [attr.aria-label]="'Cập nhật đơn nghỉ phép'"
+                   tabindex="0"
+                 >
+                   Cập nhật
+                 </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination controls -->
+        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div class="flex items-center">
+            <label class="mr-2 text-sm text-gray-600">Số mục mỗi trang:</label>
+            <select 
+              [(ngModel)]="pageSize" 
+              (ngModelChange)="onPageSizeChange($event)"
+              class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+            >
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+    
+          <div class="flex items-center space-x-2">
+            <button
+              (click)="onPageChange(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              [attr.aria-label]="'Trang trước'"
+              tabindex="0"
+            >
+              Trước
+            </button>
+            
+            <span class="text-sm text-gray-700" role="status" aria-live="polite">
+              Trang {{ currentPage }} / {{ totalPages }}
+            </span>
+    
+            <button
+              (click)="onPageChange(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              [attr.aria-label]="'Trang sau'"
+              tabindex="0"
+            >
+              Sau
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
