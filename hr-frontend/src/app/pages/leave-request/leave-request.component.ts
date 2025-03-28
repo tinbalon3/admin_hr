@@ -96,6 +96,7 @@ export class LeaveRequestComponent implements OnInit {
           next: (response) => {
             this.success(response.message);
             this.fetchLeaveRequestUsers();
+            console.log(123)
           },
           error: (error) => {
             this.error(error.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
