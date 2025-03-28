@@ -91,9 +91,16 @@ export class LeaveRequestComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.leaveRequestService.createLeaveRequest(result).subscribe((data: any) => {
-          this.success(data.message);
-          this.fetchLeaveRequestUsers();
+        this.leaveRequestService.createLeaveRequest(result).subscribe(
+           this.leaveRequestService.createLeaveRequest(result).subscribe({
+          next: (response) => {
+            this.success(response.message);
+            this.fetchLeaveRequestUsers();
+            console.log(123)
+          },
+          error: (error) => {
+            this.error(error.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+          }
         });
       } else {
         this.info('Dialog bị đóng mà không gửi dữ liệu.');
