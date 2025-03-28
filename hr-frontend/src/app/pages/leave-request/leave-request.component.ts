@@ -85,14 +85,13 @@ export class LeaveRequestComponent implements OnInit {
     this.updatePagedData();
   }
 
-  openDialog(): void {
+    openDialog(): void {
     const dialogRef = this.dialog.open(LeveRequestDialogComponent, {
       width: '500px',
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.leaveRequestService.createLeaveRequest(result).subscribe(
-           this.leaveRequestService.createLeaveRequest(result).subscribe({
+        this.leaveRequestService.createLeaveRequest(result).subscribe({
           next: (response) => {
             this.success(response.message);
             this.fetchLeaveRequestUsers();
