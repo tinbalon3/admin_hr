@@ -14,6 +14,7 @@ import { LeaveRequestService } from '../../services/leave-request.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { NotificationComponent } from '../../components/notification/notification.component';
+import { LeaveTypeService } from '../../services/leave-type.service';
 
 @Component({
   selector: 'app-leave-request',
@@ -51,13 +52,13 @@ export class LeaveRequestComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private leaveRequestService: LeaveRequestService,
-    private listTypeService: ListTypeService,
-    private snackBar: MatSnackBar
+    private leaveTypeService: LeaveTypeService,
+
   ) { }
 
   ngOnInit(): void {
     this.fetchLeaveRequestUsers();
-    this.fectchLeaveType();
+    this.fetchLeaveType();
   }
 
   updatePagedData(): void {
@@ -85,7 +86,7 @@ export class LeaveRequestComponent implements OnInit {
     this.updatePagedData();
   }
 
-    openDialog(): void {
+  openDialog(): void {
     const dialogRef = this.dialog.open(LeveRequestDialogComponent, {
       width: '500px',
     });
@@ -95,7 +96,6 @@ export class LeaveRequestComponent implements OnInit {
           next: (response) => {
             this.success(response.message);
             this.fetchLeaveRequestUsers();
-            console.log(123)
           },
           error: (error) => {
             this.error(error.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
@@ -107,9 +107,11 @@ export class LeaveRequestComponent implements OnInit {
     });
   }
 
-  fectchLeaveType(): void {
-    this.listTypeService.get_list_type().subscribe((data: any) => {
-      this.leaveType = data.data;
+  fetchLeaveType(): void {
+    this.leaveTypeService.getLeaveTypes().subscribe({
+      next: (data) => {
+        this.leaveType = data.data;
+      }
     });
   }
 
@@ -229,7 +231,6 @@ export class LeaveRequestComponent implements OnInit {
 
   submitSelected(selectedRequest: any): void {
   
-
     if (!selectedRequest) {
       return;
     }
