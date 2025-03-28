@@ -94,6 +94,7 @@ export class LeaveRequestComponent implements OnInit {
         this.leaveRequestService.createLeaveRequest(result).subscribe( {
           next: (data) => {
             this.success(data.message);
+            console.log(data.message);
             this.fetchLeaveRequestUsers();
           },
           error: (error) => {
