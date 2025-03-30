@@ -27,7 +27,7 @@
         <mat-label>Loại nghỉ phép</mat-label>
         <mat-select formControlName="leave_type_id">
           <mat-option *ngFor="let type of leaveTypes" [value]="type.id">
-            {{type.name}}
+            {{type.type_name}}
           </mat-option>
         </mat-select>
         <mat-error *ngIf="leaveRequestForm.get('leave_type_id')?.touched">

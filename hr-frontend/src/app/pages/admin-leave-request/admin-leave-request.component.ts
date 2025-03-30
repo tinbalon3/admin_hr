@@ -21,7 +21,7 @@ interface Employee {
 
 interface LeaveType {
   id: string;
-  name: string;
+  type_name: string;
 }
 
 @Component({
@@ -96,7 +96,8 @@ export class AdminLeaveRequestComponent implements OnInit {
 
   fetchLeaveTypes(): void {
     this.leaveTypeService.getLeaveTypes().subscribe({
-      next: (response: { data: LeaveType[] }) => {
+      next: (response: { data: any }) => {
+        console.log('Leave types:', response.data);
         this.leaveTypes = response.data;
       },
       error: (error: Error) => {

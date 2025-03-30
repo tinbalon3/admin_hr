@@ -134,6 +134,7 @@ export class CreateLeaveRequestDialogComponent implements OnInit {
     this.leaveTypeService.getLeaveTypes().subscribe({
       next: (types) => {
         this.leaveTypes = types.data;
+        console.log('Leave types:', this.leaveTypes);
         this.loadingTypes = false;
       },
       error: (error) => {
