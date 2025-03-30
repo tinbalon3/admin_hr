@@ -10,7 +10,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
-import { ListTypeService } from '../../services/list-type.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,6 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { NotificationComponent } from '../../components/notification/notification.component';
+import { LeaveTypeService } from '../../services/leave-type.service';
 
 @Component({
   selector: 'app-leave-request-admin',
@@ -60,7 +60,7 @@ export class LeaveRequestAdminComponent implements OnInit {
   constructor(
 
     private leaveRequestService: LeaveRequestService,
-    private listTypeService: ListTypeService,
+    private leaveTypeService: LeaveTypeService,
   
   ) {}
 
@@ -107,7 +107,7 @@ export class LeaveRequestAdminComponent implements OnInit {
   }
 
   fectchLeaveType(): void {
-    this.listTypeService.get_list_type().subscribe((data: any) => {
+    this.leaveTypeService.getLeaveTypes().subscribe((data: any) => {
       this.leaveType = data.data;
     });
   }

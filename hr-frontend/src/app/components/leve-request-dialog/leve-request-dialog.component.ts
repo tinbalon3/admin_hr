@@ -8,10 +8,10 @@ import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule, NativeDateAdapter, p
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ListTypeService } from '../../services/list-type.service';
 import { format } from 'date-fns';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { NotificationComponent } from '../notification/notification.component';
+import { LeaveTypeService } from '../../services/leave-type.service';
 @Component({
   selector: 'app-leave-request',
   standalone: true,
@@ -42,7 +42,7 @@ export class LeveRequestDialogComponent implements OnInit {
   selectedLeaveType: string = '';
   constructor(
     public dialogRef: MatDialogRef<LeveRequestDialogComponent>,
-    private listTypeService: ListTypeService,
+    private leaveTypeService: LeaveTypeService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
   ngOnInit(): void {
@@ -53,7 +53,7 @@ export class LeveRequestDialogComponent implements OnInit {
     this.dialogRef.close();
   }
   fectchLeaveType(): void {
-    this.listTypeService.get_list_type().subscribe((data: any) => {
+    this.leaveTypeService.getLeaveTypes().subscribe((data: any) => {
       this.leaveType = data.data;
     }
     )
