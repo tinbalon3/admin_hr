@@ -8,13 +8,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
-import { ListTypeService } from '../../services/list-type.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { NotificationComponent } from '../../components/notification/notification.component';
 import { LeaveTypeService } from '../../services/leave-type.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-leave-request',
@@ -53,7 +53,7 @@ export class LeaveRequestComponent implements OnInit {
     private dialog: MatDialog,
     private leaveRequestService: LeaveRequestService,
     private leaveTypeService: LeaveTypeService,
-
+   
   ) { }
 
   ngOnInit(): void {
@@ -96,7 +96,7 @@ export class LeaveRequestComponent implements OnInit {
           next: (response) => {
             this.success(response.message);
             this.fetchLeaveRequestUsers();
-            console.log(123)
+           
           },
           error: (error) => {
             this.error(error.error.detail || 'Đã xảy ra lỗi. Vui lòng thử lại.');
@@ -110,10 +110,15 @@ export class LeaveRequestComponent implements OnInit {
 
   fetchLeaveType(): void {
     this.leaveTypeService.getLeaveTypes().subscribe({
-      next: (data) => {
+      next:(data: any) => {
         this.leaveType = data.data;
+      },
+      error:(error) => {
+        console.error('Lỗi khi tải loại nghỉ phép:', error);
+        this.error('Không thể tải loại nghỉ phép');
       }
     });
+  
   }
 
   toggleSelectAll(event: any): void {
