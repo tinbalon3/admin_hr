@@ -173,7 +173,7 @@ export class AdminLeaveRequestComponent implements OnInit {
       };
       
       console.log('Submitting leave request:', formattedData);
-      this.leaveRequestService.createLeaveRequest(formattedData).subscribe({
+      this.leaveRequestService.createAdminLeaveRequest(formattedData).subscribe({
         next: (response) => {
           this.success(response.message);
           this.leaveRequestForm.reset();
