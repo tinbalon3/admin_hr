@@ -156,10 +156,24 @@ export class AdminLeaveRequestComponent implements OnInit {
     return '';
   }
 
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+  }
+
   onSubmit(): void {
     if (this.leaveRequestForm.valid) {
       this.loading = true;
-      this.leaveRequestService.createLeaveRequest(this.leaveRequestForm.value).subscribe({
+      const formValue = this.leaveRequestForm.value;
+      
+      // Format dates to YYYY-MM-DD
+      const formattedData = {
+        ...formValue,
+        start_date: this.formatDate(formValue.start_date),
+        end_date: this.formatDate(formValue.end_date)
+      };
+      
+      console.log('Submitting leave request:', formattedData);
+      this.leaveRequestService.createLeaveRequest(formattedData).subscribe({
         next: (response) => {
           this.success(response.message);
           this.leaveRequestForm.reset();

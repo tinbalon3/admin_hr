@@ -92,6 +92,7 @@ export class LeaveRequestComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+
         this.leaveRequestService.createLeaveRequest(result).subscribe({
           next: (response) => {
             this.success(response.message);
@@ -257,7 +258,7 @@ export class LeaveRequestComponent implements OnInit {
         }
       }
     };
-
+    console.log('Formatted data:', formattedData);
     this.leaveRequestService.sendLeaveRequestToAdmin(formattedData).subscribe({
       next: () => {
         this.success('Gửi yêu cầu thành công!');

@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, NgZone, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -253,28 +254,40 @@ export class NotificationComponent implements OnInit, OnDestroy {
     dismissable: true
   };
 
-  private hideTimeout?: number;
+  private hideTimeout?: ReturnType<typeof setTimeout>;
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(
+    private elementRef: ElementRef,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit() {}
 
   ngOnDestroy() {
-    if (this.hideTimeout) {
+    if (this.hideTimeout && isPlatformBrowser(this.platformId)) {
       clearTimeout(this.hideTimeout);
     }
   }
 
   show() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     this.state = 'enter';
     this.elementRef.nativeElement.classList.add('visible');
-    this.hideTimeout = window.setTimeout(() => this.hide(), this._data.duration);
+    this.ngZone.run(() => {
+      this.hideTimeout = setTimeout(() => this.hide(), this._data.duration);
+    });
   }
 
   hide() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.state = 'leave';
     this.elementRef.nativeElement.classList.remove('visible');
-    setTimeout(() => this.state = 'void', 300);
+    this.ngZone.run(() => {
+      setTimeout(() => this.state = 'void', 300);
+    });
   }
 
   dismiss() {
