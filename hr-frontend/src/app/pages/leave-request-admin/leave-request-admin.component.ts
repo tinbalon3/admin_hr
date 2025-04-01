@@ -119,7 +119,7 @@ export class LeaveRequestAdminComponent implements OnInit {
       decision: request.leave_request.status,
     };
   
-    this.leaveRequestService.changeDecsion(updatedRequest).subscribe({
+    this.leaveRequestService.changeDecision(updatedRequest).subscribe({
       next: () => {
         this.success('Cập nhật thành công!');
         this.fetchLeaveRequestAdmin();

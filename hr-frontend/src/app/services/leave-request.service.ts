@@ -26,7 +26,7 @@ export class LeaveRequestService {
     // Truyền leave_type_id qua query parameters
     // const params = new HttpParams().set('leave_type_id', leaveData.leave_type_id);
 
-    return this.http.post(this.API_LEAVE_REQUEST_CREATE, leaveData, { headers });
+    return this.http.post(this.API_LEAVE_REQUEST_CREATE_ADMIN, leaveData, { headers });
   }
 
   getListLeaveRequestUser(): Observable<any> {
@@ -71,7 +71,7 @@ export class LeaveRequestService {
     });
     return this.http.post(this.API_LEAVE_REQUEST_SEND_LEAVE_REQUEST_ADMIN, leaveData, { headers });
   }
-  changeDecsion(leaveData:any): Observable<any> {
+  changeDecision(leaveData:any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
