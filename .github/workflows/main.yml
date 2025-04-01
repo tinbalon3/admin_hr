@@ -1,1 +1,23 @@
-echo "Hello world"
+name: Simple Test Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Test Command 1  
+      run: echo "Testing GitHub Actions"
+      
+    - name: Test Command 2
+      run: |
+        echo "Multiple commands can be run"
+        echo "Current directory: $PWD"
+        ls -la
